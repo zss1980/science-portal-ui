@@ -244,13 +244,19 @@
           portalCore.hideInfoModal(true)
           portalCore.setProgressBar('okay')
 
-          var cores = imageList.availableCores
-          var tempImageList = new Array()
-          for (var i=0; i< imageList.length; i++) {
-            // each entry has id, type, digest, only 'id' is needed
-            tempImageList.push({name: imageList[i].id, optionID: imageList[i].id})
+          if (imageList.length > 0) {
+
+            var cores = imageList.availableCores
+            var tempImageList = new Array()
+            for (var i = 0; i < imageList.length; i++) {
+              // each entry has id, type, digest, only 'id' is needed
+              tempImageList.push({name: imageList[i].id, optionID: imageList[i].id})
+            }
+            populateSelect('sp_software_stack', tempImageList, 'select stack')
+          } else {
+            portalCore.setInfoModal('No Images found','No public Software Stack Images found for your username.')
           }
-          populateSelect('sp_software_stack', tempImageList, 'select stack')
+
         })
         .catch(function(message) {
           portalCore.setInfoModal('Problem Loading Images', 'Problem loading software stack resources. '
