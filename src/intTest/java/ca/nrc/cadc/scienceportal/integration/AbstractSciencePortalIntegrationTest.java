@@ -2,7 +2,7 @@
 ************************************************************************
 ****  C A N A D I A N   A S T R O N O M Y   D A T A   C E N T R E  *****
 *
-* (c) 2013.                         (c) 2013.
+* (c) 2021.                            (c) 2021.
 * National Research Council            Conseil national de recherches
 * Ottawa, Canada, K1A 0R6              Ottawa, Canada, K1A 0R6
 * All rights reserved                  Tous droits reserves
@@ -23,8 +23,6 @@
 *                                      sation du logiciel.
 *
 *
-* @author jenkinsd
-* 12/13/13 - 1:44 PM
 *
 *
 *

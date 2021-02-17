@@ -152,7 +152,7 @@ idea {
 
         systemProperty 'user.name', project.intTest_user_name
         systemProperty 'user.password', project.intTest_user_password
-        
+
         maxParallelForks = 1
     }
 }
