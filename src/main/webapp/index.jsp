@@ -80,16 +80,6 @@
                       <i>Attempting to connect to existing session. If one isn't found, the launch page will be displayed. </i></button>
                     </div>
 
-<%--                    <div class="doi-authenticated">--%>
-<%--                      <!-- Noficiation and Alert bars -->--%>
-<%--                      <div class="alert alert-danger hidden">--%>
-<%--                        <strong id="status_code">444</strong>&nbsp;&nbsp;<span id="error_msg">Server error</span>--%>
-<%--                      </div>--%>
-
-<%--                      <div class="alert alert-success hidden">--%>
-<%--                        <span id="alert_msg"></span>--%>
-<%--                      </div>--%>
-
               <!-- Info/Error Modal -->
               <div class="modal fade" id="info_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
