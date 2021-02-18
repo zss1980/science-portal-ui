@@ -1,0 +1,22 @@
+{
+  "software_stack": {
+    "tipHTML": "Reference to an image to use to start the session container",
+    "placement": "top",
+    "title": "Software Stack"
+  },
+  "session_name": {
+    "tipHTML": "Name for the session. Alphanumeric characters.",
+    "placement": "top",
+    "title": "Session Name"
+  },
+  "context_memory": {
+    "tipHTML": "System memory (RAM) to be used for the session. Default: 16G",
+    "placement": "top",
+    "title": "Memory"
+  },
+  "context_cores": {
+    "tipHTML": "Number of cores used by the session. Default: 2",
+    "placement": "top",
+    "title": "# of Cores"
+  }
+}
