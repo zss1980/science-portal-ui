@@ -71,11 +71,12 @@
                       </ul>
                     </nav>
                   </div>
-                  <div class="progress sp-progress-bar-container">
-                    <div class="beacon-progress progress-bar progress-bar-success sp-progress-bar"
-                         role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100">
-                    </div>
-                  </div>
+                  <div id="spProgressBar"></div>
+<%--                  <div class="progress sp-progress-bar-container">--%>
+<%--                    <div class="beacon-progress progress-bar progress-bar-success sp-progress-bar"--%>
+<%--                         role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100">--%>
+<%--                    </div>--%>
+<%--                  </div>--%>
                   <div class="panel-body science-portal-panel-body">
 
                     <!-- Noficiation and Alert bars -->
@@ -209,7 +210,8 @@
 
 
     <script type="application/javascript" src="<c:out value=" ${baseURL}/canfar/javascript/cadc.contexthelp.js" />"></script>
-    <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_core.js?ver=1" />"></script>
+    <script type="application/javascript" src="<c:out value=" ${baseURL}/canfar/javascript/cadc.progressbar.js" />"></script>
+    <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_core.js" />"></script>
     <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_session.js" />"></script>
     <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_launch.js" />"></script>
 

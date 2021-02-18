@@ -52,9 +52,19 @@
       hoverClassname: 'science-portal-tooltip-btn'
     }
     var _contextHelp = new cadc.web.CadcContextHelp(_chOptions)
+    // Done here because there's an ajax call involved to open the help
+    // resource file.
     _contextHelp.init()
 
+    // Instantiate progress bar
+    var _barOpts = {
+      progressBarClass : 'sp-progress-bar',
+      progressBarDivID : 'spProgressBar'
+    }
+    var _progressBar = new cadc.web.CadcProgressBar(_barOpts)
+
     function init() {
+      _progressBar.init()
       setSessionServiceURL()
     }
 
@@ -68,31 +78,32 @@
 
     // Communicate AJAX progress and status using progress bar
     function setProgressBar(state) {
-      var _progressBar = $('.sp-progress-bar')
-      switch (state) {
-        case 'busy': {
-          _progressBar.addClass('progress-bar-striped')
-          _progressBar.removeClass('progress-bar-danger')
-          _progressBar.addClass('progress-bar-success')
-          break
-        }
-        case 'okay': {
-          _progressBar.removeClass('progress-bar-striped')
-          _progressBar.removeClass('progress-bar-danger')
-          _progressBar.addClass('progress-bar-success')
-          break
-        }
-        case 'error': {
-          _progressBar.removeClass('progress-bar-striped')
-          _progressBar.removeClass('progress-bar-success')
-          _progressBar.addClass('progress-bar-danger')
-          break
-        }
-        default: {
-          // Nothing
-          break
-        }
-      }
+      _progressBar.setProgressBar(state)
+      //var _progressBar = $('.sp-progress-bar')
+      //switch (state) {
+      //  case 'busy': {
+      //    _progressBar.addClass('progress-bar-striped')
+      //    _progressBar.removeClass('progress-bar-danger')
+      //    _progressBar.addClass('progress-bar-success')
+      //    break
+      //  }
+      //  case 'okay': {
+      //    _progressBar.removeClass('progress-bar-striped')
+      //    _progressBar.removeClass('progress-bar-danger')
+      //    _progressBar.addClass('progress-bar-success')
+      //    break
+      //  }
+      //  case 'error': {
+      //    _progressBar.removeClass('progress-bar-striped')
+      //    _progressBar.removeClass('progress-bar-success')
+      //    _progressBar.addClass('progress-bar-danger')
+      //    break
+      //  }
+      //  default: {
+      //    // Nothing
+      //    break
+      //  }
+      //}
     }
 
     function setAjaxFail(message) {
