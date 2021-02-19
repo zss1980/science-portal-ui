@@ -132,7 +132,7 @@
     // ------ Set up web service URLs ------
 
     function setSessionServiceURL() {
-      setInfoModal('Loading Page Resources', 'Locating session web service.', false, true)
+      setInfoModal('Loading Page Resources', 'Locating session web service.', false, true, true)
       Promise.resolve(prepareRegistry())
         .then(function(serviceURL) {
             if (typeof serviceURL != 'undefined') {

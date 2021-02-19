@@ -139,7 +139,7 @@
                                          data-title="Memory"></div>
                           </label>
                             <div class="col-sm-6">
-                              <select name="memory" id="sp_memory"
+                              <select name="ram" id="sp_memory"
                                       class="form-control sp-form sp-form-input"
                                       tabindex="3">
                                 <option value="" selected disabled>-- loading resource list --</option>

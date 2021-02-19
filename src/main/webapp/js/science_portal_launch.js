@@ -108,9 +108,9 @@
             forwardToSession(runningSession)
           })
           .catch(function (message) {
-            portalCore.setInfoModal('Session start Pending',
+            portalCore.setInfoModal('Session start pending',
               'The requested session is starting up (in Pending state.) ' +
-              'Refresh the page to attempt to connect.', true, false, false)
+              'Reload the page to attempt to connect.', true, false, false)
           })
       })
 
