@@ -79,31 +79,6 @@
     // Communicate AJAX progress and status using progress bar
     function setProgressBar(state) {
       _progressBar.setProgressBar(state)
-      //var _progressBar = $('.sp-progress-bar')
-      //switch (state) {
-      //  case 'busy': {
-      //    _progressBar.addClass('progress-bar-striped')
-      //    _progressBar.removeClass('progress-bar-danger')
-      //    _progressBar.addClass('progress-bar-success')
-      //    break
-      //  }
-      //  case 'okay': {
-      //    _progressBar.removeClass('progress-bar-striped')
-      //    _progressBar.removeClass('progress-bar-danger')
-      //    _progressBar.addClass('progress-bar-success')
-      //    break
-      //  }
-      //  case 'error': {
-      //    _progressBar.removeClass('progress-bar-striped')
-      //    _progressBar.removeClass('progress-bar-success')
-      //    _progressBar.addClass('progress-bar-danger')
-      //    break
-      //  }
-      //  default: {
-      //    // Nothing
-      //    break
-      //  }
-      //}
     }
 
     function setAjaxFail(message) {
@@ -183,7 +158,7 @@
 
     // ------------ Rendering & display functions ------------
 
-    function setInfoModal(title, msg, hideSpinner, hideThanks) {
+    function setInfoModal(title, msg, hideSpinner, hideReload, hideHome) {
       // Set titles and messages
       $('.info-span').html(msg)
       $('#infoModalLongTitle').html(title)
@@ -199,13 +174,19 @@
       }
 
       // Toggle these elements as required
-      if (hideThanks === true) {
-        $('#infoThanks').addClass('hidden')  // should be d-none, but bootstrap css not being applied?
+      if (typeof hideReload == 'undefined' || hideReload === true) {
+        $('#pageReload').addClass('hidden')  // should be d-none, but bootstrap css not being applied?
       } else {
-        $('#infoThanks').removeClass('hidden')
+        $('#pageReload').removeClass('hidden')
       }
 
-      if (hideSpinner === true) {
+      if (typeof hideHome == 'undefined' || hideHome === true) {
+        $('#hideHome').addClass('hidden')  // should be d-none, but bootstrap css not being applied?
+      } else {
+        $('#hideHome').removeClass('hidden')
+      }
+
+      if (typeof hideSpinner == 'undefined' || hideSpinner === true) {
         $('.spinner-span').addClass('hidden')
       } else {
         $('.spinner-span').removeClass('hidden')

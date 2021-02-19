@@ -194,8 +194,12 @@
                       <span class="info-span"></span>
                       <span class="spinner-span glyphicon glyphicon-refresh fast-right-spinner"></span>
                     </div>
-                    <div id="infoThanks" class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Thanks</button>
+                    <div id="pageReload" class="modal-footer">
+                      <button type="button" class="btn btn-success" data-dismiss="modal" id="pageReloadButton">Reload</button>
+                    </div>
+                    <div id="infoHome" class="sp-modal-footer-info-link">
+                      <a href="<c:out value="${baseURL}" />" class="account_access_info" title="CANFARHome" target="_blank">
+                        CANFAR Home</a>
                     </div>
                   </div>
                 </div>
