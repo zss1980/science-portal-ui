@@ -51,6 +51,7 @@
       // Button listeners
       $('#sp_reset_button').click(handleResetFormState)
       $('#session_request_form').submit(handleSessionRequest)
+      $('#pageReloadButton').click(handlePageRefresh)
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
@@ -69,8 +70,8 @@
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onServiceURLFail, function (e, data){
         // Unable to contact registry to get sessions web service URL
         portalCore.setProgressBar('error')
-        portalCore.setInfoModal('Page Unavailable', 'Unable to establish session web service communication. '
-          + 'Refresh to try again or contact CANFAR admin for assistance.', true, true)
+        portalCore.setInfoModal('Page Unavailable', 'Unable to establish communication with Skaha web service. '
+          + 'Reload page to try again or contact CANFAR admin for assistance.', true, false, false)
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onFindSessionOK, function (e, data) {
@@ -91,7 +92,7 @@
         portalCore.hideInfoModal(true)
 
         if (request.status == 403) {
-          portalCore.setInfoModal('Skaha authorisation issue', portalCore.getRcDisplayText(request), true, true)
+          portalCore.setInfoModal('Skaha authorization issue', portalCore.getRcDisplayText(request), true, false, false)
         } else {
           // There some other problem contacting the session service. Report the error
           portalCore.setAjaxFail(request)
@@ -101,14 +102,15 @@
       portalCore.subscribe(_selfPortalLaunch, cadc.web.science.portal.launch.events.onSessionRequestOK, function (e, sessionData) {
         // Start polling for session status to discover when/if the requested session comes up.
         // Function returns a Promise, so need .then and .catch here
-        portalCore.setInfoModal('Waiting', 'Waiting for session startup', false, false)
+        portalCore.setInfoModal('Waiting', 'Waiting for session startup', false, true, true)
         portalSessions.pollSessionStatus({}, 10000, 200)
           .then( function(runningSession) {
             forwardToSession(runningSession)
           })
           .catch(function (message) {
-            portalCore.hideInfoModal(true)
-            portalCore.handleAjaxError(message)
+            portalCore.setInfoModal('Session start pending',
+              'The requested session is starting up (in Pending state.) ' +
+              'Reload the page to attempt to connect.', true, false, false)
           })
       })
 
@@ -163,8 +165,13 @@
       } else {
         portalCore.setProgressBar('error')
         portalCore.setInfoModal('Can\'t connect to session', 'An existing session was found, but is not running. (' +
-          curSession.status + '). Try refreshing page to reconnect. Otherwise please contact CANFAR admin for assistance.', true, false);
+          curSession.status + '). Reload page to attempt reconnect. Otherwise please contact CANFAR admin for assistance.',
+          true, false, false);
       }
+    }
+
+    function handlePageRefresh() {
+      window.location.reload()
     }
 
     // ------------ HTTP/Ajax functions ------------
@@ -180,7 +187,7 @@
       portalCore.clearAjaxAlert()
       var formData = gatherFormData()
 
-      portalCore.setInfoModal('Requesting Session', 'Requesting new session', false, true)
+      portalCore.setInfoModal('Requesting Session', 'Requesting new session', false, true, true)
       Promise.resolve(postSessionRequestAjax(portalCore.sessionServiceURL.session, formData))
         .then(function(sessionInfo) {
           portalCore.setProgressBar('okay')
@@ -235,7 +242,7 @@
     // ------- Dropdown Ajax functions
 
     function loadSoftwareStackImages() {
-      portalCore.setInfoModal('Loading Images', 'Getting software stack list', false, true)
+      portalCore.setInfoModal('Loading Images', 'Getting software stack list', false, true, true)
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
 
@@ -254,13 +261,14 @@
             }
             populateSelect('sp_software_stack', tempImageList, 'select stack')
           } else {
-            portalCore.setInfoModal('No Images found','No public Software Stack Images found for your username.')
+            portalCore.setInfoModal('No Images found','No public Software Stack Images found for your username.',
+              true, false, false)
           }
 
         })
         .catch(function(message) {
           portalCore.setInfoModal('Problem Loading Images', 'Problem loading software stack resources. '
-            + 'Try to reset the form to reload.', true, false)
+            + 'Try to reset the form to reload.', true, false, false)
           portalCore.handleAjaxError(message)
         })
     }
@@ -293,7 +301,8 @@
 
     function loadContext() {
       // go to /context endpoint and then populate the sp_cores and sp_memory dropdowns
-      portalCore.setInfoModal('Loading Context Resources', 'Getting current context resources', false, true)
+      portalCore.setInfoModal('Loading Context Resources', 'Getting current context resources',
+        false, true, true)
 
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
@@ -321,7 +330,7 @@
         })
         .catch(function(message) {
           portalCore.setInfoModal('Problem Loading Context', 'Problem loading server context resources. '
-            + 'Try to reset the form to reload.', true, false)
+            + 'Reload page to try again.', true, false, false)
           portalCore.handleAjaxError(message)
         })
     }

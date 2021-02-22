@@ -139,7 +139,7 @@
                                          data-title="Memory"></div>
                           </label>
                             <div class="col-sm-6">
-                              <select name="memory" id="sp_memory"
+                              <select name="ram" id="sp_memory"
                                       class="form-control sp-form sp-form-input"
                                       tabindex="3">
                                 <option value="" selected disabled>-- loading resource list --</option>
@@ -194,8 +194,12 @@
                       <span class="info-span"></span>
                       <span class="spinner-span glyphicon glyphicon-refresh fast-right-spinner"></span>
                     </div>
-                    <div id="infoThanks" class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Thanks</button>
+                    <div id="pageReload" class="modal-footer">
+                      <button type="button" class="btn btn-success" data-dismiss="modal" id="pageReloadButton">Reload</button>
+                    </div>
+                    <div id="infoHome" class="sp-modal-footer-info-link">
+                      <a href="<c:out value="${baseURL}" />" class="account_access_info" title="CANFARHome" target="_blank">
+                        CANFAR Home</a>
                     </div>
                   </div>
                 </div>
