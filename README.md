@@ -1,6 +1,6 @@
 # CANFAR Science Portal
 ### V 1.0
-#####Feb 2021
+##### Feb 2021
 
 UI for launching and connecting to Jupyter notebook sessions that back onto CANFAR resources. 
 
