@@ -9,9 +9,8 @@
               PortalSession: PortalSession,
               // Events
               events: {
-                onFindSessionOK: new jQuery.Event('sciPort:onFindSessionOK'),
-                onFindSessionFail: new jQuery.Event('sciPort:onFindSessionFail'),
-                onFindSessionError: new jQuery.Event('sciPort:onFindSessionError')
+                onLoadSessionListDone: new jQuery.Event('sciPort:onLoadSessionListDone'),
+                onLoadSessionListError: new jQuery.Event('sciPort:onLoadSessionListError')
               }
             }
           }
@@ -82,22 +81,19 @@
     /**
      * Run this on page load to see if there's something to start up.
     */
-    function findCurrentSession() {
+    function loadSessionList() {
       Promise.resolve(getSessionListAjax(_selfPortalSess.sessionURLs.session, {}))
         .then(function(sessionList) {
 
           if (sessionList.length > 0) {
             setSessionList(sessionList)
-            _selfPortalSess.curSession = getCurrentSession()
-            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onFindSessionOK, _selfPortalSess.curSession)
-          } else {
-            // No session found
-            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onFindSessionFail)
           }
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone, sessionList)
+
         })
         .catch(function(message) {
           // get session list failed in a way that can't allow page to continue
-          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onFindSessionError, message)
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListError, message)
         })
     }
 
@@ -185,9 +181,9 @@
         setServiceURLs: setServiceURLs,
         initSessionList: initSessionList,
         getSessionList: getSessionList,
+        loadSessionList: loadSessionList,
         setSessionList: setSessionList,
         getCurrentSession: getCurrentSession,
-        findCurrentSession: findCurrentSession,
         isRunningSession: isRunningSession,
         isSessionListEmpty : isSessionListEmpty,
         pollSessionStatus: pollSessionStatus
