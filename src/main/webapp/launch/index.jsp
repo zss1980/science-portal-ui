@@ -83,7 +83,7 @@
                       <li role="presentation" class="sp-session-link sp-session-add">
                         <a href="#" class="sp-session-link sp-session-add">
                           <i class="fas fa-plus service-link " data-toggle="tooltip" data-placement="top" title="desktop session test"></i>
-                          <div class="sp-session-link-name">Add Session</div>
+                          <div class="sp-session-link-name">New Session</div>
                         </a>
                       </li>
 

@@ -47,6 +47,7 @@
       // Button listeners
       $('#sp_reset_button').click(handleResetFormState)
       $('#session_request_form').submit(handleSessionRequest)
+      $('#pageReloadButton').click(handlePageRefresh)
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
@@ -155,14 +156,14 @@
         $unorderedList.append($listItem)
       })
 
-      // Put 'Add Session' button last.
+      // Put 'New Session' button last.
       var $listItem = $('<li />')
       $listItem.prop("role", "presentation")
       $listItem.prop('class', 'sp-session-link sp-session-add')
 
       var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
       '<i class="fas fa-plus"></i>' +
-      '<div class="sp-session-link-name">Add Session</div>' +
+      '<div class="sp-session-link-name">New Session</div>' +
       '</a> </li>'
       $listItem.html(listItemHTML)
       $unorderedList.append($listItem)
@@ -204,7 +205,6 @@
       portalSessions.loadSessionList()
     }
 
-
     /**
      * Instead of going directly to the session, check to make sure it's in 'Running' state first.
      * @param curSession
@@ -222,6 +222,13 @@
           curSession.status + '). Reload page to attempt reconnect. Otherwise please contact CANFAR admin for assistance.',
           true, false, false);
       }
+    }
+
+    /**
+     * Triggered from 'Reload' button on info modal
+     */
+    function handlePageRefresh() {
+      window.location.reload()
     }
 
     // ------------ HTTP/Ajax functions ------------
