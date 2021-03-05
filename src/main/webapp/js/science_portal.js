@@ -127,7 +127,6 @@
       $(sessionData).each(function () {
 
         var $listItem = $('<li />')
-        $listItem.prop("role", "presentation")
         $listItem.prop('class', 'sp-session-link')
 
         var $anchorItem = $('<a />')
@@ -158,7 +157,6 @@
 
       // Put 'New Session' button last.
       var $listItem = $('<li />')
-      $listItem.prop("role", "presentation")
       $listItem.prop('class', 'sp-session-link sp-session-add')
 
       var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
@@ -188,7 +186,7 @@
         var option = $('<option />')
         option.val(this.optionID)
         if (this.optionID == defaultOptionID ) {
-          option.prop("selected", true)
+          option.prop('selected', true)
         }
         option.html(this.name)
         $selectToAugment.append(option)
@@ -303,7 +301,7 @@
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
 
-      Promise.resolve(getImageListAjax(portalCore.sessionServiceURL.images + "?type=notebook", {}))
+      Promise.resolve(getImageListAjax(portalCore.sessionServiceURL.images + '?type=notebook', {}))
         .then(function(imageList) {
           portalCore.hideInfoModal(true)
           portalCore.setProgressBar('okay')
