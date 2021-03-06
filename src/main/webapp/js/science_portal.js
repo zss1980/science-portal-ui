@@ -32,7 +32,7 @@
   function PortalApp(inputs) {
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
-    var _selfPortalLaunch = this
+    var _selfPortalApp = this
 
     // ------------ Page load functions ------------
 
@@ -48,6 +48,7 @@
       $('#sp_reset_button').click(handleResetFormState)
       $('#session_request_form').submit(handleSessionRequest)
       $('#pageReloadButton').click(handlePageRefresh)
+      $('.sp-session-connect').click(handleConnectRequest)
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
@@ -60,7 +61,6 @@
         // This will forward to an existing session if it exists
         // Enforces 'one session per user' rule
         portalSessions.setServiceURLs(portalCore.sessionServiceURL)
-        // rename this to 'getSessionList' or something sane
         checkForSessions()
       })
 
@@ -93,13 +93,13 @@
         }
       })
 
-      portalCore.subscribe(_selfPortalLaunch, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
+      portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
         // Start polling for session status to discover when/if the requested session comes up.
         // Function returns a Promise, so need .then and .catch here
         portalCore.setInfoModal('Waiting', 'Waiting for session startup', false, true, true)
         portalSessions.pollSessionStatus({}, 10000, 200)
           .then( function(runningSession) {
-            forwardToSession(runningSession)
+            //forwardToSession(runningSession)
           })
           .catch(function (message) {
             portalCore.setInfoModal('Session start pending',
@@ -115,10 +115,13 @@
     function populateSessionList(sessionData) {
       var $sessionListDiv = $('#spSessionList')
 
-      // Clear select content first
+      // Clear listeners
+      $('.sp-session-connect').off('click')
+
+      // Clear session list
       $sessionListDiv.empty()
 
-      // Make new parent list
+      // Make new list from sessionData
       var $unorderedList = $('<ul />')
       $unorderedList.prop('class', 'nav nav-pills')
 
@@ -130,8 +133,14 @@
         $listItem.prop('class', 'sp-session-link')
 
         var $anchorItem = $('<a />')
-        $anchorItem.prop('href', this.connectURL)
-        $anchorItem.prop('target', '_blank')
+        $anchorItem.prop('href', '#')
+
+        // Attach session data to the anchor element
+        $anchorItem.attr('data-connecturl', this.connectURL)
+        $anchorItem.attr('data-status', this.status)
+        $anchorItem.attr('data-id', this.id)
+        $anchorItem.attr('data-name', this.name)
+        $anchorItem.prop('class', 'sp-session-connect')
 
         var $iconItem = $('<i />')
 
@@ -167,6 +176,7 @@
       $unorderedList.append($listItem)
 
       $sessionListDiv.append($unorderedList)
+      $('.sp-session-connect').on('click', handleConnectRequest)
     }
 
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
@@ -203,21 +213,30 @@
       portalSessions.loadSessionList()
     }
 
+
+    // ------------ Event Handlers ------------
+
     /**
      * Instead of going directly to the session, check to make sure it's in 'Running' state first.
      * @param curSession
      */
-    function forwardToSession(curSession) {
-      if (portalSessions.isRunningSession(curSession)) {
+    function handleConnectRequest(event, data) {
+      event.preventDefault()
+      // Pull data-* information from anchor element
+      var sessionData = $(event.currentTarget).data()
+      if (portalSessions.isRunningSession(sessionData)) {
         portalCore.setProgressBar('okay')
-        portalCore.setInfoModal('Connecting to Session', 'Connecting to existing session ' + curSession.name
-          + ' (' + curSession.id + ')', false, false)
+        portalCore.setInfoModal('Connecting to Session', 'Connecting to existing session ' + sessionData.name
+          + ' (' + sessionData.id + ')', false, false)
         // just forward people to next page, in this same window
-        window.location.replace(curSession.connectURL);
+        window.open(sessionData.connecturl, '_blank')
+        // Note: the modal just opened is left up. It's not clear if that's he best behaviour,
+        // but after it's used some we'll get feedback on how better to handle it
       } else {
         portalCore.setProgressBar('error')
+        // TODO: should be able to close this modal?
         portalCore.setInfoModal('Can\'t connect to session', 'An existing session was found, but is not running. (' +
-          curSession.status + '). Reload page to attempt reconnect. Otherwise please contact CANFAR admin for assistance.',
+          sessionData.status + '). Try again in a few moments, or contact CANFAR admin for assistance.',
           true, false, false);
       }
     }
@@ -229,7 +248,7 @@
       window.location.reload()
     }
 
-    // ------------ HTTP/Ajax functions ------------
+    // ------------ HTTP/Ajax functions & event handlers ------------
     // ---------------- POST ------------------
 
     /**
@@ -247,7 +266,7 @@
         .then(function(sessionInfo) {
           portalCore.setProgressBar('okay')
           portalCore.hideInfoModal(true)
-          portalCore.trigger(_selfPortalLaunch, cadc.web.science.portal.events.onSessionRequestOK, sessionInfo)
+          portalCore.trigger(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, sessionInfo)
         })
         .catch(function(message) {
           portalCore.handleAjaxError(message)
