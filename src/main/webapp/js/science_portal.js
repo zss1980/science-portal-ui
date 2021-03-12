@@ -113,7 +113,7 @@
     // ------------ Data display functions
 
     function populateSessionList(sessionData) {
-      var $sessionListDiv = $('#spSessionList')
+      var $sessionListDiv = $('#sp_session_list')
 
       // Clear select content first
       $sessionListDiv.empty()

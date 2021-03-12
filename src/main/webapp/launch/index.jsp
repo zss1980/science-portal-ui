@@ -77,7 +77,7 @@
                   </div>
                   <div id="spListProgressBar"></div>
 
-                  <div class="panel-body science-portal-panel-body" id="spSessionList">
+                  <div class="panel-body science-portal-panel-body" id="sp_session_list">
                     <ul class="nav nav-pills">
 
                       <li role="presentation" class="sp-session-link sp-session-add">
