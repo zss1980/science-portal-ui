@@ -99,12 +99,13 @@
         portalCore.setInfoModal('Waiting', 'Waiting for session startup', false, true, true)
         portalSessions.pollSessionStatus({}, 10000, 200)
           .then( function(runningSession) {
-            //forwardToSession(runningSession)
+            // refresh the session panel
+            checkForSessions()
           })
           .catch(function (message) {
-            portalCore.setInfoModal('Session start pending',
-              'The requested session is starting up (in Pending state.) ' +
-              'Reload the page to attempt to connect.', true, false, false)
+            portalCore.setInfoModal('Error checking for sessions',
+              'Unable to get session list. ' +
+              'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
           })
       })
 
