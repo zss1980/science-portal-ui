@@ -56,15 +56,24 @@
     // resource file.
     _contextHelp.init()
 
-    // Instantiate progress bar
+    // Instantiate progress bars
     var _barOpts = {
       progressBarClass : 'sp-progress-bar',
-      progressBarDivID : 'spProgressBar'
+      progressBarDivID : 'sp_progress_bar'
     }
     var _progressBar = new cadc.web.CadcProgressBar(_barOpts)
 
+    // Instantiate List progress bar
+    var _listBarOpts = {
+      progressBarClass : 'sp-progress-bar',
+      progressBarDivID : 'sp_list_progressBar'
+    }
+
+    var _listProgressBar = new cadc.web.CadcProgressBar(_listBarOpts)
+
     function init() {
       _progressBar.init()
+      _listProgressBar.init()
       setSessionServiceURL()
     }
 
@@ -79,6 +88,8 @@
     // Communicate AJAX progress and status using progress bar
     function setProgressBar(state) {
       _progressBar.setProgressBar(state)
+      // TODO: this will need it's own function so it can act separately
+      _listProgressBar.setProgressBar(state)
     }
 
     function setAjaxFail(message) {

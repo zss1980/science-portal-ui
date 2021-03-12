@@ -5,13 +5,11 @@
       web: {
         science: {
           portal: {
-            launch: {
-              PortalLaunch: PortalLaunch,
-              // Events
-              events: {
-                onSessionRequestOK: new jQuery.Event('sciPort:onSessionRequestOK'),
-                onSessionRequestFail: new jQuery.Event('sciPort:onSessionRequestFail'),
-              }
+            PortalApp: PortalApp,
+            // Events
+            events: {
+              onSessionRequestOK: new jQuery.Event('sciPort:onSessionRequestOK'),
+              onSessionRequestFail: new jQuery.Event('sciPort:onSessionRequestFail'),
             }
           }
         }
@@ -31,9 +29,7 @@
    *       sessionsResourceID: '<resourceID of session web service>'
     *    }
    */
-  function PortalLaunch(inputs) {
-    // PortalSession object is owned by PortalCore.
-    // Session list, current session, etc. come from there
+  function PortalApp(inputs) {
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
     var _selfPortalLaunch = this
@@ -64,7 +60,8 @@
         // This will forward to an existing session if it exists
         // Enforces 'one session per user' rule
         portalSessions.setServiceURLs(portalCore.sessionServiceURL)
-        checkForSession()
+        // rename this to 'getSessionList' or something sane
+        checkForSessions()
       })
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onServiceURLFail, function (e, data){
@@ -74,18 +71,15 @@
           + 'Reload page to try again or contact CANFAR admin for assistance.', true, false, false)
       })
 
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onFindSessionOK, function (e, data) {
-        // This function display a 'helpful message' if the session status is not 'Running'
-        forwardToSession(data)
-      })
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e, sessionListData) {
+        populateSessionList(sessionListData)
 
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onFindSessionFail, function (e, data) {
-        // No session found for currently authenticated user, so continue to form
-        loadSoftwareStackImages()
+        // TODO: load all form data intially - CADC-9354 wil pare this down to only what's needed per session type
         loadContext()
+        loadSoftwareStackImages()
       })
 
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onFindSessionError, function (e, request){
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, function (e, request){
         // This should be triggered if the user doesn't have access to Skaha resources, as well as
         // other error conditions. Without access to Skaha, the user should be blocked from using the page,
         // but be directed to some place they can ask for what they need (a resource allocation.)
@@ -99,7 +93,7 @@
         }
       })
 
-      portalCore.subscribe(_selfPortalLaunch, cadc.web.science.portal.launch.events.onSessionRequestOK, function (e, sessionData) {
+      portalCore.subscribe(_selfPortalLaunch, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
         // Start polling for session status to discover when/if the requested session comes up.
         // Function returns a Promise, so need .then and .catch here
         portalCore.setInfoModal('Waiting', 'Waiting for session startup', false, true, true)
@@ -118,6 +112,63 @@
 
     // ------------ Data display functions
 
+    function populateSessionList(sessionData) {
+      var $sessionListDiv = $('#sp_session_list')
+
+      // Clear select content first
+      $sessionListDiv.empty()
+
+      // Make new parent list
+      var $unorderedList = $('<ul />')
+      $unorderedList.prop('class', 'nav nav-pills')
+
+      // Build new list
+      // Assuming a list of sessions is provided, with connect url, name, type
+      $(sessionData).each(function () {
+
+        var $listItem = $('<li />')
+        $listItem.prop('class', 'sp-session-link')
+
+        var $anchorItem = $('<a />')
+        $anchorItem.prop('href', this.connectURL)
+        $anchorItem.prop('target', '_blank')
+
+        var $iconItem = $('<i />')
+
+        var iconClass
+        if (this.type == 'notebook') {
+          iconClass = 'fas fa-cube'
+        } else if (this.type == 'desktop') {
+          iconClass = 'fas fa-desktop'
+        } else if (this.type == 'carta') {
+          iconCass = 'fas fa-cube'
+        }
+        $iconItem.prop('class', iconClass)
+
+        var $nameItem = $('<div />')
+        $nameItem.prop('class', 'sp-session-link-name')
+        $nameItem.html(this.name)
+
+        $anchorItem.append($iconItem)
+        $anchorItem.append($nameItem)
+        $listItem.append($anchorItem)
+        $unorderedList.append($listItem)
+      })
+
+      // Put 'New Session' button last.
+      var $listItem = $('<li />')
+      $listItem.prop('class', 'sp-session-link sp-session-add')
+
+      var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
+      '<i class="fas fa-plus"></i>' +
+      '<div class="sp-session-link-name">New Session</div>' +
+      '</a> </li>'
+      $listItem.html(listItemHTML)
+      $unorderedList.append($listItem)
+
+      $sessionListDiv.append($unorderedList)
+    }
+
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
       var $selectToAugment = $('#' + selectID)
 
@@ -135,27 +186,28 @@
         var option = $('<option />')
         option.val(this.optionID)
         if (this.optionID == defaultOptionID ) {
-          option.prop("selected", true)
+          option.prop('selected', true)
         }
         option.html(this.name)
         $selectToAugment.append(option)
       });
     }
 
-    /**
-     * Intended to be run at page startup in order to enforce the 'one session per user' rule
-     */
-    function checkForSession() {
-      portalCore.setInfoModal('Session Check', 'Checking for running session', false, false)
+
+    function checkForSessions() {
+      portalCore.setInfoModal('Session Check', 'Checking for active sessions', false, false)
       // This is an ajax function that will fire either onFindSessionOK or onFindSessionFail
       // and listeners to those will respond accordingly
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
-      portalSessions.findCurrentSession()
+      portalSessions.loadSessionList()
     }
 
+    /**
+     * Instead of going directly to the session, check to make sure it's in 'Running' state first.
+     * @param curSession
+     */
     function forwardToSession(curSession) {
-      //portalCore.hideInfoModal(true)
       if (portalSessions.isRunningSession(curSession)) {
         portalCore.setProgressBar('okay')
         portalCore.setInfoModal('Connecting to Session', 'Connecting to existing session ' + curSession.name
@@ -170,6 +222,9 @@
       }
     }
 
+    /**
+     * Triggered from 'Reload' button on info modal
+     */
     function handlePageRefresh() {
       window.location.reload()
     }
@@ -192,7 +247,7 @@
         .then(function(sessionInfo) {
           portalCore.setProgressBar('okay')
           portalCore.hideInfoModal(true)
-          portalCore.trigger(_selfPortalLaunch, cadc.web.science.portal.launch.events.onSessionRequestOK, sessionInfo)
+          portalCore.trigger(_selfPortalLaunch, cadc.web.science.portal.events.onSessionRequestOK, sessionInfo)
         })
         .catch(function(message) {
           portalCore.handleAjaxError(message)
@@ -246,7 +301,7 @@
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
 
-      Promise.resolve(getImageListAjax(portalCore.sessionServiceURL.images + "?type=notebook", {}))
+      Promise.resolve(getImageListAjax(portalCore.sessionServiceURL.images + '?type=notebook', {}))
         .then(function(imageList) {
           portalCore.hideInfoModal(true)
           portalCore.setProgressBar('okay')

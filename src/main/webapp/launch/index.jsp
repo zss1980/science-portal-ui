@@ -37,6 +37,8 @@
     <link rel="stylesheet" type="text/css"
           href="<c:out value=" ${baseURL}/cadcVOTV/css/jquery-ui-1.11.4.min.css " />" media="screen"
     />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt"
+          crossorigin="anonymous">
 
     <!-- Located in ROOT.war -->
     <script type="application/javascript" src="${baseURL}/canfar/javascript/jquery-2.2.4.min.js"></script>
@@ -59,24 +61,46 @@
               <h3 class="sp-page-header">
                 <a id="canfar_science_portal" class="anchor" href="#sp_launch" aria-hidden="true">
                   <span aria-hidden="true" class="octicon octicon-link"></span>
-                </a>Science Portal: Launch Session
+                </a>Science Portal
               </h3>
 
+              <%--   List grid starts here           --%>
               <div class="science-portal-authenticated">
+                <div id="sp_listnavbar" class="panel panel-default sp-panel">
+
+                  <div class="panel-heading sp-panel-heading">
+                    <nav class="navbar navbar-expand-sm sp-header-navbar" id="list-navbar-functions">
+                      <ul class="nav navbar-nav sp-header-navbar">
+                        <li class="nav-item"><h4>Active Sessions</h4></li>
+                      </ul>
+                    </nav>
+                  </div>
+                  <div id="sp_list_progressBar"></div>
+
+                  <div class="panel-body science-portal-panel-body" id="sp_session_list">
+                    <ul class="nav nav-pills">
+
+                      <li role="presentation" class="sp-session-link sp-session-add">
+                        <a href="#" class="sp-session-link sp-session-add">
+                          <i class="fas fa-plus service-link " data-toggle="tooltip" data-placement="top" title="desktop session test"></i>
+                          <div class="sp-session-link-name">New Session</div>
+                        </a>
+                      </li>
+
+                    </ul>
+                  </div>
+                </div>
+                <%--   Launch Form starts here             --%>
                 <div id="sp_navbar" class="panel panel-default sp-panel">
                   <div class="panel-heading sp-panel-heading">
                     <nav class="navbar navbar-expand-sm sp-header-navbar" id="navbar-functions">
                       <ul class="nav navbar-nav sp-header-navbar">
-                        <li class="nav-item"><h4>Session Information</h4></li>
+                        <li class="nav-item"><h4>Launch Session</h4></li>
                       </ul>
                     </nav>
                   </div>
-                  <div id="spProgressBar"></div>
-<%--                  <div class="progress sp-progress-bar-container">--%>
-<%--                    <div class="beacon-progress progress-bar progress-bar-success sp-progress-bar"--%>
-<%--                         role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100">--%>
-<%--                    </div>--%>
-<%--                  </div>--%>
+                  <div id="sp_progress_bar"></div>
+
                   <div class="panel-body science-portal-panel-body">
 
                     <!-- Noficiation and Alert bars -->
@@ -217,13 +241,13 @@
     <script type="application/javascript" src="<c:out value=" ${baseURL}/canfar/javascript/cadc.progressbar.js" />"></script>
     <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_core.js" />"></script>
     <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_session.js" />"></script>
-    <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_launch.js" />"></script>
+    <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal.js" />"></script>
 
     <script type="application/javascript">
       $(document).ready(function() {
         // Set up controller for Science Portal Session Launch page
-        launch_js = new cadc.web.science.portal.launch.PortalLaunch({
-          baseURL: window.location.origin, // TODO: should this be configured rather than discovered?
+        launch_js = new cadc.web.science.portal.PortalApp({
+          baseURL: window.location.origin,
           sessionsResourceID: '<%= sessionsResourceID %>'
         })
         launch_js.init()
