@@ -75,7 +75,7 @@
                       </ul>
                     </nav>
                   </div>
-                  <div id="spListProgressBar"></div>
+                  <div id="sp_list_progressBar"></div>
 
                   <div class="panel-body science-portal-panel-body" id="sp_session_list">
                     <ul class="nav nav-pills">
@@ -99,7 +99,7 @@
                       </ul>
                     </nav>
                   </div>
-                  <div id="spProgressBar"></div>
+                  <div id="sp_progress_bar"></div>
 
                   <div class="panel-body science-portal-panel-body">
 
