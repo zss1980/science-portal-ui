@@ -59,14 +59,14 @@
     // Instantiate progress bars
     var _barOpts = {
       progressBarClass : 'sp-progress-bar',
-      progressBarDivID : 'spProgressBar'
+      progressBarDivID : 'sp_progress_bar'
     }
     var _progressBar = new cadc.web.CadcProgressBar(_barOpts)
 
     // Instantiate List progress bar
     var _listBarOpts = {
       progressBarClass : 'sp-progress-bar',
-      progressBarDivID : 'spListProgressBar'
+      progressBarDivID : 'sp_list_progressBar'
     }
 
     var _listProgressBar = new cadc.web.CadcProgressBar(_listBarOpts)
