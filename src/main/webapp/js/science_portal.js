@@ -102,12 +102,13 @@
       })
 
       portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
-        // Start polling for session status to discover when/if the requested session comes up.
-        // Function returns a Promise, so need .then and .catch here
-        portalCore.setInfoModal('Waiting', 'Waiting for session startup', false, true, true)
+        // TODO in CADC-9349, rethink this section, whether polling is appropriate (or if it's used
+        // as part of a delete,) - w
+        // allow multiple sessions per user
         portalSessions.pollSessionStatus({}, 10000, 200)
           .then( function(runningSession) {
-            //forwardToSession(runningSession)
+            // TODO: final action will be put here in CADC-9349
+            checkForSessions()
           })
           .catch(function (message) {
             portalCore.setInfoModal('Session start pending',
