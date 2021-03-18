@@ -44,13 +44,12 @@
     }
 
     function attachListeners() {
-      // Button listeners
+
+      // Button/page click listeners
+
+      // These elements are on the session launch form
       $('#sp_reset_button').click(handleResetFormState)
       $('#session_request_form').submit(handleSessionRequest)
-      $('#pageReloadButton').click(handlePageRefresh)
-      $('.sp-session-connect').click(handleConnectRequest)
-
-
       $('#sp_session_type').change(function(){
         // TODO: CADC-9362: trigger reload of the images list *only* if needed
         // consider saving current session in a hidden value so it's only done
@@ -58,6 +57,13 @@
         loadSoftwareStackImages($(this).val())
       })
 
+      // This element is on the info modal
+      $('#pageReloadButton').click(handlePageRefresh)
+
+      // These elements are on the icons in the session list
+      $('.sp-session-connect').click(handleConnectRequest)
+
+      // Data Flow/javascript object listeners
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
         // Contacts the registry to discover where the sessions web service is,
@@ -79,8 +85,10 @@
           + 'Reload page to try again or contact CANFAR admin for assistance.', true, false, false)
       })
 
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e, sessionListData) {
-        populateSessionList(sessionListData)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
+        // Build session list on top of page
+        populateSessionList(portalSessions.getSessionList())
+
         // Get supported session type list & populate dropdown (ajax)
         loadTypeMap()
         // TODO: load all form data intially - CADC-9354 wil pare this down to only what's needed per session type
@@ -159,7 +167,7 @@
         } else if (this.type == 'desktop') {
           iconClass = 'fas fa-desktop'
         } else if (this.type == 'carta') {
-          iconCass = 'fas fa-cube'
+          iconClass = 'fas fa-cube'
         }
         $iconItem.prop('class', iconClass)
 

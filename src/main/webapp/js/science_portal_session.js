@@ -42,8 +42,8 @@
     function getSessionList() {
       if (_selfPortalSess._sessionList === {}) {
         initSessionList()
-        return _selfDoc._sessionList
       }
+      return _selfPortalSess._sessionList
     }
 
     function getCurrentSession() {
@@ -88,7 +88,7 @@
           if (sessionList.length > 0) {
             setSessionList(sessionList)
           }
-          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone, sessionList)
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone)
 
         })
         .catch(function(message) {
@@ -144,7 +144,7 @@
                 setTimeout(checkCondition, interval, resolve, reject)
               } else {
                 // Didn't match and too much time, reject!
-                reject(new Error('Session took too long to start running. Try refreshing the page to connect or contact CANFAR admin for assistance.'))
+                reject(new Error('Waiting for session to start running. Try refreshing the page to list running sessions, or contact CANFAR admin for assistance.'))
               }
             } else {
               // could be that the system hasn't caught up to the request yet and
