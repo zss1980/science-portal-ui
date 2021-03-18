@@ -1,4 +1,9 @@
 {
+  "session_type": {
+    "tipHTML": "Select from the list of supported session types (notebook, carta, desktop.)",
+    "placement": "top",
+    "title": "Session Type"
+  },
   "software_stack": {
     "tipHTML": "Reference to an image to use to start the session container",
     "placement": "top",
