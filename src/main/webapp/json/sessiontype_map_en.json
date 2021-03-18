@@ -1,0 +1,4 @@
+{
+  "session_types" : ["carta", "desktop", "notebook"],
+  "default" : "notebook"
+}
