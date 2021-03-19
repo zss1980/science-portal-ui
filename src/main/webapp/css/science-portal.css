@@ -218,21 +218,45 @@
 
 /* Session List styling */
 
-.sp-session-link {
-  text-align: center!important;
-  font-size: 24px;
-  margin: 5px;
-}
 
-.sp-session-link-name {
-  text-align: center!important;
-  font-size: 14px;
-  font-weight: bold;
-}
+
 
 .sp-session-add {
   color: gray;
   background-color: #e6e6e6;
+}
+
+/* nav link element class*/
+.sp-session-link {
+  text-align: center!important;
+  font-size: 24px;
+  margin: 5px;
+  width: 130px;
+  height: 70px;
+}
+
+/* nav link title - not part of link */
+.sp-session-type {
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* nav link box */
+.sp-session-connect {
+  border: green;
+  border-style: outset;
+  border-width: thin;
+  /*width: 130px;*/
+  /*height: 70px;*/
+  overflow: hidden;
+}
+
+/* nav link title (below icon */
+.sp-session-link-name {
+  text-align: center!important;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 

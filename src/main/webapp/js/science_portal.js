@@ -149,6 +149,11 @@
         var $listItem = $('<li />')
         $listItem.prop('class', 'sp-session-link')
 
+        var $titleItem = $('<div />')
+        $titleItem.prop('class', 'sp-session-type')
+        $titleItem.html(this.type)
+        $listItem.append($titleItem)
+
         var $anchorItem = $('<a />')
         $anchorItem.prop('href', '#')
 
@@ -182,15 +187,15 @@
       })
 
       // Put 'New Session' button last.
-      var $listItem = $('<li />')
-      $listItem.prop('class', 'sp-session-link sp-session-add')
-
-      var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
-      '<i class="fas fa-plus"></i>' +
-      '<div class="sp-session-link-name">New Session</div>' +
-      '</a> </li>'
-      $listItem.html(listItemHTML)
-      $unorderedList.append($listItem)
+      //var $listItem = $('<li />')
+      //$listItem.prop('class', 'sp-session-link sp-session-add')
+      //
+      //var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
+      //'<i class="fas fa-plus"></i>' +
+      //'<div class="sp-session-link-name">New Session</div>' +
+      //'</a> </li>'
+      //$listItem.html(listItemHTML)
+      //$unorderedList.append($listItem)
 
       $sessionListDiv.append($unorderedList)
       $('.sp-session-connect').on('click', handleConnectRequest)
