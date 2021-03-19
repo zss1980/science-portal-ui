@@ -46,6 +46,11 @@
     function attachListeners() {
 
       // Button/page click listeners
+      $('.sp-add-session').click(handleAddSession)
+      $('.sp-del-session').click(handleDeleteSession)
+
+      // These elements are on the icons in the session list
+      $('.sp-session-connect').click(handleConnectRequest)
 
       // These elements are on the session launch form
       $('#sp_reset_button').click(handleResetFormState)
@@ -59,9 +64,6 @@
 
       // This element is on the info modal
       $('#pageReloadButton').click(handlePageRefresh)
-
-      // These elements are on the icons in the session list
-      $('.sp-session-connect').click(handleConnectRequest)
 
       // Data Flow/javascript object listeners
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
@@ -88,18 +90,14 @@
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
         // Build session list on top of page
         populateSessionList(portalSessions.getSessionList())
-
-        // Get supported session type list & populate dropdown (ajax)
-        loadTypeMap()
-        // TODO: load all form data intially - CADC-9354 wil pare this down to only what's needed per session type
-        loadContext()
+        portalCore.setProgressBar("okay")
+        portalCore.hideInfoModal(true)
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, function (e, request){
         // This should be triggered if the user doesn't have access to Skaha resources, as well as
         // other error conditions. Without access to Skaha, the user should be blocked from using the page,
         // but be directed to some place they can ask for what they need (a resource allocation.)
-        portalCore.hideInfoModal(true)
 
         if (request.status == 403) {
           portalCore.setInfoModal('Skaha authorization issue', portalCore.getRcDisplayText(request), true, false, false)
@@ -110,12 +108,15 @@
       })
 
       portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
-        // TODO in CADC-9349, rethink this section, whether polling is appropriate (or if it's used
-        // as part of a delete,) - w
-        // allow multiple sessions per user
+        // hide launch form
+        showLaunchForm(false)
+
+        // Start polling for session start before
+        // todo: check that this session checks for running status of the new
+        // session by something like the session name....
         portalSessions.pollSessionStatus({}, 10000, 200)
           .then( function(runningSession) {
-            // TODO: final action will be put here in CADC-9349
+            // Grab new session list
             checkForSessions()
           })
           .catch(function (message) {
@@ -270,6 +271,39 @@
       window.location.reload()
     }
 
+    function showLaunchForm(show) {
+      if (show === true) {
+        $('#sp_launch_form_div').removeClass('hidden')
+      } else {
+        $('#sp_launch_form_div').addClass('hidden')
+      }
+    }
+
+    /**
+     * Triggered from '+' button on session list button bar
+     */
+    function handleAddSession() {
+      // TODO: decide what form information is loaded at page start,
+      // and what is loaded at this point - the 'isLaunchFormVisible' function
+      // might go away if it's all loaded here.
+      // Show the launch form
+      showLaunchForm(true)
+
+      // Get supported session type list & populate dropdown (ajax)
+      loadTypeMap()
+      // TODO: this might only be shown for notebook - but it's the default,
+      // so show it initially
+      loadContext()
+    }
+
+    /**
+     * Triggered from '-' button on session list button bar
+     */
+    function handleDeleteSession() {
+      alert("Function not supported yet")
+    }
+
+
     // ------------ HTTP/Ajax functions & event handlers ------------
     // ---------------- POST ------------------
 
@@ -361,13 +395,13 @@
 
         populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
 
+        // notebook is default
         loadSoftwareStackImages("notebook")
-
       })
     }
 
     function loadSoftwareStackImages(sessionType) {
-      portalCore.setInfoModal('Loading Images', 'Getting software stack list', false, true, true)
+      portalCore.setInfoModal('Loading Container Images', 'Getting container list', false, true, true)
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
 
@@ -387,7 +421,7 @@
             // Make the first entry be default until something else is decided
             populateSelect('sp_software_stack', tempImageList, 'select stack', tempImageList[0].name)
           } else {
-            portalCore.setInfoModal('No Images found','No public Software Stack Images found for your username.',
+            portalCore.setInfoModal('No Images found','No public container images found for your username.',
               true, false, false)
           }
 
@@ -395,7 +429,7 @@
         .catch(function(message) {
           var msgStr =  portalCore.getRcDisplayTextPlusCode(message)
           portalCore.setProgressBar('error')
-          portalCore.setInfoModal('Problem Loading Images', 'Problem loading software stack resources. '
+          portalCore.setInfoModal('Problem loading container images', 'Problem loading container image list. '
             + 'Try to reset the form to reload. ' + msgStr, true, false, false)
         })
     }

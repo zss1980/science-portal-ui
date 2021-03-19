@@ -89,9 +89,14 @@
 
                     </ul>
                   </div>
+                  <div class="sp-button-bar">
+                    <%-- session action button bar --%>
+                      <button class="sp-button-bar-button sp-add-session fa fa-plus"></button>
+                      <button class="sp-button-bar-button sp-del-session fa fa-minus"></button>
+                  </div>
                 </div>
                 <%--   Launch Form starts here             --%>
-                <div id="sp_navbar" class="panel panel-default sp-panel">
+                <div id="sp_launch_form_div" class="panel panel-default sp-panel hidden">
                   <div class="panel-heading sp-panel-heading">
                     <nav class="navbar navbar-expand-sm sp-header-navbar" id="navbar-functions">
                       <ul class="nav navbar-nav sp-header-navbar">
@@ -99,6 +104,7 @@
                       </ul>
                     </nav>
                   </div>
+
                   <div id="sp_progress_bar"></div>
 
                   <div class="panel-body science-portal-panel-body">
@@ -112,9 +118,10 @@
                       <span id="alert_msg"></span>
                     </div>
 
-                    <div class="science_portal_not_authenticated hidden"><button type="submit" class="btn btn-primary" id="science_portal_login_button">
-                      <i>Login Required...</i></button>
-                    </div>
+<%--                    <div class="science_portal_not_authenticated hidden"><button type="submit" class="btn btn-primary" id="science_portal_login_button">--%>
+<%--                      <i>Login Required...</i></button>--%>
+<%--                    </div>--%>
+
                     <!-- Form starts -->
                     <div class="science-portal-form-body">
                       <form id="session_request_form" class="form-horizontal">
@@ -123,7 +130,7 @@
                         <div class="form-group">
                           <label for="sp_session_name"
                                  class="col-sm-3 control-label"
-                                 id="sp_session_name_label">session name <div id="session_name"
+                                 id="sp_session_name_label">session name<div id="session_name"
                                                                               class="science-portal-tooltip"
                                                                               data-contentkey="session_name"></div></label>
                           <div class="col-sm-6">
