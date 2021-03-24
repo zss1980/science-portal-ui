@@ -66,7 +66,7 @@
     // Instantiate List progress bar
     var _listBarOpts = {
       progressBarClass : 'sp-progress-bar',
-      progressBarDivID : 'sp_list_progressBar'
+      progressBarDivID : 'sp_list_progress_bar'
     }
 
     var _listProgressBar = new cadc.web.CadcProgressBar(_listBarOpts)
