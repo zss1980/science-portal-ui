@@ -78,16 +78,17 @@
                   <div id="sp_list_progress_bar"></div>
 
                   <div class="panel-body science-portal-panel-body" id="sp_session_list">
-                    <ul class="nav nav-pills">
+<%--                    commented out but kept until it's decided how 'add session' affordance will be implemented --%>
+<%--                    <ul class="nav nav-pills">--%>
 
-                      <li role="presentation" class="sp-session-link sp-session-add">
-                        <a href="#" class="sp-session-link sp-session-add">
-                          <i class="fas fa-plus service-link " data-toggle="tooltip" data-placement="top" title="desktop session test"></i>
-                          <div class="sp-session-link-name">New Session</div>
-                        </a>
-                      </li>
+<%--                      <li role="presentation" class="sp-session-link sp-session-add">--%>
+<%--                        <a href="#" class="sp-session-link sp-session-add">--%>
+<%--                          <i class="fas fa-plus service-link " data-toggle="tooltip" data-placement="top" title="desktop session test"></i>--%>
+<%--                          <div class="sp-session-link-name">New Session</div>--%>
+<%--                        </a>--%>
+<%--                      </li>--%>
 
-                    </ul>
+<%--                    </ul>--%>
                   </div>
                 </div>
                 <%--   Launch Form starts here             --%>
