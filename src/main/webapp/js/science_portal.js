@@ -79,8 +79,10 @@
           + 'Reload page to try again or contact CANFAR admin for assistance.', true, false, false)
       })
 
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e, sessionListData) {
-        populateSessionList(sessionListData)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
+        // Build session list on top of page
+        populateSessionList(portalSessions.getSessionList())
+
         // Get supported session type list & populate dropdown (ajax)
         loadTypeMap()
         // TODO: load all form data intially - CADC-9354 wil pare this down to only what's needed per session type
@@ -107,13 +109,15 @@
         // allow multiple sessions per user
         portalSessions.pollSessionStatus({}, 10000, 200)
           .then( function(runningSession) {
+
             // TODO: final action will be put here in CADC-9349
+            // refresh the session panel
             checkForSessions()
           })
           .catch(function (message) {
-            portalCore.setInfoModal('Session start pending',
-              'The requested session is starting up (in Pending state.) ' +
-              'Reload the page to attempt to connect.', true, false, false)
+            portalCore.setInfoModal('Error checking for sessions',
+              'Unable to get session list. ' +
+              'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
           })
       })
 
@@ -154,12 +158,12 @@
         var $iconItem = $('<i />')
 
         var iconClass
-        if (this.type == 'notebook') {
+        if (this.type === 'notebook') {
           iconClass = 'fas fa-cube'
-        } else if (this.type == 'desktop') {
+        } else if (this.type === 'desktop') {
           iconClass = 'fas fa-desktop'
-        } else if (this.type == 'carta') {
-          iconCass = 'fas fa-cube'
+        } else if (this.type === 'carta') {
+          iconClass = 'fas fa-cube'
         }
         $iconItem.prop('class', iconClass)
 
@@ -174,15 +178,18 @@
       })
 
       // Put 'New Session' button last.
-      var $listItem = $('<li />')
-      $listItem.prop('class', 'sp-session-link sp-session-add')
-
-      var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
-      '<i class="fas fa-plus"></i>' +
-      '<div class="sp-session-link-name">New Session</div>' +
-      '</a> </li>'
-      $listItem.html(listItemHTML)
-      $unorderedList.append($listItem)
+      // TODO: commenting this out in CADC-9362 until it can be decided how
+      // 'add session' affordance will be implemented. Launch form is always
+      // available in this version of the app
+      //var $listItem = $('<li />')
+      //$listItem.prop('class', 'sp-session-link sp-session-add')
+      //
+      //var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
+      //'<i class="fas fa-plus"></i>' +
+      //'<div class="sp-session-link-name">New Session</div>' +
+      //'</a> </li>'
+      //$listItem.html(listItemHTML)
+      //$unorderedList.append($listItem)
 
       $sessionListDiv.append($unorderedList)
       $('.sp-session-connect').on('click', handleConnectRequest)
