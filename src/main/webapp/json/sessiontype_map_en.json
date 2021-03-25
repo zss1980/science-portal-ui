@@ -1,0 +1,4 @@
+{
+  "session_types" : ["notebook"],
+  "default" : "notebook"
+}

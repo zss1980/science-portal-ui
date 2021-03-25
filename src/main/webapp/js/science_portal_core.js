@@ -236,6 +236,26 @@
       return displayText
     }
 
+    /**
+     * Parse return codes and add text for the screen
+     * @param request
+     * @returns {string}
+     */
+    function getRcDisplayTextPlusCode(request) {
+      var displayText
+      switch(request.status) {
+        case 403:
+          displayText = 'You are not authorised to use Skaha resources. Contact CANFAR admin' +
+            ' for information on how to get set up with a resource allocation and permission to access the service.'
+          break
+        default:
+          displayText = request.responseText
+          break
+      }
+
+      return '(' + request.status + ')' + displayText
+    }
+
 
     // ------------ Authentication functions ------------
 
@@ -321,6 +341,7 @@
       trigger: trigger,
       hideModals: hideModals,
       getRcDisplayText: getRcDisplayText,
+      getRcDisplayTextPlusCode: getRcDisplayTextPlusCode,
       parseJSONStr: parseJSONStr,
     })
   }

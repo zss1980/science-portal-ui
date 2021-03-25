@@ -39,11 +39,12 @@
       _selfPortalSess._sessionList = {}
     }
 
+
     function getSessionList() {
       if (_selfPortalSess._sessionList === {}) {
         initSessionList()
-        return _selfDoc._sessionList
       }
+      return _selfPortalSess._sessionList
     }
 
     function getCurrentSession() {
@@ -88,7 +89,7 @@
           if (sessionList.length > 0) {
             setSessionList(sessionList)
           }
-          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone, sessionList)
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone)
 
         })
         .catch(function(message) {

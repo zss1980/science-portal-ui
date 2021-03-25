@@ -50,6 +50,14 @@
       $('#pageReloadButton').click(handlePageRefresh)
       $('.sp-session-connect').click(handleConnectRequest)
 
+
+      $('#sp_session_type').change(function(){
+        // TODO: CADC-9362: trigger reload of the images list *only* if needed
+        // consider saving current session in a hidden value so it's only done
+        // when needed.
+        loadSoftwareStackImages($(this).val())
+      })
+
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
         // Contacts the registry to discover where the sessions web service is,
@@ -71,12 +79,14 @@
           + 'Reload page to try again or contact CANFAR admin for assistance.', true, false, false)
       })
 
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e, sessionListData) {
-        populateSessionList(sessionListData)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
+        // Build session list on top of page
+        populateSessionList(portalSessions.getSessionList())
 
+        // Get supported session type list & populate dropdown (ajax)
+        loadTypeMap()
         // TODO: load all form data intially - CADC-9354 wil pare this down to only what's needed per session type
         loadContext()
-        loadSoftwareStackImages()
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, function (e, request){
@@ -94,11 +104,13 @@
       })
 
       portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
-        // Start polling for session status to discover when/if the requested session comes up.
-        // Function returns a Promise, so need .then and .catch here
-        portalCore.setInfoModal('Waiting', 'Waiting for session startup', false, true, true)
+        // TODO in CADC-9349, rethink this section, whether polling is appropriate (or if it's used
+        // as part of a delete,) - w
+        // allow multiple sessions per user
         portalSessions.pollSessionStatus({}, 10000, 200)
           .then( function(runningSession) {
+
+            // TODO: final action will be put here in CADC-9349
             // refresh the session panel
             checkForSessions()
           })
@@ -146,12 +158,12 @@
         var $iconItem = $('<i />')
 
         var iconClass
-        if (this.type == 'notebook') {
+        if (this.type === 'notebook') {
           iconClass = 'fas fa-cube'
-        } else if (this.type == 'desktop') {
+        } else if (this.type === 'desktop') {
           iconClass = 'fas fa-desktop'
-        } else if (this.type == 'carta') {
-          iconCass = 'fas fa-cube'
+        } else if (this.type === 'carta') {
+          iconClass = 'fas fa-cube'
         }
         $iconItem.prop('class', iconClass)
 
@@ -166,15 +178,18 @@
       })
 
       // Put 'New Session' button last.
-      var $listItem = $('<li />')
-      $listItem.prop('class', 'sp-session-link sp-session-add')
-
-      var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
-      '<i class="fas fa-plus"></i>' +
-      '<div class="sp-session-link-name">New Session</div>' +
-      '</a> </li>'
-      $listItem.html(listItemHTML)
-      $unorderedList.append($listItem)
+      // TODO: commenting this out in CADC-9362 until it can be decided how
+      // 'add session' affordance will be implemented. Launch form is always
+      // available in this version of the app
+      //var $listItem = $('<li />')
+      //$listItem.prop('class', 'sp-session-link sp-session-add')
+      //
+      //var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
+      //'<i class="fas fa-plus"></i>' +
+      //'<div class="sp-session-link-name">New Session</div>' +
+      //'</a> </li>'
+      //$listItem.html(listItemHTML)
+      //$unorderedList.append($listItem)
 
       $sessionListDiv.append($unorderedList)
       $('.sp-session-connect').on('click', handleConnectRequest)
@@ -316,12 +331,41 @@
     // ---------------- GETs ----------------
     // ------- Dropdown Ajax functions
 
-    function loadSoftwareStackImages() {
+    var _sessionTypeMap
+
+    /**
+     * Get the a map of help text and headers from the content file
+     * @private
+     */
+    function loadTypeMap() {
+      // todo: make the filename stored somewhere central?
+      var contentFileURL = 'json/sessiontype_map_en.json'
+
+      // Using a json input file because it's anticipated that the
+      // number of sessions will increase fairly soon.
+      $.getJSON(contentFileURL, function (jsonData) {
+        _sessionTypeMap = jsonData
+
+        // parse out the option data
+        var tempTypeList = new Array()
+        for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
+          // each entry has id, type, digest, only 'id' is needed
+          tempTypeList.push({name: _sessionTypeMap.session_types[i], optionID: _sessionTypeMap.session_types[i]})
+        }
+
+        populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
+
+        loadSoftwareStackImages("notebook")
+
+      })
+    }
+
+    function loadSoftwareStackImages(sessionType) {
       portalCore.setInfoModal('Loading Images', 'Getting software stack list', false, true, true)
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
 
-      Promise.resolve(getImageListAjax(portalCore.sessionServiceURL.images + '?type=notebook', {}))
+      Promise.resolve(getImageListAjax(portalCore.sessionServiceURL.images + '?type=' + sessionType, {}))
         .then(function(imageList) {
           portalCore.hideInfoModal(true)
           portalCore.setProgressBar('okay')
@@ -334,7 +378,8 @@
               // each entry has id, type, digest, only 'id' is needed
               tempImageList.push({name: imageList[i].id, optionID: imageList[i].id})
             }
-            populateSelect('sp_software_stack', tempImageList, 'select stack')
+            // Make the first entry be default until something else is decided
+            populateSelect('sp_software_stack', tempImageList, 'select stack', tempImageList[0].name)
           } else {
             portalCore.setInfoModal('No Images found','No public Software Stack Images found for your username.',
               true, false, false)
@@ -342,9 +387,10 @@
 
         })
         .catch(function(message) {
+          var msgStr =  portalCore.getRcDisplayTextPlusCode(message)
+          portalCore.setProgressBar('error')
           portalCore.setInfoModal('Problem Loading Images', 'Problem loading software stack resources. '
-            + 'Try to reset the form to reload.', true, false, false)
-          portalCore.handleAjaxError(message)
+            + 'Try to reset the form to reload. ' + msgStr, true, false, false)
         })
     }
 

@@ -78,16 +78,17 @@
                   <div id="sp_list_progress_bar"></div>
 
                   <div class="panel-body science-portal-panel-body" id="sp_session_list">
-                    <ul class="nav nav-pills">
+<%--                    commented out but kept until it's decided how 'add session' affordance will be implemented --%>
+<%--                    <ul class="nav nav-pills">--%>
 
-                      <li role="presentation" class="sp-session-link sp-session-add">
-                        <a href="#" class="sp-session-link sp-session-add">
-                          <i class="fas fa-plus service-link " data-toggle="tooltip" data-placement="top" title="desktop session test"></i>
-                          <div class="sp-session-link-name">New Session</div>
-                        </a>
-                      </li>
+<%--                      <li role="presentation" class="sp-session-link sp-session-add">--%>
+<%--                        <a href="#" class="sp-session-link sp-session-add">--%>
+<%--                          <i class="fas fa-plus service-link " data-toggle="tooltip" data-placement="top" title="desktop session test"></i>--%>
+<%--                          <div class="sp-session-link-name">New Session</div>--%>
+<%--                        </a>--%>
+<%--                      </li>--%>
 
-                    </ul>
+<%--                    </ul>--%>
                   </div>
                 </div>
                 <%--   Launch Form starts here             --%>
@@ -118,19 +119,40 @@
                     <!-- Form starts -->
                     <div class="science-portal-form-body">
                       <form id="session_request_form" class="form-horizontal">
+
                         <!-- Session Name -->
                         <div class="form-group">
                           <label for="sp_session_name"
                                  class="col-sm-3 control-label"
                                  id="sp_session_name_label">session name <div id="session_name"
-                                                                               class="science-portal-tooltip"
-                                                                               data-contentkey="session_name"></div></label>
+                                                                              class="science-portal-tooltip"
+                                                                              data-contentkey="session_name"></div></label>
                           <div class="col-sm-6">
                             <input type="text" class="form-control sp-form sp-form-input"
                                    id="sp_session_name" name="name"
                                    placeholder="provide session name" tabindex="1" required/>
                           </div>
                         </div>  <!-- end form group -->
+
+                        <!-- Session type list -->
+                        <div class="form-group">
+                          <label for="sp_software_stack"
+                                 class="col-sm-3 control-label"
+                                 id="sp_session_type_label">session type
+                            <div id="session_type"
+                                 class="science-portal-tooltip"
+                                 data-contentkey="session_type"
+                                 data-title="Session Type">
+                            </div>
+                          </label>
+                          <div class="col-sm-6">
+                            <select name="type" id="sp_session_type"
+                                    class="form-control sp-form sp-form-input"
+                                    tabindex="2" required>
+                              <option value="" selected disabled><em>-- loading types --</em></option>
+                            </select>
+                          </div>
+                        </div>
 
                         <!-- Software Stack (Image list) -->
                         <div class="form-group">
@@ -146,11 +168,12 @@
                           <div class="col-sm-6">
                             <select name="image" id="sp_software_stack"
                                     class="form-control sp-form sp-form-input"
-                                    tabindex="2" required>
+                                    tabindex="3" required>
                               <option value="" selected disabled><em>-- loading images --</em></option>
                             </select>
                           </div>
                         </div>
+
 
                         <%--  TODO: add content dropdowns after this                      --%>
                         <div class="form-group">
@@ -165,7 +188,7 @@
                             <div class="col-sm-6">
                               <select name="ram" id="sp_memory"
                                       class="form-control sp-form sp-form-input"
-                                      tabindex="3">
+                                      tabindex="4">
                                 <option value="" selected disabled>-- loading resource list --</option>
                               </select>
                             </div>
@@ -183,12 +206,11 @@
                       <div class="col-sm-6">
                         <select name="cores" id="sp_cores"
                                 class="form-control sp-form sp-form-input"
-                                tabindex="4">
+                                tabindex="5">
                           <option value="" selected disabled>-- loading resource list --</option>
                         </select>
                       </div>
                     </div>
-
 
                         <!-- Buttons -->
                         <div class="form-group">
