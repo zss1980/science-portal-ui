@@ -69,29 +69,6 @@
       return session
     }
 
-    // TODO: probably not needed
-    function getCurrentSession() {
-      // return first list entry as 'current'
-      if (_selfPortalSess._sessionList != {}) {
-        return _selfPortalSess._sessionList[0]
-      }
-      else {
-        return {}
-      }
-    }
-
-    // TODO: might be able to delete this
-    function isRunningSession(sessionObj) {
-      if (sessionObj != {}) {
-          if (sessionObj.status == 'Running') {
-            return true
-          } else {
-            return false
-          }
-      }
-      return false
-    }
-
     /**
      * Check if session for sessionID is of the given status
      * @param sessionID
@@ -311,8 +288,6 @@
         getSessionList: getSessionList,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
-        getCurrentSession: getCurrentSession,
-        isRunningSession: isRunningSession,
         isSessionStatus: isSessionStatus,
         isSessionStatusByID: isSessionStatusByID,
         isSessionListEmpty : isSessionListEmpty,

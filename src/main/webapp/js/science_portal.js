@@ -214,17 +214,6 @@
         $unorderedList.append($listItem)
       })
 
-      // Put 'New Session' button last.
-      //var $listItem = $('<li />')
-      //$listItem.prop('class', 'sp-session-link sp-session-add')
-      //
-      //var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
-      //'<i class="fas fa-plus"></i>' +
-      //'<div class="sp-session-link-name">New Session</div>' +
-      //'</a> </li>'
-      //$listItem.html(listItemHTML)
-      //$unorderedList.append($listItem)
-
       $sessionListDiv.append($unorderedList)
       $('.sp-session-connect').on('click', handleConnectRequest)
       $('.sp-session-delete').on('click', handleDeleteSession)
@@ -311,16 +300,14 @@
      * Triggered from '+' button on session list button bar
      */
     function handleAddSession() {
-      // TODO: decide what form information is loaded at page start,
-      // and what is loaded at this point - the 'isLaunchFormVisible' function
-      // might go away if it's all loaded here.
       // Show the launch form
       showLaunchForm(true)
 
       // Get supported session type list & populate dropdown (ajax)
       loadTypeMap()
+
       // TODO: this might only be shown for notebook - but it's the default,
-      // so show it initially
+      // so show it initially - address in CADC-9354
       loadContext()
     }
 
