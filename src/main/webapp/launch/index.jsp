@@ -64,7 +64,7 @@
                 </a>Science Portal
               </h3>
 
-              <%--   List grid starts here           --%>
+              <%--   Session list section starts here  --%>
               <div class="science-portal-authenticated">
                 <div id="sp_listnavbar" class="panel panel-default sp-panel">
 
@@ -77,24 +77,15 @@
                   </div>
                   <div id="sp_list_progressBar"></div>
 
+                  <%-- Body of session list will be built in this div  --%>
                   <div class="panel-body science-portal-panel-body" id="sp_session_list">
-                    <ul class="nav nav-pills">
-
-                      <li role="presentation" class="sp-session-link sp-session-add">
-                        <a href="#" class="sp-session-link sp-session-add">
-                          <i class="fas fa-plus service-link " data-toggle="tooltip" data-placement="top" title="desktop session test"></i>
-                          <div class="sp-session-link-name">New Session</div>
-                        </a>
-                      </li>
-
-                    </ul>
                   </div>
-                  <div class="sp-button-bar">
-                    <%-- session action button bar --%>
-                      <button class="sp-button-bar-button sp-add-session fa fa-plus"></button>
-                      <button class="sp-button-bar-button sp-del-session fa fa-minus"></button>
-                  </div>
+                <div class="sp-button-bar">
+                  <%-- session action button bar --%>
+                  <button class="sp-button-bar-button sp-add-session fa fa-plus"></button>
+                  <button class="sp-button-bar-button sp-session-reload fa fa-redo"></button>
                 </div>
+
                 <%--   Launch Form starts here             --%>
                 <div id="sp_launch_form_div" class="panel panel-default sp-panel hidden">
                   <div class="panel-heading sp-panel-heading">
@@ -118,10 +109,6 @@
                       <span id="alert_msg"></span>
                     </div>
 
-<%--                    <div class="science_portal_not_authenticated hidden"><button type="submit" class="btn btn-primary" id="science_portal_login_button">--%>
-<%--                      <i>Login Required...</i></button>--%>
-<%--                    </div>--%>
-
                     <!-- Form starts -->
                     <div class="science-portal-form-body">
                       <form id="session_request_form" class="form-horizontal">
@@ -130,9 +117,11 @@
                         <div class="form-group">
                           <label for="sp_session_name"
                                  class="col-sm-3 control-label"
-                                 id="sp_session_name_label">session name<div id="session_name"
-                                                                              class="science-portal-tooltip"
-                                                                              data-contentkey="session_name"></div></label>
+                                 id="sp_session_name_label">name
+                            <div id="session_name"
+                                class="science-portal-tooltip"
+                                data-contentkey="session_name"></div>
+                          </label>
                           <div class="col-sm-6">
                             <input type="text" class="form-control sp-form sp-form-input"
                                    id="sp_session_name" name="name"
@@ -142,9 +131,9 @@
 
                         <!-- Session type list -->
                         <div class="form-group">
-                          <label for="sp_software_stack"
+                          <label for="sp_session_type"
                                  class="col-sm-3 control-label"
-                                 id="sp_session_type_label">session type
+                                 id="sp_session_type_label">type
                             <div id="session_type"
                                  class="science-portal-tooltip"
                                  data-contentkey="session_type"
@@ -160,11 +149,11 @@
                           </div>
                         </div>
 
-                        <!-- Software Stack (Image list) -->
+                        <!-- Container image (Image list) -->
                         <div class="form-group">
                           <label for="sp_software_stack"
                                  class="col-sm-3 control-label"
-                                 id="sp_software_stack_label">software stack
+                                 id="sp_software_stack_label">container image
                             <div id="software_stack"
                                 class="science-portal-tooltip"
                                 data-contentkey="software_stack"

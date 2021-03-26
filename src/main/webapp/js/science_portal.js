@@ -44,10 +44,9 @@
     }
 
     function attachListeners() {
-
       // Button/page click listeners
       $('.sp-add-session').click(handleAddSession)
-      $('.sp-del-session').click(handleDeleteSession)
+      $('.sp-session-reload').click(checkForSessions)
 
       // These elements are on the icons in the session list
       $('.sp-session-connect').click(handleConnectRequest)
@@ -114,7 +113,7 @@
         // Start polling for session start before
         // todo: check that this session checks for running status of the new
         // session by something like the session name....
-        portalSessions.pollSessionStatus({}, 10000, 200)
+        portalSessions.pollSessionRunning(sessionData, 10000, 200)
           .then( function(runningSession) {
             // Grab new session list
             checkForSessions()
@@ -123,6 +122,23 @@
             portalCore.setInfoModal('Session start pending',
               'The requested session is starting up (in Pending state.) ' +
               'Reload the page to attempt to connect.', true, false, false)
+          })
+      })
+
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionDeleteOK, function (e, sessionID) {
+
+        portalCore.setInfoModal("Polling", "Waiting for sesion delete request to complete.", false, false, true)
+        // Start polling for session gone from list
+        portalSessions.pollSessionTerminated(sessionID, 10000, 200)
+          .then( function(runningSession) {
+            portalCore.setInfoModal("Done", "Session Deleted, refreshing session list.", true, false, true)
+            // Grab new session list
+            checkForSessions()
+          })
+          .catch(function (message) {
+            portalCore.setInfoModal('Session delete pending',
+              'The session is taking a while to terminate. ' +
+              'Reload the page to refresh session list.', true, false, false)
           })
       })
 
@@ -135,6 +151,7 @@
 
       // Clear listeners
       $('.sp-session-connect').off('click')
+      $('.sp-session-delete').off('click')
 
       // Clear session list
       $sessionListDiv.empty()
@@ -150,10 +167,20 @@
         var $listItem = $('<li />')
         $listItem.prop('class', 'sp-session-link')
 
+        var $titleDiv = $('<div />')
         var $titleItem = $('<div />')
         $titleItem.prop('class', 'sp-session-type')
         $titleItem.html(this.type)
-        $listItem.append($titleItem)
+        $titleDiv.append($titleItem)
+
+        var $deleteButton = $('<button/>')
+        // needed to issue delete sanely
+        $deleteButton.attr('data-id', this.id)
+        $deleteButton.attr('data-name', this.name)
+        $deleteButton.prop("class", "fas fa-times sp-session-delete")
+        $titleItem.append($deleteButton)
+
+        $listItem.append($titleDiv)
 
         var $anchorItem = $('<a />')
         $anchorItem.prop('href', '#')
@@ -200,6 +227,7 @@
 
       $sessionListDiv.append($unorderedList)
       $('.sp-session-connect').on('click', handleConnectRequest)
+      $('.sp-session-delete').on('click', handleDeleteSession)
     }
 
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
@@ -299,8 +327,10 @@
     /**
      * Triggered from '-' button on session list button bar
      */
-    function handleDeleteSession() {
-      alert("Function not supported yet")
+    function handleDeleteSession(event) {
+      var sessionData = $(event.currentTarget).data()
+      portalCore.setInfoModal("Delete Request", "Deleting session " + sessionData.name + ", id " + sessionData.id, false, false, true)
+      portalSessions.deleteSession(sessionData.id)
     }
 
 
@@ -338,8 +368,10 @@
           'load',
           function () {
             if (request.status === 200) {
-              var jsonData = portalCore.parseJSONStr(request.responseText)
-              resolve(jsonData)
+              // Session ID and data from server not returned with
+              // this request. Use the name & type posted in form
+              // to identify this request going forward
+              resolve({"name": sessionData.get("name"), "type": sessionData.get("type")})
             } else {
               reject(request)
             }
