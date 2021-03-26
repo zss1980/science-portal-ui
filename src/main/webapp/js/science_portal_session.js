@@ -41,6 +41,7 @@
       _selfPortalSess._sessionList = {}
     }
 
+
     function getSessionList() {
       if (_selfPortalSess._sessionList === {}) {
         initSessionList()

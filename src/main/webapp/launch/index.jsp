@@ -75,7 +75,7 @@
                       </ul>
                     </nav>
                   </div>
-                  <div id="sp_list_progressBar"></div>
+                  <div id="sp_list_progress_bar"></div>
 
                   <%-- Body of session list will be built in this div  --%>
                   <div class="panel-body science-portal-panel-body" id="sp_session_list">

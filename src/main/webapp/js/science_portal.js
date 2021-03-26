@@ -119,9 +119,9 @@
             checkForSessions()
           })
           .catch(function (message) {
-            portalCore.setInfoModal('Session start pending',
-              'The requested session is starting up (in Pending state.) ' +
-              'Reload the page to attempt to connect.', true, false, false)
+            portalCore.setInfoModal('Error checking for sessions',
+              'Unable to get session list. ' +
+              'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
           })
       })
 
@@ -195,11 +195,11 @@
         var $iconItem = $('<i />')
 
         var iconClass
-        if (this.type == 'notebook') {
+        if (this.type === 'notebook') {
           iconClass = 'fas fa-cube'
-        } else if (this.type == 'desktop') {
+        } else if (this.type === 'desktop') {
           iconClass = 'fas fa-desktop'
-        } else if (this.type == 'carta') {
+        } else if (this.type === 'carta') {
           iconClass = 'fas fa-cube'
         }
         $iconItem.prop('class', iconClass)
