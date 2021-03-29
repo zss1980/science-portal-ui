@@ -229,8 +229,8 @@
   text-align: center!important;
   font-size: 24px;
   margin: 5px;
-  width: 130px;
-  height: 70px;
+  width: 100px;
+  height: 85px;
 }
 
 /* nav link title - not part of link */
@@ -246,10 +246,12 @@
   border-style: outset;
   border-width: thin;
   overflow: hidden;
+  width: 100px;
+  height: 85px;
 }
 
 /* nav link title (below icon */
-.sp-session-link-name {
+.sp-session-link-type {
   text-align: center!important;
   font-size: 14px;
   font-weight: bold;
@@ -271,6 +273,16 @@ button.sp-session-delete {
   border: none;
   backgound-color: #e7e7e7;
   font-size: 10;
+}
+
+.sp-icon-desktop {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.sp-icon-img {
+  width: 40px;
+  height: 40px;
 }
 
 

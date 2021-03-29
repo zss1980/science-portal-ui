@@ -41,7 +41,6 @@
       _selfPortalSess._sessionList = {}
     }
 
-
     function getSessionList() {
       if (_selfPortalSess._sessionList === {}) {
         initSessionList()
@@ -89,6 +88,10 @@
       return isStatus
     }
 
+    function isRunningSession(session) {
+      return isSessionStatus(session, 'Running')
+    }
+
     function isSessionStatus(session, sessionStatus) {
       var isStatus = false
       if (session.status == sessionStatus) {
@@ -96,6 +99,24 @@
       }
       return isStatus
     }
+
+    /**
+     * Build a default session name based on the session type and current count
+     * of sessions
+     * @param sessionType
+     * @returns {*}
+     */
+    function getDefaultSessionName(sessionType) {
+      // First entry will have a '1'
+      var count = 1
+      for (var i = 0; i < _selfPortalSess._sessionList.length; i++) {
+        if (_selfPortalSess._sessionList[i].type === sessionType) {
+          count++
+        }
+      }
+      return sessionType + count
+    }
+
 
 
     function setSessionList(sessionList) {
@@ -284,12 +305,14 @@
       $.extend(this, {
         setServiceURLs: setServiceURLs,
         initSessionList: initSessionList,
+        getDefaultSessionName: getDefaultSessionName,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
         getSessionList: getSessionList,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
         isSessionStatus: isSessionStatus,
+        isRunningSession: isRunningSession,
         isSessionStatusByID: isSessionStatusByID,
         isSessionListEmpty : isSessionListEmpty,
         pollSessionRunning: pollSessionRunning,

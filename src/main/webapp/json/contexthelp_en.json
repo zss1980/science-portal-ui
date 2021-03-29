@@ -10,7 +10,7 @@
     "title": "Software Stack"
   },
   "session_name": {
-    "tipHTML": "Name for the session. Alphanumeric characters.",
+    "tipHTML": "Name for the session. Default name reflects the current number of sessions of the selected type. Alphanumeric characters only.",
     "placement": "top",
     "title": "Session Name"
   },
