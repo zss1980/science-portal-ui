@@ -1,4 +1,17 @@
 {
-  "session_types" : ["notebook", "carta", "desktop"],
+  "session_types" : [
+      {
+        "name": "notebook",
+        "form_fields": ["name", "type", "image", "memory", "cores"]
+      },
+      {
+        "name": "carta",
+        "form_fields": ["name", "type", "image"]
+      },
+      {
+        "name": "desktop",
+        "form_fields": ["name", "type", "image"]
+      }
+    ],
   "default" : "notebook"
 }

@@ -242,7 +242,6 @@
             }
           })
           .catch(function (message) {
-            //handleAjaxError(message)
             // TODO: these messages need tweaking
             reject(new Error('Waiting for session to start running. Try refreshing the page to list running sessions, or contact CANFAR admin for assistance.'))
 

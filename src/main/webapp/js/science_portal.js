@@ -35,6 +35,12 @@
     var _selfPortalApp = this
     this.baseURL = inputs.baseURL
 
+    // Used for populating type dropdown and displaying appropriate form fields
+    // per session type
+    var _sessionTypeMap
+    // Complete list of form fields available
+    var _launchFormFields = ['name', 'type', 'image', 'memory', 'cores']
+
     // ------------ Page load functions ------------
 
     function init() {
@@ -56,11 +62,7 @@
       $('#sp_reset_button').click(handleResetFormState)
       $('#session_request_form').submit(handleSessionRequest)
       $('#sp_session_type').change(function(){
-        // TODO: CADC-9362: trigger reload of the images list *only* if needed
-        // consider saving current session in a hidden value so it's only done
-        // when needed.
-        loadSoftwareStackImages($(this).val())
-        setSessionName($(this).val())
+        setLaunchFormForType($(this).val())
       })
 
       // This element is on the info modal
@@ -113,8 +115,6 @@
         showLaunchForm(false)
 
         // Start polling for session start before
-        // todo: check that this session checks for running status of the new
-        // session by something like the session name....
         portalSessions.pollSessionRunning(sessionData, 10000, 200)
           .then( function(runningSession) {
             // Grab new session list
@@ -197,11 +197,12 @@
         var $iconItem
 
         var iconClass
+        // TODO: this is the only place that session types
+        // are hard coded. Consider expanding sessiontype_map_en.json to include
+        // the img logo and icon class
         if (this.type === 'notebook') {
           $iconItem = $('<img />')
           $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/jupyterLogo.jpg')
-          //$iconItem.prop('width', 50)
-          //$iconItem.prop('height', 50)
           iconClass = 'sp-icon-img'
         } else if (this.type === 'desktop') {
           $iconItem = $('<i />')
@@ -209,9 +210,11 @@
         } else if (this.type === 'carta') {
           $iconItem = $('<img />')
           $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/cartaLogo.png')
-          //$iconItem.prop('width', 40)
-          //$iconItem.prop('height', 40)
           iconClass = 'sp-icon-img'
+        } else {
+          // provide a default icon type
+          $iconItem = $('<i />')
+          iconClass = 'fas fa-cube sp-icon-desktop'
         }
         $iconItem.prop('class', iconClass)
 
@@ -241,6 +244,34 @@
       $('#sp_session_name').val(sessionName)
     }
 
+    function setFormFields(sessionType) {
+      // go through _sessionTypeMap.session_types
+      var formList = []
+      for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
+        if (_sessionTypeMap.session_types[i].name === sessionType) {
+          formList = _sessionTypeMap.session_types[i].form_fields
+          break
+        }
+       }
+
+      // go through full form list, and if an item in the full list
+      // is not included in type formList, then set it to hidden. otherwise show it
+      for (var j = 0; j < _launchFormFields.length; j++) {
+        if (formList.indexOf(_launchFormFields[j]) == -1) {
+          $('.sp-form-' + _launchFormFields[j]).addClass('hidden')
+        } else {
+          $('.sp-form-' + _launchFormFields[j]).removeClass('hidden')
+        }
+      }
+
+    }
+
+    function setSelectedType(sessionType) {
+      var $selectToChange = $('#' + selectID)
+
+      // Go through options until current is found, add or remove selected attribute
+    }
+
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
       var $selectToAugment = $('#' + selectID)
 
@@ -249,7 +280,6 @@
 
       if (typeof optionalDefault == 'undefined') {
         // Add given placeholder text
-        // TODO: change css to match this to name input colouring
         $selectToAugment.append('<option value="" selected disabled>' + placeholderText + '</option>')
       }
 
@@ -322,15 +352,12 @@
      * Triggered from '+' button on session list button bar
      */
     function handleAddSession() {
-      // Show the launch form
-      showLaunchForm(true)
-
       // Get supported session type list & populate dropdown (ajax)
+      // Triggers setting the launch form to defaults
       loadTypeMap()
 
-      // TODO: this might only be shown for notebook - but it's the default,
-      // so show it initially - address in CADC-9354
-      loadContext()
+      // Show the launch form
+      showLaunchForm(true)
     }
 
     /**
@@ -412,14 +439,11 @@
     // ---------------- GETs ----------------
     // ------- Dropdown Ajax functions
 
-    var _sessionTypeMap
-
     /**
      * Get the a map of help text and headers from the content file
      * @private
      */
     function loadTypeMap() {
-      // todo: make the filename stored somewhere central?
       var contentFileURL = 'json/sessiontype_map_en.json'
 
       // Using a json input file because it's anticipated that the
@@ -431,18 +455,25 @@
         var tempTypeList = new Array()
         for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
           // each entry has id, type, digest, only 'id' is needed
-          tempTypeList.push({name: _sessionTypeMap.session_types[i], optionID: _sessionTypeMap.session_types[i]})
+          tempTypeList.push({name: _sessionTypeMap.session_types[i].name, optionID: _sessionTypeMap.session_types[i].name})
         }
 
         populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
 
         // notebook is default
-        loadSoftwareStackImages('notebook')
-        setSessionName('notebook')
+        setLaunchFormForType(_sessionTypeMap.default)
       })
     }
 
-    function loadSoftwareStackImages(sessionType) {
+    function setLaunchFormForType(sessionType) {
+      loadContainerImages(sessionType)
+      // reload context values whether they are displayed or not
+      loadContext()
+      setSessionName(sessionType)
+      setFormFields(sessionType)
+    }
+
+    function loadContainerImages(sessionType) {
       portalCore.setInfoModal('Loading Container Images', 'Getting container list', false, true, true)
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
@@ -570,13 +601,17 @@
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('okay')
 
-      // Clear form, refresh context and image list
-      // clear name field
-      $('#sp_session_name').val('')
+      // set selected back to session type default
+      $("#sp_session_type option").each(function() {
+        if ($(this).val() == _sessionTypeMap.default) {
+          $(this).attr('selected','selected')
+        } else {
+          $(this).removeAttr('selected')
+        }
+      });
 
-      // reload the dropdowns with the latest info
-      loadSoftwareStackImages()
-      loadContext()
+      // reload the form for default session type
+      setLaunchFormForType(_sessionTypeMap.default)
     }
 
     $.extend(this, {

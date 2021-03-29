@@ -7,7 +7,7 @@
   "software_stack": {
     "tipHTML": "Reference to an image to use to start the session container",
     "placement": "top",
-    "title": "Software Stack"
+    "title": "Container Image"
   },
   "session_name": {
     "tipHTML": "Name for the session. Default name reflects the current number of sessions of the selected type. Alphanumeric characters only.",

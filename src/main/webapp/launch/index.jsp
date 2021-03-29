@@ -114,7 +114,7 @@
                       <form id="session_request_form" class="form-horizontal">
 
                         <!-- Session Name -->
-                        <div class="form-group">
+                        <div class="form-group sp-form-name">
                           <label for="sp_session_name"
                                  class="col-sm-3 control-label"
                                  id="sp_session_name_label">name
@@ -130,7 +130,7 @@
                         </div>  <!-- end form group -->
 
                         <!-- Session type list -->
-                        <div class="form-group">
+                        <div class="form-group sp-form-type">
                           <label for="sp_session_type"
                                  class="col-sm-3 control-label"
                                  id="sp_session_type_label">type
@@ -150,7 +150,7 @@
                         </div>
 
                         <!-- Container image (Image list) -->
-                        <div class="form-group">
+                        <div class="form-group sp-form-image">
                           <label for="sp_software_stack"
                                  class="col-sm-3 control-label"
                                  id="sp_software_stack_label">container image
@@ -168,10 +168,8 @@
                             </select>
                           </div>
                         </div>
-
-
-                        <%--  TODO: add content dropdowns after this                      --%>
-                        <div class="form-group">
+                        
+                        <div class="form-group sp-form-memory">
                           <label for="sp_memory"
                                  class="col-sm-3 control-label"
                                  id="science_portal_memory_label">memory
@@ -189,7 +187,7 @@
                             </div>
                         </div>
 
-                    <div class="form-group">
+                    <div class="form-group sp-form-cores">
                       <label for="sp_cores"
                              class="col-sm-3 control-label"
                              id="sp_cores_label"># cores
