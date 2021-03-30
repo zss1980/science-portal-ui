@@ -218,12 +218,6 @@
 
 /* Session List styling */
 
-/* item styling for large placeholder TODO: may remove this, is in index.jsp */
-.sp-session-add {
-  color: gray;
-  background-color: #e6e6e6;
-}
-
 /* nav link element class (session list) */
 .sp-session-link {
   text-align: center!important;

@@ -281,7 +281,6 @@
     }
 
     // #auth_modal is in /canfar/includes/_application_header.shtml
-    // the other items are expected to be in the doi index.jsp
     function setNotAuthenticated() {
       $('#auth_modal').modal({
         backdrop: 'static',
