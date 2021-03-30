@@ -78,7 +78,7 @@
                   <div id="sp_list_progress_bar"></div>
 
                   <%-- Body of session list will be built in this div  --%>
-                  <div class="panel-body science-portal-panel-body" id="sp_session_list">
+                  <div class="panel-body sp-panel-body" id="sp_session_list">
                   </div>
                 <div class="sp-button-bar">
                   <%-- session action button bar --%>
@@ -168,7 +168,7 @@
                             </select>
                           </div>
                         </div>
-                        
+
                         <div class="form-group sp-form-memory">
                           <label for="sp_memory"
                                  class="col-sm-3 control-label"

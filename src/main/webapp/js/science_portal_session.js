@@ -31,6 +31,7 @@
     var _isEmpty = true
     this._sessionList = {}
     this.sessionURLs = {}
+    this.isPolling = false
 
     function setServiceURLs(URLObject) {
       _selfPortalSess.sessionURLs = URLObject
@@ -90,6 +91,17 @@
 
     function isRunningSession(session) {
       return isSessionStatus(session, 'Running')
+    }
+
+    function isAllRunning() {
+      var allRunning = true
+      for (var i = 0; i < _selfPortalSess._sessionList.length; i++) {
+        if (_selfPortalSess._sessionList[i].status !== 'Running') {
+          allRunning = false
+          break
+        }
+      }
+      return allRunning
     }
 
     function isSessionStatus(session, sessionStatus) {
@@ -212,6 +224,40 @@
       })
     }
 
+    function pollSessionList(interval) {
+
+        // TODO: consider long-running timeout so panel left in background doesn't use
+        // resources forever
+        interval = interval || 200
+
+        var checkCondition = function (resolve, reject) {
+          if (_selfPortalSess.isPolling == true) {
+            resolve('running')
+          }
+
+          _selfPortalSess.isPolling = true
+
+          getSessionListAjax(_selfPortalSess.sessionURLs.session)
+            .then(function (sessionList) {
+              _selfPortalSess.setSessionList(sessionList)
+              if (_selfPortalSess.isAllRunning()) {
+                // ensure polling flag is set to false
+                _selfPortalSess.isPolling = false
+                resolve()
+              } else {
+                // If neither of the conditions are met and the timeout
+                // hasn't elapsed, go again
+                // update info modal with current status?
+                setTimeout(checkCondition, interval, resolve, reject)
+              }
+            })
+            .catch(function (message) {
+              reject(new Error('Error polling session list. Reload page to try again or contact CANFAR admin for assistance.'))
+            })
+        } // end checkCondition
+        return new Promise(checkCondition)
+    }
+
     function pollSessionRunning(sessionData, timeout, interval) {
       // Set a reasonable timeout
       var endTime = Number(new Date()) + (timeout || 10000)
@@ -310,10 +356,12 @@
         getSessionList: getSessionList,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
+        isAllRunning: isAllRunning,
         isSessionStatus: isSessionStatus,
         isRunningSession: isRunningSession,
         isSessionStatusByID: isSessionStatusByID,
         isSessionListEmpty : isSessionListEmpty,
+        pollSessionList: pollSessionList,
         pollSessionRunning: pollSessionRunning,
         pollSessionTerminated: pollSessionTerminated,
         deleteSession: deleteSession,

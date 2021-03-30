@@ -115,7 +115,18 @@
         showLaunchForm(false)
 
         // Start polling for session start before
-        portalSessions.pollSessionRunning(sessionData, 10000, 200)
+        //portalSessions.pollSessionRunning(sessionData, 10000, 200)
+        //  .then( function(runningSession) {
+        //    // Grab new session list
+        //    checkForSessions()
+        //  })
+        //  .catch(function (message) {
+        //    portalCore.setInfoModal('Error checking for sessions',
+        //      'Unable to get session list. ' +
+        //      'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
+        //  })
+
+        portalSessions.pollSessionList(200)
           .then( function(runningSession) {
             // Grab new session list
             checkForSessions()
@@ -125,6 +136,9 @@
               'Unable to get session list. ' +
               'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
           })
+
+
+
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionDeleteOK, function (e, sessionID) {
@@ -169,23 +183,51 @@
         var $listItem = $('<li />')
         $listItem.prop('class', 'sp-session-link')
 
+        // $itemContainer holds both the linkItem with the
+        // connect and delete controls, sesion type logo, etc.,
+        // and potentially a 'blockingDiv' that puts a panel
+        // over the linkItem, blocking access when the session
+        // isn't Running.
+        var $itemContainer = $('<div />')
+        $itemContainer.prop('class', 'sp-link-container')
+
+        if (this.status != 'Running') {
+          // Add the extra blocking div
+          var $blockingDiv = $('<div />')
+          $blockingDiv.prop('class', 'sp-link-disable')
+          $itemContainer.append($blockingDiv)
+          $blockingDiv.html(this.status)
+        }
+
+        // Create the main $linkItem div to hold session
+        // information and action controls
+        var $linkItem = $('<div />')
+        $linkItem.prop('class', 'sp-link-connect')
+
         var $titleDiv = $('<div />')
+        $titleDiv.prop('class', 'sp-session-title')
         var $titleItem = $('<div />')
-        $titleItem.prop('class', 'sp-session-type')
+        $titleItem.prop('class', 'sp-session-name')
         $titleItem.html(this.name)
         $titleDiv.append($titleItem)
 
         var $deleteButton = $('<button/>')
-        // needed to issue delete sanely
+        // add session data to delete button so it can be
+        // sent on click to the delete handler
         $deleteButton.attr('data-id', this.id)
         $deleteButton.attr('data-name', this.name)
         $deleteButton.prop("class", "fas fa-times sp-session-delete")
         $titleItem.append($deleteButton)
 
+        //TODO: this would be better moved up so it's attached roughly
+        // in the order it shows up.
         $listItem.append($titleDiv)
 
+        var $anchorDiv = $('<div />')
+        $anchorDiv.prop('class', 'sp-session-anchor')
         var $anchorItem = $('<a />')
-        $anchorItem.prop('href', '#')
+        $anchorItem.prop('href', '')
+        $anchorDiv.append($anchorItem)
 
         // Attach session data to the anchor element
         $anchorItem.attr('data-connecturl', this.connectURL)
@@ -224,7 +266,10 @@
 
         $anchorItem.append($iconItem)
         $anchorItem.append($nameItem)
-        $listItem.append($anchorItem)
+
+        $linkItem.append($anchorDiv)
+        $itemContainer.append($linkItem)
+        $listItem.append($itemContainer)
         $unorderedList.append($listItem)
       })
 
