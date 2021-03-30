@@ -79,6 +79,16 @@
 
                   <%-- Body of session list will be built in this div  --%>
                   <div class="panel-body sp-panel-body" id="sp_session_list">
+                    <ul class="nav nav-pills">
+
+                      <li role="presentation" class="sp-session-link sp-session-add">
+                        <a href="" class="sp-session-link sp-session-add">
+                          <i class="service-link" data-toggle="tooltip" data-placement="top"></i>
+                          <div class="sp-session-help-text">Select '+' to launch a session</div>
+                        </a>
+                      </li>
+
+                    </ul>
                   </div>
                 <div class="sp-button-bar">
                   <%-- session action button bar --%>

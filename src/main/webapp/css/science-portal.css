@@ -218,6 +218,15 @@
 
 /* Session List styling */
 
+.sp-session-add {
+  color: gray;
+  background-color: #e6e6e6;
+}
+
+.sp-session-help-text {
+  font-size: 15px;
+}
+
 /* nav link element class (session list) */
 .sp-session-link {
   text-align: center!important;
