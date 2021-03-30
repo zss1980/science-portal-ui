@@ -34,6 +34,7 @@
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
     var _selfPortalApp = this
     this.baseURL = inputs.baseURL
+    this.isPolling = false
 
     // Used for populating type dropdown and displaying appropriate form fields
     // per session type
@@ -95,6 +96,29 @@
         populateSessionList(portalSessions.getSessionList())
         portalCore.setProgressBar("okay")
         portalCore.hideInfoModal(true)
+
+        if ( _selfPortalApp.isPolling == false) {
+          // Flag polling is occurring so only one instance is running at a time.
+          // Any changes in session list will be picked up by the single polling instance
+          _selfPortalApp.isPolling == true
+
+          // If everything is stable, stop. If no, kick off polling
+          portalSessions.pollSessionList(1000)
+            .then(function (finalState) {
+              if (finalState == 'done') {
+                // Grab new session list
+                populateSessionList(portalSessions.getSessionList())
+              }
+            })
+            .catch(function (message) {
+              portalCore.setInfoModal('Error getting session lise',
+                'Unable to get session list. ' +
+                'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
+            })
+
+          _selfPortalApp.isPolling = false
+        }
+
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, function (e, request){
@@ -110,55 +134,23 @@
         }
       })
 
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onPollingContinue, function (e) {
+        // Rebuild session list on top of page
+        populateSessionList(portalSessions.getSessionList())
+      })
+
       portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
         // hide launch form
         showLaunchForm(false)
-
-        // Start polling for session start before
-        //portalSessions.pollSessionRunning(sessionData, 10000, 200)
-        //  .then( function(runningSession) {
-        //    // Grab new session list
-        //    checkForSessions()
-        //  })
-        //  .catch(function (message) {
-        //    portalCore.setInfoModal('Error checking for sessions',
-        //      'Unable to get session list. ' +
-        //      'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
-        //  })
-
-        portalSessions.pollSessionList(200)
-          .then( function(runningSession) {
-            // Grab new session list
-            checkForSessions()
-          })
-          .catch(function (message) {
-            portalCore.setInfoModal('Error checking for sessions',
-              'Unable to get session list. ' +
-              'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
-          })
-
-
-
+        checkForSessions()
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionDeleteOK, function (e, sessionID) {
-
-        portalCore.setInfoModal("Polling", "Waiting for sesion delete request to complete.", false, false, true)
-        // Start polling for session gone from list
-        portalSessions.pollSessionTerminated(sessionID, 10000, 200)
-          .then( function(runningSession) {
-            portalCore.setInfoModal("Done", "Session Deleted, refreshing session list.", true, false, true)
-            // Grab new session list
-            checkForSessions()
-          })
-          .catch(function (message) {
-            portalCore.setInfoModal('Session delete pending',
-              'The session is taking a while to terminate. ' +
-              'Reload the page to refresh session list.', true, false, false)
-          })
+        portalCore.hideInfoModal(true)
+        checkForSessions()
       })
 
-    }
+    } // end attachListeners()
 
     // ------------ Data display functions
 
@@ -219,8 +211,6 @@
         $deleteButton.prop("class", "fas fa-times sp-session-delete")
         $titleItem.append($deleteButton)
 
-        //TODO: this would be better moved up so it's attached roughly
-        // in the order it shows up.
         $listItem.append($titleDiv)
 
         var $anchorDiv = $('<div />')
@@ -342,7 +332,7 @@
 
 
     function checkForSessions() {
-      portalCore.setInfoModal('Session Check', 'Checking for active sessions', false, false)
+      portalCore.setInfoModal('Session Check', 'Grabbing session list', false, false)
       // This is an ajax function that will fire either onFindSessionOK or onFindSessionFail
       // and listeners to those will respond accordingly
       portalCore.clearAjaxAlert()

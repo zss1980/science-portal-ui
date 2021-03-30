@@ -13,6 +13,7 @@
                 onLoadSessionListError: new jQuery.Event('sciPort:onLoadSessionListError'),
                 onSessionDeleteOK: new jQuery.Event('sciPort:onSessionDeleteOK'),
                 onSessionDeleteError: new jQuery.Event('sciPort:onSessionDeleteError'),
+                onPollingContinue: new jQuery.Event('sciPort:onPollingContinue'),
               }
             }
           }
@@ -31,7 +32,6 @@
     var _isEmpty = true
     this._sessionList = {}
     this.sessionURLs = {}
-    this.isPolling = false
 
     function setServiceURLs(URLObject) {
       _selfPortalSess.sessionURLs = URLObject
@@ -93,15 +93,21 @@
       return isSessionStatus(session, 'Running')
     }
 
-    function isAllRunning() {
-      var allRunning = true
+    /**
+     * 'Stable' status means the session isn't going to change state unless the user
+     * does something explicit, like deleting or shutting down.
+     * @returns {boolean}
+     */
+    function isAllSessionsStable() {
+      var allStable = true
       for (var i = 0; i < _selfPortalSess._sessionList.length; i++) {
-        if (_selfPortalSess._sessionList[i].status !== 'Running') {
-          allRunning = false
+        if ( (_selfPortalSess._sessionList[i].status !== 'Running') &&
+          (_selfPortalSess._sessionList[i].status !== 'Succeeded') ) {
+          allStable = false
           break
         }
       }
-      return allRunning
+      return allStable
     }
 
     function isSessionStatus(session, sessionStatus) {
@@ -225,29 +231,21 @@
     }
 
     function pollSessionList(interval) {
-
         // TODO: consider long-running timeout so panel left in background doesn't use
         // resources forever
         interval = interval || 200
 
         var checkCondition = function (resolve, reject) {
-          if (_selfPortalSess.isPolling == true) {
-            resolve('running')
-          }
-
-          _selfPortalSess.isPolling = true
-
           getSessionListAjax(_selfPortalSess.sessionURLs.session)
             .then(function (sessionList) {
               _selfPortalSess.setSessionList(sessionList)
-              if (_selfPortalSess.isAllRunning()) {
-                // ensure polling flag is set to false
-                _selfPortalSess.isPolling = false
-                resolve()
+              if (_selfPortalSess.isAllSessionsStable()) {
+                resolve("done")
               } else {
                 // If neither of the conditions are met and the timeout
                 // hasn't elapsed, go again
                 // update info modal with current status?
+                trigger(_selfPortalSess, cadc.web.science.portal.session.events.onPollingContinue)
                 setTimeout(checkCondition, interval, resolve, reject)
               }
             })
@@ -256,78 +254,6 @@
             })
         } // end checkCondition
         return new Promise(checkCondition)
-    }
-
-    function pollSessionRunning(sessionData, timeout, interval) {
-      // Set a reasonable timeout
-      var endTime = Number(new Date()) + (timeout || 10000)
-      interval = interval || 200
-
-      var checkCondition = function(resolve, reject) {
-
-        getSessionListAjax(_selfPortalSess.sessionURLs.session)
-          .then(function (sessionList) {
-            _selfPortalSess.setSessionList(sessionList)
-            var session = _selfPortalSess.getSessionByNameType(sessionData)
-            if (session != null) {
-              if (_selfPortalSess.isSessionStatus(session, 'Running')) {
-                resolve(sessionData)
-              } else if (Number(new Date()) < endTime) {
-                // If neither of the conditions are met and the timeout
-                // hasn't elapsed, go again
-                // update info modal with current status?
-                setTimeout(checkCondition, interval, resolve, reject)
-              } else {
-                // Didn't match and too much time, reject!
-                reject(new Error('Waiting for session to start running. Try refreshing the page to list running sessions, or contact CANFAR admin for assistance.'))
-              }
-            } else {
-              // could be that the system hasn't caught up to the request yet and
-              // an empty return occurred
-              setTimeout(checkCondition, interval, resolve, reject)
-            }
-          })
-          .catch(function (message) {
-            // TODO: these messages need tweaking
-            reject(new Error('Waiting for session to start running. Try refreshing the page to list running sessions, or contact CANFAR admin for assistance.'))
-
-          })
-      } // end checkCondition
-      return new Promise(checkCondition)
-    }
-
-    function pollSessionTerminated(sessionID, timeout, interval) {
-      // Set a reasonable timeout
-      var endTime = Number(new Date()) + (timeout || 10000)
-      interval = interval || 200
-
-      var checkCondition = function(resolve, reject) {
-
-        getSessionListAjax(_selfPortalSess.sessionURLs.session)
-          .then(function (sessionList) {
-            _selfPortalSess.setSessionList(sessionList)
-            var session = _selfPortalSess.getSessionByID(sessionID)
-            if (session == null) {
-                resolve(sessionData)
-            } else if (Number(new Date()) < endTime) {
-                // If neither of the conditions are met and the timeout
-                // hasn't elapsed, go again
-                // update info modal with current status?
-                setTimeout(checkCondition, interval, resolve, reject)
-            } else {
-                // Didn't match and too much time, reject!
-                reject(new Error('Waiting for session to start running. Try refreshing the page to list running sessions, or contact CANFAR admin for assistance.'))
-            }
-
-          })
-          .catch(function (message) {
-            //handleAjaxError(message)
-            reject(new Error('Waiting for session to start running. Try refreshing the page to list running sessions, or contact CANFAR admin for assistance.'))
-
-          })
-      } // end checkCondition
-
-      return new Promise(checkCondition)
     }
 
     // ---------- Event Handling Functions ----------
@@ -356,14 +282,12 @@
         getSessionList: getSessionList,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
-        isAllRunning: isAllRunning,
+        isAllSessionsStable: isAllSessionsStable,
         isSessionStatus: isSessionStatus,
         isRunningSession: isRunningSession,
         isSessionStatusByID: isSessionStatusByID,
         isSessionListEmpty : isSessionListEmpty,
         pollSessionList: pollSessionList,
-        pollSessionRunning: pollSessionRunning,
-        pollSessionTerminated: pollSessionTerminated,
         deleteSession: deleteSession,
       })
     }
