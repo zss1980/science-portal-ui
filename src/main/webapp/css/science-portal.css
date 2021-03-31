@@ -218,21 +218,59 @@
 
 /* Session List styling */
 
+/* item styling for large placeholder TODO: may remove this, is in index.jsp */
+.sp-session-add {
+  color: gray;
+  background-color: #e6e6e6;
+}
+
+/* nav link element class (session list) */
 .sp-session-link {
   text-align: center!important;
   font-size: 24px;
   margin: 5px;
+  width: 130px;
+  height: 70px;
 }
 
+/* nav link title - not part of link */
+.sp-session-type {
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* nav link box */
+.sp-session-connect {
+  border: green;
+  border-style: outset;
+  border-width: thin;
+  overflow: hidden;
+}
+
+/* nav link title (below icon */
 .sp-session-link-name {
   text-align: center!important;
   font-size: 14px;
   font-weight: bold;
 }
 
-.sp-session-add {
-  color: gray;
-  background-color: #e6e6e6;
+.sp-button-bar {
+  padding: 5 10 5 10;
+  border: none;
+}
+/* add session button just below session list */
+.sp-button-bar-button {
+  border: none;
+  background-color: #ffffff;
+}
+
+/* delete button in upper right of session list item */
+button.sp-session-delete {
+  float:right;
+  border: none;
+  backgound-color: #e7e7e7;
+  font-size: 10;
 }
 
 

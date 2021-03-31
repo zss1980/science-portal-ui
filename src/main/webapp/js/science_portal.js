@@ -44,13 +44,16 @@
     }
 
     function attachListeners() {
-      // Button listeners
-      $('#sp_reset_button').click(handleResetFormState)
-      $('#session_request_form').submit(handleSessionRequest)
-      $('#pageReloadButton').click(handlePageRefresh)
+      // Button/page click listeners
+      $('.sp-add-session').click(handleAddSession)
+      $('.sp-session-reload').click(checkForSessions)
+
+      // These elements are on the icons in the session list
       $('.sp-session-connect').click(handleConnectRequest)
 
-
+      // These elements are on the session launch form
+      $('#sp_reset_button').click(handleResetFormState)
+      $('#session_request_form').submit(handleSessionRequest)
       $('#sp_session_type').change(function(){
         // TODO: CADC-9362: trigger reload of the images list *only* if needed
         // consider saving current session in a hidden value so it's only done
@@ -58,6 +61,10 @@
         loadSoftwareStackImages($(this).val())
       })
 
+      // This element is on the info modal
+      $('#pageReloadButton').click(handlePageRefresh)
+
+      // Data Flow/javascript object listeners
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
         // Contacts the registry to discover where the sessions web service is,
@@ -82,18 +89,14 @@
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
         // Build session list on top of page
         populateSessionList(portalSessions.getSessionList())
-
-        // Get supported session type list & populate dropdown (ajax)
-        loadTypeMap()
-        // TODO: load all form data intially - CADC-9354 wil pare this down to only what's needed per session type
-        loadContext()
+        portalCore.setProgressBar("okay")
+        portalCore.hideInfoModal(true)
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, function (e, request){
         // This should be triggered if the user doesn't have access to Skaha resources, as well as
         // other error conditions. Without access to Skaha, the user should be blocked from using the page,
         // but be directed to some place they can ask for what they need (a resource allocation.)
-        portalCore.hideInfoModal(true)
 
         if (request.status == 403) {
           portalCore.setInfoModal('Skaha authorization issue', portalCore.getRcDisplayText(request), true, false, false)
@@ -104,20 +107,38 @@
       })
 
       portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
-        // TODO in CADC-9349, rethink this section, whether polling is appropriate (or if it's used
-        // as part of a delete,) - w
-        // allow multiple sessions per user
-        portalSessions.pollSessionStatus({}, 10000, 200)
-          .then( function(runningSession) {
+        // hide launch form
+        showLaunchForm(false)
 
-            // TODO: final action will be put here in CADC-9349
-            // refresh the session panel
+        // Start polling for session start before
+        // todo: check that this session checks for running status of the new
+        // session by something like the session name....
+        portalSessions.pollSessionRunning(sessionData, 10000, 200)
+          .then( function(runningSession) {
+            // Grab new session list
             checkForSessions()
           })
           .catch(function (message) {
             portalCore.setInfoModal('Error checking for sessions',
               'Unable to get session list. ' +
               'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
+          })
+      })
+
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionDeleteOK, function (e, sessionID) {
+
+        portalCore.setInfoModal("Polling", "Waiting for sesion delete request to complete.", false, false, true)
+        // Start polling for session gone from list
+        portalSessions.pollSessionTerminated(sessionID, 10000, 200)
+          .then( function(runningSession) {
+            portalCore.setInfoModal("Done", "Session Deleted, refreshing session list.", true, false, true)
+            // Grab new session list
+            checkForSessions()
+          })
+          .catch(function (message) {
+            portalCore.setInfoModal('Session delete pending',
+              'The session is taking a while to terminate. ' +
+              'Reload the page to refresh session list.', true, false, false)
           })
       })
 
@@ -130,6 +151,7 @@
 
       // Clear listeners
       $('.sp-session-connect').off('click')
+      $('.sp-session-delete').off('click')
 
       // Clear session list
       $sessionListDiv.empty()
@@ -144,6 +166,21 @@
 
         var $listItem = $('<li />')
         $listItem.prop('class', 'sp-session-link')
+
+        var $titleDiv = $('<div />')
+        var $titleItem = $('<div />')
+        $titleItem.prop('class', 'sp-session-type')
+        $titleItem.html(this.type)
+        $titleDiv.append($titleItem)
+
+        var $deleteButton = $('<button/>')
+        // needed to issue delete sanely
+        $deleteButton.attr('data-id', this.id)
+        $deleteButton.attr('data-name', this.name)
+        $deleteButton.prop("class", "fas fa-times sp-session-delete")
+        $titleItem.append($deleteButton)
+
+        $listItem.append($titleDiv)
 
         var $anchorItem = $('<a />')
         $anchorItem.prop('href', '#')
@@ -177,22 +214,9 @@
         $unorderedList.append($listItem)
       })
 
-      // Put 'New Session' button last.
-      // TODO: commenting this out in CADC-9362 until it can be decided how
-      // 'add session' affordance will be implemented. Launch form is always
-      // available in this version of the app
-      //var $listItem = $('<li />')
-      //$listItem.prop('class', 'sp-session-link sp-session-add')
-      //
-      //var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
-      //'<i class="fas fa-plus"></i>' +
-      //'<div class="sp-session-link-name">New Session</div>' +
-      //'</a> </li>'
-      //$listItem.html(listItemHTML)
-      //$unorderedList.append($listItem)
-
       $sessionListDiv.append($unorderedList)
       $('.sp-session-connect').on('click', handleConnectRequest)
+      $('.sp-session-delete').on('click', handleDeleteSession)
     }
 
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
@@ -264,6 +288,39 @@
       window.location.reload()
     }
 
+    function showLaunchForm(show) {
+      if (show === true) {
+        $('#sp_launch_form_div').removeClass('hidden')
+      } else {
+        $('#sp_launch_form_div').addClass('hidden')
+      }
+    }
+
+    /**
+     * Triggered from '+' button on session list button bar
+     */
+    function handleAddSession() {
+      // Show the launch form
+      showLaunchForm(true)
+
+      // Get supported session type list & populate dropdown (ajax)
+      loadTypeMap()
+
+      // TODO: this might only be shown for notebook - but it's the default,
+      // so show it initially - address in CADC-9354
+      loadContext()
+    }
+
+    /**
+     * Triggered from '-' button on session list button bar
+     */
+    function handleDeleteSession(event) {
+      var sessionData = $(event.currentTarget).data()
+      portalCore.setInfoModal("Delete Request", "Deleting session " + sessionData.name + ", id " + sessionData.id, false, false, true)
+      portalSessions.deleteSession(sessionData.id)
+    }
+
+
     // ------------ HTTP/Ajax functions & event handlers ------------
     // ---------------- POST ------------------
 
@@ -298,8 +355,10 @@
           'load',
           function () {
             if (request.status === 200) {
-              var jsonData = portalCore.parseJSONStr(request.responseText)
-              resolve(jsonData)
+              // Session ID and data from server not returned with
+              // this request. Use the name & type posted in form
+              // to identify this request going forward
+              resolve({"name": sessionData.get("name"), "type": sessionData.get("type")})
             } else {
               reject(request)
             }
@@ -355,13 +414,13 @@
 
         populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
 
+        // notebook is default
         loadSoftwareStackImages("notebook")
-
       })
     }
 
     function loadSoftwareStackImages(sessionType) {
-      portalCore.setInfoModal('Loading Images', 'Getting software stack list', false, true, true)
+      portalCore.setInfoModal('Loading Container Images', 'Getting container list', false, true, true)
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('busy')
 
@@ -381,7 +440,7 @@
             // Make the first entry be default until something else is decided
             populateSelect('sp_software_stack', tempImageList, 'select stack', tempImageList[0].name)
           } else {
-            portalCore.setInfoModal('No Images found','No public Software Stack Images found for your username.',
+            portalCore.setInfoModal('No Images found','No public container images found for your username.',
               true, false, false)
           }
 
@@ -389,7 +448,7 @@
         .catch(function(message) {
           var msgStr =  portalCore.getRcDisplayTextPlusCode(message)
           portalCore.setProgressBar('error')
-          portalCore.setInfoModal('Problem Loading Images', 'Problem loading software stack resources. '
+          portalCore.setInfoModal('Problem loading container images', 'Problem loading container image list. '
             + 'Try to reset the form to reload. ' + msgStr, true, false, false)
         })
     }
