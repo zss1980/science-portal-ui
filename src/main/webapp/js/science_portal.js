@@ -200,8 +200,6 @@
         if (this.type === 'notebook') {
           $iconItem = $('<img />')
           $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/jupyterLogo.jpg')
-          //$iconItem.prop('width', 50)
-          //$iconItem.prop('height', 50)
           iconClass = 'sp-icon-img'
         } else if (this.type === 'desktop') {
           $iconItem = $('<i />')
@@ -209,8 +207,6 @@
         } else if (this.type === 'carta') {
           $iconItem = $('<img />')
           $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/cartaLogo.png')
-          //$iconItem.prop('width', 40)
-          //$iconItem.prop('height', 40)
           iconClass = 'sp-icon-img'
         }
         $iconItem.prop('class', iconClass)
