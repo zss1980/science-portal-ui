@@ -93,11 +93,7 @@
     }
 
     function isSessionStatus(session, sessionStatus) {
-      var isStatus = false
-      if (session.status == sessionStatus) {
-        isStatus = true
-      }
-      return isStatus
+      return session.status === sessionStatus
     }
 
     /**
