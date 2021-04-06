@@ -33,6 +33,7 @@
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
     var _selfPortalApp = this
+    this.baseURL = inputs.baseURL
 
     // ------------ Page load functions ------------
 
@@ -59,6 +60,7 @@
         // consider saving current session in a hidden value so it's only done
         // when needed.
         loadSoftwareStackImages($(this).val())
+        setSessionName($(this).val())
       })
 
       // This element is on the info modal
@@ -170,7 +172,7 @@
         var $titleDiv = $('<div />')
         var $titleItem = $('<div />')
         $titleItem.prop('class', 'sp-session-type')
-        $titleItem.html(this.type)
+        $titleItem.html(this.name)
         $titleDiv.append($titleItem)
 
         var $deleteButton = $('<button/>')
@@ -192,21 +194,26 @@
         $anchorItem.attr('data-name', this.name)
         $anchorItem.prop('class', 'sp-session-connect')
 
-        var $iconItem = $('<i />')
+        var $iconItem
 
         var iconClass
         if (this.type === 'notebook') {
-          iconClass = 'fas fa-cube'
+          $iconItem = $('<img />')
+          $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/jupyterLogo.jpg')
+          iconClass = 'sp-icon-img'
         } else if (this.type === 'desktop') {
-          iconClass = 'fas fa-desktop'
+          $iconItem = $('<i />')
+          iconClass = 'fas fa-desktop sp-icon-desktop'
         } else if (this.type === 'carta') {
-          iconClass = 'fas fa-cube'
+          $iconItem = $('<img />')
+          $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/cartaLogo.png')
+          iconClass = 'sp-icon-img'
         }
         $iconItem.prop('class', iconClass)
 
         var $nameItem = $('<div />')
-        $nameItem.prop('class', 'sp-session-link-name')
-        $nameItem.html(this.name)
+        $nameItem.prop('class', 'sp-session-link-type')
+        $nameItem.html(this.type)
 
         $anchorItem.append($iconItem)
         $anchorItem.append($nameItem)
@@ -217,6 +224,17 @@
       $sessionListDiv.append($unorderedList)
       $('.sp-session-connect').on('click', handleConnectRequest)
       $('.sp-session-delete').on('click', handleDeleteSession)
+    }
+
+    /**
+     * This function provides a default session name that integrates
+     * the number of sessions of that type. Name can be overridden by user
+     * in the launch form.
+     * @param sessionType
+     */
+    function setSessionName(sessionType) {
+      var sessionName = portalSessions.getDefaultSessionName(sessionType)
+      $('#sp_session_name').val(sessionName)
     }
 
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
@@ -341,8 +359,8 @@
           portalCore.hideInfoModal(true)
           portalCore.trigger(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, sessionInfo)
         })
-        .catch(function(message) {
-          portalCore.handleAjaxError(message)
+        .catch(function(request) {
+          portalCore.handleAjaxError(request)
         })
     }
 
@@ -359,7 +377,7 @@
               // this request. Use the name & type posted in form
               // to identify this request going forward
               resolve({"name": sessionData.get("name"), "type": sessionData.get("type")})
-            } else {
+            } else if (request.status === 400) {
               reject(request)
             }
           },
@@ -415,7 +433,8 @@
         populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
 
         // notebook is default
-        loadSoftwareStackImages("notebook")
+        loadSoftwareStackImages('notebook')
+        setSessionName('notebook')
       })
     }
 

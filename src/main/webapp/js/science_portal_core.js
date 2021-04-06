@@ -228,6 +228,12 @@
           displayText = 'You are not authorised to use Skaha resources. Contact CANFAR admin' +
           ' for information on how to get set up with a resource allocation and permission to access the service.'
           break
+        case 400:
+          // Do as good a test for max number of sessions reached message from Skaha as possible:
+          if (request.responseText.includes('session already running')) {
+            displayText = 'Limit of number of sessions of selected type reached'
+            break
+          }
         default:
           displayText = request.responseText
           break
