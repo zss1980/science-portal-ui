@@ -168,104 +168,122 @@
       var $unorderedList = $('<ul />')
       $unorderedList.prop('class', 'nav nav-pills')
 
-      // Build new list
-      // Assuming a list of sessions is provided, with connect url, name, type
-      $(sessionData).each(function () {
-
+      if (JSON.stringify(sessionData) === '{}') {
+        // Put 'New Session' button last.
         var $listItem = $('<li />')
-        $listItem.prop('class', 'sp-session-link')
+        $listItem.prop('class', 'sp-session-link sp-session-add')
 
-        // $itemContainer holds both the linkItem with the
-        // connect and delete controls, sesion type logo, etc.,
-        // and potentially a 'blockingDiv' that puts a panel
-        // over the linkItem, blocking access when the session
-        // isn't Running.
-        var $itemContainer = $('<div />')
-        $itemContainer.prop('class', 'sp-link-container')
-
-        if (this.status != 'Running') {
-          // Add the extra blocking div
-          var $blockingDiv = $('<div />')
-          $blockingDiv.prop('class', 'sp-link-disable')
-          $itemContainer.append($blockingDiv)
-          $blockingDiv.html(this.status)
-        }
-
-        // Create the main $linkItem div to hold session
-        // information and action controls
-        var $linkItem = $('<div />')
-        $linkItem.prop('class', 'sp-link-connect')
-
-        var $titleDiv = $('<div />')
-        $titleDiv.prop('class', 'sp-session-title')
-        var $titleItem = $('<div />')
-        $titleItem.prop('class', 'sp-session-name')
-        $titleItem.html(this.name)
-        $titleDiv.append($titleItem)
-
-        var $deleteButton = $('<button/>')
-        // add session data to delete button so it can be
-        // sent on click to the delete handler
-        $deleteButton.attr('data-id', this.id)
-        $deleteButton.attr('data-name', this.name)
-        $deleteButton.prop("class", "fas fa-times sp-session-delete")
-        $titleItem.append($deleteButton)
-
-        $listItem.append($titleDiv)
-
-        var $anchorDiv = $('<div />')
-        $anchorDiv.prop('class', 'sp-session-anchor')
-        var $anchorItem = $('<a />')
-        $anchorItem.prop('href', '')
-        $anchorDiv.append($anchorItem)
-
-        // Attach session data to the anchor element
-        $anchorItem.attr('data-connecturl', this.connectURL)
-        $anchorItem.attr('data-status', this.status)
-        $anchorItem.attr('data-id', this.id)
-        $anchorItem.attr('data-name', this.name)
-        $anchorItem.prop('class', 'sp-session-connect')
-
-        var $iconItem
-
-        var iconClass
-        // TODO: this is the only place that session types
-        // are hard coded. Consider expanding sessiontype_map_en.json to include
-        // the img logo and icon class
-        if (this.type === 'notebook') {
-          $iconItem = $('<img />')
-          $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/jupyterLogo.jpg')
-          iconClass = 'sp-icon-img'
-        } else if (this.type === 'desktop') {
-          $iconItem = $('<i />')
-          iconClass = 'fas fa-desktop sp-icon-desktop'
-        } else if (this.type === 'carta') {
-          $iconItem = $('<img />')
-          $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/cartaLogo.png')
-          iconClass = 'sp-icon-img'
-        } else {
-          // provide a default icon type
-          $iconItem = $('<i />')
-          iconClass = 'fas fa-cube sp-icon-desktop'
-        }
-        $iconItem.prop('class', iconClass)
-
-        var $nameItem = $('<div />')
-        $nameItem.prop('class', 'sp-session-link-type')
-        $nameItem.html(this.type)
-
-        $anchorItem.append($iconItem)
-        $anchorItem.append($nameItem)
-
-        $linkItem.append($anchorDiv)
-        $itemContainer.append($linkItem)
-        $listItem.append($itemContainer)
+        var listItemHTML = '<a href="#" class="sp-session-link sp-session-add">' +
+          '<i class="service-link"></i>' +
+          '<div class="sp-session-help-text">Select \'+\' to launch a session</div>' +
+          '</a> </li>'
+        $listItem.html(listItemHTML)
         $unorderedList.append($listItem)
-      })
+        $sessionListDiv.append($unorderedList)
+      } else {
 
-      $sessionListDiv.append($unorderedList)
-      $('.sp-session-connect').on('click', handleConnectRequest)
-      $('.sp-session-delete').on('click', handleDeleteSession)
+        // Build new list
+        // Assuming a list of sessions is provided, with connect url, name, type
+        $(sessionData).each(function () {
+
+          var $listItem = $('<li />')
+          $listItem.prop('class', 'sp-session-link')
+
+
+          // $itemContainer holds both the linkItem with the
+          // connect and delete controls, sesion type logo, etc.,
+          // and potentially a 'blockingDiv' that puts a panel
+          // over the linkItem, blocking access when the session
+          // isn't Running.
+          var $itemContainer = $('<div />')
+          $itemContainer.prop('class', 'sp-link-container')
+
+          if (this.status != 'Running') {
+            // Add the extra blocking div
+            var $blockingDiv = $('<div />')
+            $blockingDiv.prop('class', 'sp-link-disable')
+            $itemContainer.append($blockingDiv)
+            $blockingDiv.html(this.status)
+          }
+
+          // Create the main $linkItem div to hold session
+          // information and action controls
+          var $linkItem = $('<div />')
+          $linkItem.prop('class', 'sp-link-connect')
+
+          var $titleDiv = $('<div />')
+          $titleDiv.prop('class', 'sp-session-title')
+          var $titleItem = $('<div />')
+          $titleItem.prop('class', 'sp-session-name')
+          $titleItem.html(this.name)
+          $titleDiv.append($titleItem)
+
+          var $deleteButton = $('<button/>')
+          // add session data to delete button so it can be
+          // sent on click to the delete handler
+          $deleteButton.attr('data-id', this.id)
+          $deleteButton.attr('data-name', this.name)
+          $deleteButton.prop("class", "fas fa-times sp-session-delete")
+          $titleItem.append($deleteButton)
+
+          $listItem.append($titleDiv)
+
+          var $anchorDiv = $('<div />')
+          $anchorDiv.prop('class', 'sp-session-anchor')
+          var $anchorItem = $('<a />')
+          $anchorItem.prop('href', '')
+          $anchorDiv.append($anchorItem)
+
+          // Attach session data to the anchor element
+          $anchorItem.attr('data-connecturl', this.connectURL)
+          $anchorItem.attr('data-status', this.status)
+          $anchorItem.attr('data-id', this.id)
+          $anchorItem.attr('data-name', this.name)
+          $anchorItem.prop('class', 'sp-session-connect')
+
+          var $iconItem
+
+          var iconClass
+          // TODO: this is the only place that session types
+          // are hard coded. Consider expanding sessiontype_map_en.json to include
+          // the img logo and icon class
+          if (this.type === 'notebook') {
+            $iconItem = $('<img />')
+            $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/jupyterLogo.jpg')
+            iconClass = 'sp-icon-img'
+          } else if (this.type === 'desktop') {
+            $iconItem = $('<i />')
+            iconClass = 'fas fa-desktop sp-icon-desktop'
+          } else if (this.type === 'carta') {
+            $iconItem = $('<img />')
+            $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/cartaLogo.png')
+            iconClass = 'sp-icon-img'
+          } else {
+            // provide a default icon type
+            $iconItem = $('<i />')
+            iconClass = 'fas fa-cube sp-icon-desktop'
+          }
+          $iconItem.prop('class', iconClass)
+
+          var $nameItem = $('<div />')
+          $nameItem.prop('class', 'sp-session-link-type')
+          $nameItem.html(this.type)
+
+          $anchorItem.append($iconItem)
+          $anchorItem.append($nameItem)
+
+          $linkItem.append($anchorDiv)
+          $itemContainer.append($linkItem)
+          $listItem.append($itemContainer)
+          $unorderedList.append($listItem)
+
+        })
+        $sessionListDiv.append($unorderedList)
+        $('.sp-session-connect').on('click', handleConnectRequest)
+        $('.sp-session-delete').on('click', handleDeleteSession)
+      }
+
+
     }
 
     /**
