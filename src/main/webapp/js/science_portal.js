@@ -97,7 +97,7 @@
         portalCore.setProgressBar("okay")
         portalCore.hideInfoModal(true)
 
-        if ( _selfPortalApp.isPolling == false) {
+        if ( _selfPortalApp.isPolling === false) {
           // Flag polling is occurring so only one instance is running at a time.
           // Any changes in session list will be picked up by the single polling instance
           _selfPortalApp.isPolling == true
@@ -111,7 +111,7 @@
               }
             })
             .catch(function (message) {
-              portalCore.setInfoModal('Error getting session lise',
+              portalCore.setInfoModal('Error getting session list',
                 'Unable to get session list. ' +
                 'Reload the page to try again, or contact CANFAR admin for assistance.', true, false, false)
             })
