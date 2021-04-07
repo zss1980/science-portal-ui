@@ -228,13 +228,13 @@
 .sp-session-link {
   text-align: center!important;
   font-size: 24px;
-  margin: 5px;
+  margin-right: 5px;
   width: 100px;
-  height: 85px;
+  height: 95px;
 }
 
 /* nav link title - not part of link */
-.sp-session-type {
+.sp-session-name {
   text-align: left;
   font-size: 14px;
   font-weight: bold;
@@ -242,12 +242,7 @@
 
 /* nav link box */
 .sp-session-connect {
-  border: green;
-  border-style: outset;
-  border-width: thin;
   overflow: hidden;
-  width: 100px;
-  height: 85px;
 }
 
 /* nav link title (below icon */
@@ -284,5 +279,42 @@ button.sp-session-delete {
   width: 40px;
   height: 40px;
 }
+
+/* Used for controlling accessibility of session list items */
+.sp-link-container {
+  width: 100px;
+  height: 75px;
+  position: relative;
+}
+
+.sp-link-disable,
+.sp-link-connect {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.sp-link-disable {
+  z-index: 10;
+  background-color: lightgray;
+  opacity: 50%;
+  padding-top: 60px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: right;
+  font-style: italic;
+}
+
+.sp-session-anchor {
+  border-style: groove;
+  border-color: aliceblue;
+  border-width: thin;
+}
+
+
+
+
 
 
