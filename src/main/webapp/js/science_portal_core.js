@@ -169,6 +169,31 @@
 
     // ------------ Rendering & display functions ------------
 
+    function setConfirmModal(msgBody, sessionData) {
+      // Set titles and messages
+      $('#delete_modal_p').html(msgBody)
+
+      // Open modal if not already open
+      if ($('#delete_modal').data('bs.modal') === undefined ||
+        $('#delete_modal').data('bs.modal').isShown === false) {
+
+        $('#delete_session_button').attr('data-id', sessionData.id)
+        $('#delete_session_button').attr('data-name', sessionData.name)
+
+        $('#delete_modal').modal({
+          backdrop: 'static'
+        })
+      }
+    }
+
+    function hideConfirmModal(clearAll) {
+      if (clearAll === true) {
+        $('#delete_modal').modal('hide')
+        $('body').removeClass('modal-open')
+        $('.modal-backdrop').remove()
+      }
+    }
+
     function setInfoModal(title, msg, hideSpinner, hideReload, hideHome) {
       // Set titles and messages
       $('.info-span').html(msg)
@@ -339,6 +364,8 @@
       handleAjaxError: handleAjaxError,
       setProgressBar: setProgressBar,
       clearAjaxAlert: clearAjaxAlert,
+      setConfirmModal: setConfirmModal,
+      hideConfirmModal: hideConfirmModal,
       setInfoModal: setInfoModal,
       hideInfoModal: hideInfoModal,
       checkAuthentication: checkAuthentication,

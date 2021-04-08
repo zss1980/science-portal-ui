@@ -254,6 +254,29 @@
                 </div>
               </div>
 
+
+                <!-- Delete confirmation modal -->
+                <div id="delete_modal" class="modal" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                      <div class="modal-header flex-column">
+                        <h5 id="delete_modal_title" class="modal-title w-100">Are you sure?
+                          <button type="button" class="sp-close close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </h5>
+                      </div>
+                      <div id="delete_modal_body" class="modal-body">
+                        <p>Do you really want to delete this session? This process cannot be undone.</p>
+                        <p id="delete_modal_p"></p>
+                      </div>
+                      <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="delete_session_button" type="button" class="btn btn-danger">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
               <!-- Content ends -->
             </section>
           </div>

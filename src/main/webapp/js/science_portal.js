@@ -69,6 +69,11 @@
       // This element is on the info modal
       $('#pageReloadButton').click(handlePageRefresh)
 
+      // This element is on the delete modal
+      $('#delete_session_button').click(handleConfirmedDelete)
+      $('#delete_cancel').click(handleCancelDelete)
+      $('.sp-close-delete-modal').click(handleCancelDelete)
+
       // Data Flow/javascript object listeners
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
@@ -369,21 +374,8 @@
       event.preventDefault()
       // Pull data-* information from anchor element
       var sessionData = $(event.currentTarget).data()
-      if (portalSessions.isRunningSession(sessionData)) {
-        portalCore.setProgressBar('okay')
-        portalCore.setInfoModal('Connecting to Session', 'Connecting to existing session ' + sessionData.name
-          + ' (' + sessionData.id + ')', false, false)
-        // just forward people to next page, in this same window
-        window.open(sessionData.connecturl, '_blank')
-        // Note: the modal just opened is left up. It's not clear if that's he best behaviour,
-        // but after it's used some we'll get feedback on how better to handle it
-      } else {
-        portalCore.setProgressBar('error')
-        // TODO: should be able to close this modal?
-        portalCore.setInfoModal('Can\'t connect to session', 'An existing session was found, but is not running. (' +
-          sessionData.status + '). Try again in a few moments, or contact CANFAR admin for assistance.',
-          true, false, false);
-      }
+      portalCore.setProgressBar('okay')
+      window.open(sessionData.connecturl, '_blank')
     }
 
     /**
@@ -414,14 +406,29 @@
     }
 
     /**
-     * Triggered from '-' button on session list button bar
+     * Triggered from 'X' button on individual session
      */
     function handleDeleteSession(event) {
       var sessionData = $(event.currentTarget).data()
+      portalCore.setConfirmModal("Session name " + sessionData.name + ", id " + sessionData.id, sessionData)
+    }
+
+    /**
+     * Triggered from the delete modal
+     */
+    function handleConfirmedDelete(event) {
+      var sessionData = $(event.currentTarget).data()
+      portalCore.hideConfirmModal(true)
       portalCore.setInfoModal("Delete Request", "Deleting session " + sessionData.name + ", id " + sessionData.id, false, false, true)
       portalSessions.deleteSession(sessionData.id)
     }
 
+    /**
+     * Triggered from the delete modal
+     */
+    function handleCancelDelete(event) {
+      portalCore.hideConfirmModal(true)
+    }
 
     // ------------ HTTP/Ajax functions & event handlers ------------
     // ---------------- POST ------------------

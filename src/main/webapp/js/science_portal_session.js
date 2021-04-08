@@ -100,6 +100,7 @@
      */
     function isAllSessionsStable() {
       var allStable = true
+
       for (var i = 0; i < _selfPortalSess._sessionList.length; i++) {
         if ( (_selfPortalSess._sessionList[i].status !== 'Running') &&
           (_selfPortalSess._sessionList[i].status !== 'Succeeded') ) {
@@ -137,6 +138,9 @@
       if (sessionList.length > 0) {
         _selfPortalSess._sessionList = sessionList
         _selfPortalSess._isEmpty = false
+      } else {
+        _selfPortalSess._sessionList = {}
+        _selfPortalSess._isEmpty = true
       }
     }
 
@@ -151,9 +155,7 @@
       Promise.resolve(getSessionListAjax(_selfPortalSess.sessionURLs.session, {}))
         .then(function(sessionList) {
 
-          if (sessionList.length > 0) {
-            setSessionList(sessionList)
-          }
+          setSessionList(sessionList)
           trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone)
 
         })

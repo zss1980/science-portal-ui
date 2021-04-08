@@ -316,6 +316,10 @@ button.sp-session-delete {
   border-width: thin;
 }
 
+.sp-close {
+  float:right;
+}
+
 
 
 
