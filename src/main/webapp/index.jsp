@@ -90,10 +90,10 @@
 
                     </ul>
                   </div>
-                <div class="sp-button-bar">
+                <div class="sp-button-bar sp-b-tooltip">
                   <%-- session action button bar --%>
-                  <button class="sp-button-bar-button sp-add-session fa fa-plus"></button>
-                  <button class="sp-button-bar-button sp-session-reload fa fa-redo"></button>
+                  <button class="sp-button-bar-button sp-add-session fa fa-plus" data-toggle="tooltip" title="launch session"></button>
+                  <button class="sp-button-bar-button sp-session-reload fa fa-redo" data-toggle="tooltip" title="reload session list"></button>
                 </div>
 
                 <%--   Launch Form starts here             --%>
@@ -129,7 +129,7 @@
                                  class="col-sm-3 control-label"
                                  id="sp_session_name_label">name
                             <div id="session_name"
-                                class="science-portal-tooltip"
+                                class="sp-tooltip"
                                 data-contentkey="session_name"></div>
                           </label>
                           <div class="col-sm-6">
@@ -145,7 +145,7 @@
                                  class="col-sm-3 control-label"
                                  id="sp_session_type_label">type
                             <div id="session_type"
-                                 class="science-portal-tooltip"
+                                 class="sp-tooltip"
                                  data-contentkey="session_type"
                                  data-title="Session Type">
                             </div>
@@ -165,7 +165,7 @@
                                  class="col-sm-3 control-label"
                                  id="sp_software_stack_label">container image
                             <div id="software_stack"
-                                class="science-portal-tooltip"
+                                class="sp-tooltip"
                                 data-contentkey="software_stack"
                                 data-title="Software Stack">
                             </div>
@@ -184,7 +184,7 @@
                                  class="col-sm-3 control-label"
                                  id="science_portal_memory_label">memory
                                     <div id="context_memory"
-                                         class="science-portal-tooltip"
+                                         class="sp-tooltip"
                                          data-contentkey="context_memory"
                                          data-title="Memory"></div>
                           </label>
@@ -202,7 +202,7 @@
                              class="col-sm-3 control-label"
                              id="sp_cores_label"># cores
                                 <div id="context_cores"
-                                      class="science-portal-tooltip"
+                                      class="sp-tooltip"
                                       data-contentkey="context_cores"
                                       data-title="Number of Cores"></div>
                       </label>

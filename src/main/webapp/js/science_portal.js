@@ -46,6 +46,10 @@
 
     function init() {
       attachListeners()
+
+      // add tooltips
+      $('[data-toggle="tooltip"]').tooltip()
+      
       // Nothing happens if user is not authenticated, so no other page
       // load information is done until this call comes back (see onAuthenticated event below)
       portalCore.checkAuthentication()
@@ -219,7 +223,7 @@
           var $titleDiv = $('<div />')
           $titleDiv.prop('class', 'sp-session-title')
           var $titleItem = $('<div />')
-          $titleItem.prop('class', 'sp-session-name')
+          $titleItem.prop('class', 'sp-session-name sp-b-tooltip')
           $titleItem.html(this.name)
           $titleDiv.append($titleItem)
 
@@ -228,7 +232,9 @@
           // sent on click to the delete handler
           $deleteButton.attr('data-id', this.id)
           $deleteButton.attr('data-name', this.name)
-          $deleteButton.prop("class", "fas fa-times sp-session-delete")
+          $deleteButton.prop('class', 'fas fa-times sp-session-delete')
+          $deleteButton.attr('data-toggle', 'tooltip')
+          $deleteButton.attr('title', 'delete session')
           $titleItem.append($deleteButton)
 
           $listItem.append($titleDiv)
@@ -286,6 +292,10 @@
         $sessionListDiv.append($unorderedList)
         $('.sp-session-connect').on('click', handleConnectRequest)
         $('.sp-session-delete').on('click', handleDeleteSession)
+
+        // add tooltips
+        $('[data-toggle="tooltip"]').tooltip()
+
       }
 
 

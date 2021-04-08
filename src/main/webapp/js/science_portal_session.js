@@ -132,8 +132,6 @@
       return sessionType + count
     }
 
-
-
     function setSessionList(sessionList) {
       if (sessionList.length > 0) {
         _selfPortalSess._sessionList = sessionList

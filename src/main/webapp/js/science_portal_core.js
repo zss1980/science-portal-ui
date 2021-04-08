@@ -48,8 +48,8 @@
     // loading the content file, and load the popovers
     var _chOptions = {
       contentFile: 'contexthelp_en.json',
-      clickClassname: 'science-portal-tooltip',
-      hoverClassname: 'science-portal-tooltip-btn'
+      clickClassname: 'sp-tooltip',
+      hoverClassname: 'sp-hover-tooltip'
     }
     var _contextHelp = new cadc.web.CadcContextHelp(_chOptions)
     // Done here because there's an ajax call involved to open the help

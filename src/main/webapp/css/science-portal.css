@@ -232,6 +232,8 @@
   text-align: center!important;
   font-size: 24px;
   margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   width: 100px;
   height: 95px;
 }
@@ -268,9 +270,12 @@
 /* delete button in upper right of session list item */
 button.sp-session-delete {
   float:right;
-  border: none;
+  font-size: 10px;
   backgound-color: #e7e7e7;
-  font-size: 10;
+  margin-top: 3px;
+  border: darkgray;
+  border-style: solid;
+  border-width: thin;
 }
 
 .sp-icon-desktop {
@@ -320,7 +325,18 @@ button.sp-session-delete {
   float:right;
 }
 
+.sp-b-tooltip > .tooltip > .tooltip-inner {
+  color:black;
+  background-color: darkgray;
+}
 
+.sp-b-tooltip > .tooltip.top .tooltip-arrow {
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: darkgray;
+}
 
 
 
