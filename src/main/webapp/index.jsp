@@ -90,10 +90,10 @@
 
                     </ul>
                   </div>
-                <div class="sp-button-bar">
+                <div class="sp-button-bar sp-b-tooltip">
                   <%-- session action button bar --%>
-                  <button class="sp-button-bar-button sp-add-session fa fa-plus"></button>
-                  <button class="sp-button-bar-button sp-session-reload fa fa-redo"></button>
+                  <button class="sp-button-bar-button sp-add-session fa fa-plus" data-toggle="tooltip" title="launch session"></button>
+                  <button class="sp-button-bar-button sp-session-reload fa fa-redo" data-toggle="tooltip" title="reload session list"></button>
                 </div>
 
                 <%--   Launch Form starts here             --%>
@@ -129,7 +129,7 @@
                                  class="col-sm-3 control-label"
                                  id="sp_session_name_label">name
                             <div id="session_name"
-                                class="science-portal-tooltip"
+                                class="sp-tooltip"
                                 data-contentkey="session_name"></div>
                           </label>
                           <div class="col-sm-6">
@@ -145,7 +145,7 @@
                                  class="col-sm-3 control-label"
                                  id="sp_session_type_label">type
                             <div id="session_type"
-                                 class="science-portal-tooltip"
+                                 class="sp-tooltip"
                                  data-contentkey="session_type"
                                  data-title="Session Type">
                             </div>
@@ -165,7 +165,7 @@
                                  class="col-sm-3 control-label"
                                  id="sp_software_stack_label">container image
                             <div id="software_stack"
-                                class="science-portal-tooltip"
+                                class="sp-tooltip"
                                 data-contentkey="software_stack"
                                 data-title="Software Stack">
                             </div>
@@ -184,7 +184,7 @@
                                  class="col-sm-3 control-label"
                                  id="science_portal_memory_label">memory
                                     <div id="context_memory"
-                                         class="science-portal-tooltip"
+                                         class="sp-tooltip"
                                          data-contentkey="context_memory"
                                          data-title="Memory"></div>
                           </label>
@@ -202,7 +202,7 @@
                              class="col-sm-3 control-label"
                              id="sp_cores_label"># cores
                                 <div id="context_cores"
-                                      class="science-portal-tooltip"
+                                      class="sp-tooltip"
                                       data-contentkey="context_cores"
                                       data-title="Number of Cores"></div>
                       </label>
@@ -253,6 +253,29 @@
                   </div>
                 </div>
               </div>
+
+
+                <!-- Delete confirmation modal -->
+                <div id="delete_modal" class="modal" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                      <div class="modal-header flex-column">
+                        <h5 id="delete_modal_title" class="modal-title w-100">Are you sure?
+                          <button type="button" class="sp-close close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </h5>
+                      </div>
+                      <div id="delete_modal_body" class="modal-body">
+                        <p>Do you really want to delete this session? This process cannot be undone.</p>
+                        <p id="delete_modal_p"></p>
+                      </div>
+                      <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="delete_session_button" type="button" class="btn btn-danger">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
 
               <!-- Content ends -->
             </section>

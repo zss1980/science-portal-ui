@@ -1,38 +1,62 @@
 # CANFAR Science Portal
-### V 1.0
-##### Feb 2021
+### V 2.0
+##### April 2021
 
-UI for launching and connecting to Jupyter notebook sessions that back onto CANFAR resources. 
+UI for accessing and managing Jupyter notebook, carta or desktop sessions that back onto CANFAR resources. 
 
 ## Description
-This CANFAR service provides the ability to connect to and launch Jupyter notebook sessions that back
-on to CANFAR resources. Using Software Stack images and current system resource values (context) provided by Skaha, you can
-launch a session using the image you select powered with the amount of memory and number of cores you designate. 
+This CANFAR service provides the ability to access and manage Jupyter notebook, desktop (vnc), and carta sessions that back
+on to CANFAR resources. Using container images and current system resource values (context) provided by Skaha, you can
+launch and manage sessions using the container image you select. Contextualization is provided for some session types 
+ (currently notebook only,) allowing the amount of memory and number of cores you designate to be used to power
+ your session. 
 
 ## Endpoint locations
 All endpoints require authentication with CANFAR, and authorization to access Skaha resource allocations.
 
-Science Portal Session Launch
-http://www.canfar.net/science-portal/launch
+Science Portal URL
+https://www.canfar.net/science-portal
 
 ## Skaha Web Service
-Skaha provides Science Portal with access to Jupyter Notebook sessions. 
-
+Skaha provides Science Portal with access to supported session types (Jupyter notebooks, desktop (vnc) and carta)
 More information can be found in the swagger docs: https://ws-uv.canfar.net/skaha
 
-## CANFAR Science Portal Workflow
+## CANFAR Science Portal Workflows
+All workflows assume you are logged in with a CADC account
 
-### Launching and Connecting to Notebook sessions
 
-1) Log in with a CADC account (Authenticate)
-2) If you have a currently running session, Science Portal will attempt to connect and forward to it.
-3) If you do not have a currently running session, Science Portal will display a form where
-you can select the Software Stack image, amount of memory (RAM) and number of cores, designate
-a name and launch a session.
-4) Science Portal will poll for 30 seconds, attempting to connect to the session after Skaha 
-says it is in 'Running' state. 
+### Connecting to existing sessions
 
-### Deleting sessions
-This can be done from within the session, or via curl directly to the Skaha web service. (See the swagger
-docs link above.)
+1) From the main page: https://www.canfar.net/science-portal
+2) Science Portal will poll for and display any sessions you currently have
+3) Clicking on a session icon will connect to and forward you to the session
+
+
+### Launch a new session
+
+1) From the main page: https://www.canfar.net/science-portal
+2) Science Portal will poll for and display any sessions you currently have
+3) Clicking on the '+' icon below the session list
+4) A form will be displayed for gathering data for your session 
+5) Select the type of session you want to launch (default is 'notebook')
+6) The container image list will be updated for the session type
+7) Optionally change the name of the session, and any available context values
+(ie memory or # of cores)
+8) Select 'Launch'
+9) Science Portal will request the session be started, will add the session 
+to the list at the top of the page. 
+
+
+### Delete an existing session
+
+1) From the main page: https://www.canfar.net/science-portal
+2) Science Portal will poll for and display any sessions you currently have
+3) Clicking on the 'X' icon at the top right of a session listing will bring
+up a confirmation box. 
+4) Continue to delete or cancel
+5) Science Portal will request the session be deleted, will mark the session 
+   as inaccessible in the list at the top of the page, polling Skaha until 
+   the session is deleted, at which point it's removed from the list
+
+
 
