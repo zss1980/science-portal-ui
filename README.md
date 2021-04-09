@@ -15,7 +15,7 @@ launch and manage sessions using the container image you select. Contextualizati
 All endpoints require authentication with CANFAR, and authorization to access Skaha resource allocations.
 
 Science Portal URL
-http://www.canfar.net/science-portal
+https://www.canfar.net/science-portal
 
 ## Skaha Web Service
 Skaha provides Science Portal with access to supported session types (Jupyter notebooks, desktop (vnc) and carta)
@@ -27,14 +27,14 @@ All workflows assume you are logged in with a CADC account
 
 ### Connecting to existing sessions
 
-1) From the main page: http://www.canfar.net/science-portal
+1) From the main page: https://www.canfar.net/science-portal
 2) Science Portal will poll for and display any sessions you currently have
 3) Clicking on a session icon will connect to and forward you to the session
 
 
 ### Launch a new session
 
-1) From the main page: http://www.canfar.net/science-portal
+1) From the main page: https://www.canfar.net/science-portal
 2) Science Portal will poll for and display any sessions you currently have
 3) Clicking on the '+' icon below the session list
 4) A form will be displayed for gathering data for your session 
@@ -49,7 +49,7 @@ to the list at the top of the page.
 
 ### Delete an existing session
 
-1) From the main page: http://www.canfar.net/science-portal
+1) From the main page: https://www.canfar.net/science-portal
 2) Science Portal will poll for and display any sessions you currently have
 3) Clicking on the 'X' icon at the top right of a session listing will bring
 up a confirmation box. 
