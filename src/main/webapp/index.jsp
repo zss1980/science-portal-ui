@@ -78,7 +78,7 @@
                   <div id="sp_list_progress_bar"></div>
 
                   <%-- Body of session list will be built in this div  --%>
-                  <div class="panel-body sp-panel-body" id="sp_session_list">
+                  <div class="panel-body sp-panel-body sp-session-panel-body" id="sp_session_list">
                     <ul class="nav nav-pills">
 
                       <li role="presentation" class="sp-session-link sp-session-add">
@@ -135,7 +135,7 @@
                           <div class="col-sm-6">
                             <input type="text" class="form-control sp-form sp-form-input"
                                    id="sp_session_name" name="name"
-                                   placeholder="provide session name" tabindex="1" required/>
+                                   placeholder="provide session name" tabindex="1" required maxlength="15"/>
                           </div>
                         </div>  <!-- end form group -->
 

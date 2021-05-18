@@ -18,9 +18,9 @@
   border-color: #ccc;
 }
 
-.sp-panel-body {
-  padding: 5px;
-}
+/*.sp-panel-body {*/
+/*  padding: 5px;*/
+/*}*/
 
 .sp-progress-bar {
   width: 100%;
@@ -31,7 +31,6 @@
   height: 8px;
   /*background-image: linear-gradient(to bottom, #ffffff 0, #ffffff 100%);*/
   margin-bottom: 0px;
-
 }
 
 .form-group {
@@ -232,17 +231,20 @@
   text-align: center!important;
   font-size: 24px;
   margin-right: 5px;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   width: 100px;
-  height: 95px;
 }
 
 /* nav link title - not part of link */
 .sp-session-name {
-  text-align: left;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
+  overflow: hidden;
+}
+
+.sp-session-panel-body {
+  padding-left: 10;
+  padding-bottom: 0;
 }
 
 /* nav link box */
@@ -253,8 +255,9 @@
 /* nav link title (below icon */
 .sp-session-link-type {
   text-align: center!important;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
+  font-style: italic;
 }
 
 .sp-button-bar {
@@ -272,10 +275,11 @@ button.sp-session-delete {
   float:right;
   font-size: 10px;
   backgound-color: #e7e7e7;
-  margin-top: 3px;
+  margin-top: -1px;
   border: darkgray;
   border-style: solid;
   border-width: thin;
+  -webkit-border-radius: 5px;
 }
 
 .sp-icon-desktop {
@@ -284,19 +288,22 @@ button.sp-session-delete {
 }
 
 .sp-icon-img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
 }
 
 /* Used for controlling accessibility of session list items */
 .sp-link-container {
   width: 100px;
-  height: 75px;
+  height: 90px;
   position: relative;
+  border-style: groove;
+  border-color: aliceblue;
+  -webkit-border-radius: 5px;
 }
 
 .sp-link-disable,
-.sp-link-connect {
+.sp-session-ctl {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -304,21 +311,25 @@ button.sp-session-delete {
   left: 0;
 }
 
+.sp-session-ctl {
+  height: 14px;
+  -webkit-border-radius: 5px;
+  margin-right: 1px;
+  z-index: 50; /* always on top */
+}
+
 .sp-link-disable {
   z-index: 10;
   background-color: lightgray;
   opacity: 50%;
-  padding-top: 60px;
   font-size: 12px;
   font-weight: bold;
-  text-align: right;
+  text-align: left;
   font-style: italic;
 }
 
 .sp-session-anchor {
-  border-style: groove;
-  border-color: aliceblue;
-  border-width: thin;
+  padding-top: 15px;
 }
 
 .sp-close {
