@@ -112,7 +112,7 @@
           _selfPortalApp.isPolling == true
 
           // If everything is stable, stop. If no, kick off polling
-          portalSessions.pollSessionList(1000)
+          portalSessions.pollSessionList(8000)
             .then(function (finalState) {
               if (finalState == 'done') {
                 // Grab new session list
@@ -198,34 +198,26 @@
           var $listItem = $('<li />')
           $listItem.prop('class', 'sp-session-link')
 
-
-          // $itemContainer holds both the linkItem with the
-          // connect and delete controls, sesion type logo, etc.,
-          // and potentially a 'blockingDiv' that puts a panel
+          // $itemContainer holds: both the
+          // - linkItem with the connect affordance (session type & logo)
+          // - delete affordance
+          // - potentially a 'blockingDiv' that puts a panel
           // over the linkItem, blocking access when the session
           // isn't Running.
           var $itemContainer = $('<div />')
           $itemContainer.prop('class', 'sp-link-container')
 
           if (this.status != 'Running') {
-            // Add the extra blocking div
+            // Add the blocking div
             var $blockingDiv = $('<div />')
             $blockingDiv.prop('class', 'sp-link-disable')
             $itemContainer.append($blockingDiv)
             $blockingDiv.html(this.status)
           }
 
-          // Create the main $linkItem div to hold session
-          // information and action controls
-          var $linkItem = $('<div />')
-          $linkItem.prop('class', 'sp-link-connect')
-
-          var $titleDiv = $('<div />')
-          $titleDiv.prop('class', 'sp-session-title')
-          var $titleItem = $('<div />')
-          $titleItem.prop('class', 'sp-session-name sp-b-tooltip')
-          $titleItem.html(this.name)
-          $titleDiv.append($titleItem)
+          // delete button
+          var $buttonDiv = $('<div />')
+          $buttonDiv.prop('class', 'sp-session-ctl sp-b-tooltip')
 
           var $deleteButton = $('<button/>')
           // add session data to delete button so it can be
@@ -235,12 +227,12 @@
           $deleteButton.prop('class', 'fas fa-times sp-session-delete')
           $deleteButton.attr('data-toggle', 'tooltip')
           $deleteButton.attr('title', 'delete session')
-          $titleItem.append($deleteButton)
-
-          $listItem.append($titleDiv)
+          $buttonDiv.append($deleteButton)
+          $itemContainer.append($buttonDiv)
 
           var $anchorDiv = $('<div />')
           $anchorDiv.prop('class', 'sp-session-anchor')
+
           var $anchorItem = $('<a />')
           $anchorItem.prop('href', '')
           $anchorDiv.append($anchorItem)
@@ -253,7 +245,6 @@
           $anchorItem.prop('class', 'sp-session-connect')
 
           var $iconItem
-
           var iconClass
           // TODO: this is the only place that session types
           // are hard coded. Consider expanding sessiontype_map_en.json to include
@@ -283,11 +274,16 @@
           $anchorItem.append($iconItem)
           $anchorItem.append($nameItem)
 
-          $linkItem.append($anchorDiv)
-          $itemContainer.append($linkItem)
+          $itemContainer.append($anchorDiv)
           $listItem.append($itemContainer)
-          $unorderedList.append($listItem)
 
+          // Add session name to bottom of control
+          var $titleItem = $('<div />')
+          $titleItem.prop('class', 'sp-session-name')
+          $titleItem.html(this.name)
+          $listItem.append($titleItem)
+
+          $unorderedList.append($listItem)
         })
         $sessionListDiv.append($unorderedList)
         $('.sp-session-connect').on('click', handleConnectRequest)
@@ -295,10 +291,7 @@
 
         // add tooltips
         $('[data-toggle="tooltip"]').tooltip()
-
       }
-
-
     }
 
     /**
