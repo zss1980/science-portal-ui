@@ -210,7 +210,6 @@
           // Create the main $linkItem div to hold session
           // information and action controls
           var $linkItem = $('<div />')
-          $linkItem.prop('class', 'sp-link-connect')
 
           if (this.status != 'Running') {
             // Add the blocking div
