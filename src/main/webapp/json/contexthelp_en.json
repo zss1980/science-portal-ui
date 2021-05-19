@@ -10,7 +10,7 @@
     "title": "Container Image"
   },
   "session_name": {
-    "tipHTML": "Name for the session. Default name reflects the current number of sessions of the selected type. Alphanumeric characters only.",
+    "tipHTML": "Name for the session. Default name reflects the current number of sessions of the selected type. </br> Alphanumeric characters only. 15 character maximum.",
     "placement": "top",
     "title": "Session Name"
   },
