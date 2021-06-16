@@ -302,16 +302,8 @@
      * @param sessionType
      */
     function setDefaultSessionName(sessionType) {
-      //var curSessionName = $('#sp_session_name').val()
-
-      // set default name if any of the following are true:
-      // first case happens on first opening of form, or if
-      // field is cleared
-      //if ((curSessionName === "" ) ||
-      //if (curSessionName !== portalSessions.getDefaultSessionName(_curSessionType))  {
-        var sessionName = portalSessions.getDefaultSessionName(sessionType)
-        $('#sp_session_name').val(sessionName)
-      //}
+      var sessionName = portalSessions.getDefaultSessionName(sessionType)
+      $('#sp_session_name').val(sessionName)
     }
 
     function setFormFields(sessionType) {
