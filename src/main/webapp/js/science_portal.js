@@ -41,6 +41,7 @@
     var _sessionTypeMap
     // Complete list of form fields available
     var _launchFormFields = ['name', 'type', 'image', 'memory', 'cores']
+    var _curSessionType
 
     // ------------ Page load functions ------------
 
@@ -67,7 +68,7 @@
       $('#sp_reset_button').click(handleResetFormState)
       $('#session_request_form').submit(handleSessionRequest)
       $('#sp_session_type').change(function(){
-        setLaunchFormForType($(this).val())
+        setLaunchFormForType($(this).val(), false)
       })
 
       // This element is on the info modal
@@ -300,9 +301,17 @@
      * in the launch form.
      * @param sessionType
      */
-    function setSessionName(sessionType) {
-      var sessionName = portalSessions.getDefaultSessionName(sessionType)
-      $('#sp_session_name').val(sessionName)
+    function setDefaultSessionName(sessionType) {
+      //var curSessionName = $('#sp_session_name').val()
+
+      // set default name if any of the following are true:
+      // first case happens on first opening of form, or if
+      // field is cleared
+      //if ((curSessionName === "" ) ||
+      //if (curSessionName !== portalSessions.getDefaultSessionName(_curSessionType))  {
+        var sessionName = portalSessions.getDefaultSessionName(sessionType)
+        $('#sp_session_name').val(sessionName)
+      //}
     }
 
     function setFormFields(sessionType) {
@@ -524,16 +533,24 @@
         populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
 
         // notebook is default
-        setLaunchFormForType(_sessionTypeMap.default)
+        _curSessionType = _sessionTypeMap.default;
+        setLaunchFormForType(_sessionTypeMap.default, true)
       })
     }
 
-    function setLaunchFormForType(sessionType) {
+    function setLaunchFormForType(sessionType, isReset) {
       loadContainerImages(sessionType)
-      // reload context values whether they are displayed or not
       loadContext()
-      setSessionName(sessionType)
       setFormFields(sessionType)
+
+      // Don't set the next default session name if the user
+      // appears to have changed the name, unless it has been cleared
+      var curSessionName = $('#sp_session_name').val().trim()
+      if (isReset === true || curSessionName === "" ||
+        (curSessionName === portalSessions.getDefaultSessionName(_curSessionType))) {
+          setDefaultSessionName(sessionType.trim())
+      }
+      _curSessionType = sessionType
     }
 
     function loadContainerImages(sessionType) {
@@ -674,7 +691,7 @@
       });
 
       // reload the form for default session type
-      setLaunchFormForType(_sessionTypeMap.default)
+      setLaunchFormForType(_sessionTypeMap.default, true)
     }
 
     $.extend(this, {
