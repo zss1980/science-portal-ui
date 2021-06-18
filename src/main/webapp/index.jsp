@@ -123,22 +123,6 @@
                     <div class="science-portal-form-body">
                       <form id="session_request_form" class="form-horizontal">
 
-                        <!-- Session Name -->
-                        <div class="form-group sp-form-name">
-                          <label for="sp_session_name"
-                                 class="col-sm-3 control-label"
-                                 id="sp_session_name_label">name
-                            <div id="session_name"
-                                class="sp-tooltip"
-                                data-contentkey="session_name"></div>
-                          </label>
-                          <div class="col-sm-6">
-                            <input type="text" class="form-control sp-form sp-form-input"
-                                   id="sp_session_name" name="name"
-                                   placeholder="provide session name" tabindex="1" required maxlength="15"/>
-                          </div>
-                        </div>  <!-- end form group -->
-
                         <!-- Session type list -->
                         <div class="form-group sp-form-type">
                           <label for="sp_session_type"
@@ -153,7 +137,7 @@
                           <div class="col-sm-6">
                             <select name="type" id="sp_session_type"
                                     class="form-control sp-form sp-form-input"
-                                    tabindex="2" required>
+                                    tabindex="1" required>
                               <option value="" selected disabled><em>-- loading types --</em></option>
                             </select>
                           </div>
@@ -173,12 +157,29 @@
                           <div class="col-sm-6">
                             <select name="image" id="sp_software_stack"
                                     class="form-control sp-form sp-form-input"
-                                    tabindex="3" required>
+                                    tabindex="2" required>
                               <option value="" selected disabled><em>-- loading images --</em></option>
                             </select>
                           </div>
                         </div>
 
+                        <!-- Session Name -->
+                        <div class="form-group sp-form-name">
+                          <label for="sp_session_name"
+                                 class="col-sm-3 control-label"
+                                 id="sp_session_name_label">name
+                            <div id="session_name"
+                                 class="sp-tooltip"
+                                 data-contentkey="session_name"></div>
+                          </label>
+                          <div class="col-sm-6">
+                            <input type="text" class="form-control sp-form sp-form-input"
+                                   id="sp_session_name" name="name"
+                                   placeholder="provide session name" tabindex="3" required maxlength="15"/>
+                          </div>
+                        </div>  <!-- end form group -->
+
+                        <!-- Memory for session -->
                         <div class="form-group sp-form-memory">
                           <label for="sp_memory"
                                  class="col-sm-3 control-label"
@@ -195,8 +196,9 @@
                                 <option value="" selected disabled>-- loading resource list --</option>
                               </select>
                             </div>
-                        </div>
+                        </div> <!-- end form group -->
 
+                        <!-- # of cores for session -->
                     <div class="form-group sp-form-cores">
                       <label for="sp_cores"
                              class="col-sm-3 control-label"
@@ -213,7 +215,7 @@
                           <option value="" selected disabled>-- loading resource list --</option>
                         </select>
                       </div>
-                    </div>
+                    </div> <!-- end form group -->
 
                         <!-- Buttons -->
                         <div class="form-group">
