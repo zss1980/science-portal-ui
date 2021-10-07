@@ -6,7 +6,7 @@
       },
       {
         "name": "carta",
-        "form_fields": ["name", "type", "image"]
+        "form_fields": ["name", "type", "image", "memory", "cores"]
       },
       {
         "name": "desktop",
