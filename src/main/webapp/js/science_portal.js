@@ -328,16 +328,24 @@
 
     function setFormFields(sessionType) {
       var mapEntry = getMapEntry(sessionType)
-      var formList = mapEntry.form_fields
+      if (mapEntry != null) {
+        var formList = mapEntry.form_fields
 
-      // go through full form list, and if an item in the full list
-      // is not included in type formList, then set it to hidden. otherwise show it
-      for (var j = 0; j < _launchFormFields.length; j++) {
-        if (formList.indexOf(_launchFormFields[j]) == -1) {
-          $('.sp-form-' + _launchFormFields[j]).addClass('hidden')
-        } else {
-          $('.sp-form-' + _launchFormFields[j]).removeClass('hidden')
+        // go through full form list, and if an item in the full list
+        // is not included in type formList, then set it to hidden. otherwise show it
+        for (var j = 0; j < _launchFormFields.length; j++) {
+          if (formList.indexOf(_launchFormFields[j]) == -1) {
+            $('.sp-form-' + _launchFormFields[j]).addClass('hidden')
+          } else {
+            $('.sp-form-' + _launchFormFields[j]).removeClass('hidden')
+          }
         }
+      } else {
+        // report error - the session type provided isn't configured for
+        // the version of science portal being used.
+        portalCore.setProgressBar('error')
+        portalCore.setInfoModal('Invlaid session type', 'Session type not found. '
+          + 'Reload this page to try again. ', true, false, false)
       }
 
     }
