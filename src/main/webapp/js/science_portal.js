@@ -47,6 +47,7 @@
 
     function init() {
       attachListeners()
+      loadSessionTypeMap()
 
       // add tooltips
       $('[data-toggle="tooltip"]').tooltip()
@@ -238,39 +239,49 @@
           $anchorItem.prop('href', '')
           $anchorDiv.append($anchorItem)
 
-          // Attach session data to the anchor element
+          // get display data from _sessiontype_map
+          var mapEntry = getMapEntry(this.type)
+          var $iconItem
+          $iconItem = $('<img />')
+
+          // Defaults allow new session types to be added to skaha
+          // prior to them being added to science-portal UI.
+          // Values from sessionTypeMap override defaults
+          // Use fontawesome cube as default if nothing provided in map
+          var iconClass = 'fas fa-cube sp-icon-desktop'
+
+          // session type is default label
+          var iconLabel = this.type
+
+          // Check to see if there are any items in the sessionType_map that
+          // may override the defaults
+          if (mapEntry != null) {
+            if (typeof mapEntry.portal_icon != 'undefined' ) {
+              $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/' + mapEntry.portal_icon)
+              iconClass = 'sp-icon-img'
+            }
+
+            if (typeof mapEntry.portal_fa_class != 'undefined' ){
+              // Use a fontawesome icon by applying the class name
+              iconClass = mapEntry.portal_fa_class
+            }
+
+            if (typeof mapEntry.portal_text != 'undefined' ) {
+              iconLabel = mapEntry.portal_text
+            }
+          }
+
           $anchorItem.attr('data-connecturl', this.connectURL)
           $anchorItem.attr('data-status', this.status)
           $anchorItem.attr('data-id', this.id)
           $anchorItem.attr('data-name', this.name)
           $anchorItem.prop('class', 'sp-session-connect')
 
-          var $iconItem
-          var iconClass
-          // TODO: this is the only place that session types
-          // are hard coded. Consider expanding sessiontype_map_en.json to include
-          // the img logo and icon class
-          if (this.type === 'notebook') {
-            $iconItem = $('<img />')
-            $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/jupyterLogo.jpg')
-            iconClass = 'sp-icon-img'
-          } else if (this.type === 'desktop') {
-            $iconItem = $('<i />')
-            iconClass = 'fas fa-desktop sp-icon-desktop'
-          } else if (this.type === 'carta') {
-            $iconItem = $('<img />')
-            $iconItem.prop('src', _selfPortalApp.baseURL + '/science-portal/images/cartaLogo.png')
-            iconClass = 'sp-icon-img'
-          } else {
-            // provide a default icon type
-            $iconItem = $('<i />')
-            iconClass = 'fas fa-cube sp-icon-desktop'
-          }
           $iconItem.prop('class', iconClass)
 
           var $nameItem = $('<div />')
           $nameItem.prop('class', 'sp-session-link-type')
-          $nameItem.html(this.type)
+          $nameItem.html(iconLabel)
 
           $anchorItem.append($iconItem)
           $anchorItem.append($nameItem)
@@ -295,6 +306,15 @@
       }
     }
 
+    function getMapEntry(sessionName) {
+      for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
+        if (_sessionTypeMap.session_types[i].name === sessionName) {
+          return _sessionTypeMap.session_types[i]
+        }
+      }
+      return null
+    }
+
     /**
      * This function provides a default session name that integrates
      * the number of sessions of that type. Name can be overridden by user
@@ -307,14 +327,8 @@
     }
 
     function setFormFields(sessionType) {
-      // go through _sessionTypeMap.session_types
-      var formList = []
-      for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
-        if (_sessionTypeMap.session_types[i].name === sessionType) {
-          formList = _sessionTypeMap.session_types[i].form_fields
-          break
-        }
-       }
+      var mapEntry = getMapEntry(sessionType)
+      var formList = mapEntry.form_fields
 
       // go through full form list, and if an item in the full list
       // is not included in type formList, then set it to hidden. otherwise show it
@@ -326,12 +340,6 @@
         }
       }
 
-    }
-
-    function setSelectedType(sessionType) {
-      var $selectToChange = $('#' + selectID)
-
-      // Go through options until current is found, add or remove selected attribute
     }
 
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
@@ -401,9 +409,8 @@
      * Triggered from '+' button on session list button bar
      */
     function handleAddSession() {
-      // Get supported session type list & populate dropdown (ajax)
-      // Triggers setting the launch form to defaults
-      loadTypeMap()
+      // populate the dropdown lists
+      populateForm();
 
       // Show the launch form
       showLaunchForm(true)
@@ -507,27 +514,29 @@
      * Get the a map of help text and headers from the content file
      * @private
      */
-    function loadTypeMap() {
+    function loadSessionTypeMap() {
       var contentFileURL = 'json/sessiontype_map_en.json'
 
       // Using a json input file because it's anticipated that the
       // number of sessions will increase fairly soon.
       $.getJSON(contentFileURL, function (jsonData) {
         _sessionTypeMap = jsonData
-
-        // parse out the option data
-        var tempTypeList = new Array()
-        for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
-          // each entry has id, type, digest, only 'id' is needed
-          tempTypeList.push({name: _sessionTypeMap.session_types[i].name, optionID: _sessionTypeMap.session_types[i].name})
-        }
-
-        populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
-
-        // notebook is default
-        _curSessionType = _sessionTypeMap.default;
-        setLaunchFormForType(_sessionTypeMap.default, true)
       })
+    }
+
+    function populateForm() {
+      // parse out the option data
+      var tempTypeList = new Array()
+      for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
+        // each entry has id, type, digest, only 'id' is needed
+        tempTypeList.push({name: _sessionTypeMap.session_types[i].name, optionID: _sessionTypeMap.session_types[i].name})
+      }
+
+      populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
+
+      // notebook is default
+      _curSessionType = _sessionTypeMap.default;
+      setLaunchFormForType(_sessionTypeMap.default, true)
     }
 
     function setLaunchFormForType(sessionType, isReset) {
