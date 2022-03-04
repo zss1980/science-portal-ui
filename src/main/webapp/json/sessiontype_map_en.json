@@ -2,15 +2,26 @@
   "session_types" : [
       {
         "name": "notebook",
-        "form_fields": ["name", "type", "image", "memory", "cores"]
+        "form_fields": ["name", "type", "image", "memory", "cores"],
+        "portal_icon": "jupyterLogo.jpg",
+        "portal_text": "Jupyter"
       },
       {
         "name": "carta",
-        "form_fields": ["name", "type", "image", "memory", "cores"]
+        "form_fields": ["name", "type", "image", "memory", "cores"],
+        "portal_icon": "cartaLogo.png"
       },
       {
         "name": "desktop",
-        "form_fields": ["name", "type", "image"]
+        "form_fields": ["name", "type", "image"],
+        "portal_fa_class": "fas fa-desktop sp-icon-desktop",
+        "portal_text": "desktop"
+      },
+      {
+        "name": "pluto",
+        "form_fields": ["name", "type", "image", "memory", "cores"],
+        "portal_text": "Pluto.jl",
+        "portal_icon": "plutoJL_square_logo.png"
       }
     ],
   "default" : "notebook"
