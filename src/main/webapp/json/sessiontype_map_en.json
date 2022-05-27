@@ -18,12 +18,6 @@
         "portal_icon": "cartaLogo.png"
       },
       {
-        "name": "pluto",
-        "form_fields": ["name", "type", "image", "memory", "cores"],
-        "portal_text": "Pluto.jl",
-        "portal_icon": "plutoJL_square_logo.png"
-      },
-      {
         "name": "contributed",
         "form_fields": ["name", "type", "image", "memory", "cores"],
         "portal_icon": "fas_cube.png",
