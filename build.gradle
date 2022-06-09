@@ -39,7 +39,7 @@ ext {
     intTest_user_password = 'sywymUL4'
 
     // Change this value to test other locations, such as Production or RC.
-    intTest_default_web_app_url = 'https://www-rc.canfar.net'
+    intTest_default_web_app_url = 'https://rc-www.canfar.net'
     intTest_default_web_app_endpoint = '/science-portal'
 }
 
