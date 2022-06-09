@@ -3,7 +3,7 @@
  *******************  CANADIAN ASTRONOMY DATA CENTRE  *******************
  **************  CENTRE CANADIEN DE DONNÉES ASTRONOMIQUES  **************
  *
- *  (c) 2021.                            (c) 2021.
+ *  (c) 2022.                            (c) 2022.
  *  Government of Canada                 Gouvernement du Canada
  *  National Research Council            Conseil national de recherches
  *  Ottawa, Canada, K1A 0R6              Ottawa, Canada, K1A 0R6
@@ -67,18 +67,66 @@
 
 package ca.nrc.cadc.scienceportal.integration;
 
+import ca.nrc.cadc.web.selenium.AbstractTestWebPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class SciencePortalPage extends SciencePortalAbstractPage {
+public class SciencePortalPage extends AbstractTestWebPage {
+    protected static final By SP_TITLE_BY = By.id("doi_title");
+    protected static final By SP_LOGOUT_BY = By.id("logout");
+    protected static final By SP_INFO_PANEL = By.className("alert-danger");
+    protected static final By SP_MODAL_LOGIN = By.xpath("//*[@id=\"modalloginForm\"]/div[2]/button");
+
+
+    @FindBy(className = "sp-progress-bar")
+    WebElement statusBar;
+
+    @FindBy(id = "modalUsername")
+    WebElement modalUsernameInput;
+
+    @FindBy(id = "modalPassword")
+    WebElement modalPasswordInput;
+
+    @FindBy(id = "logout")
+    WebElement logout;
+
+    @FindBy(className = "user-actions")
+    WebElement userActionDropdown;
 
     public SciencePortalPage(WebDriver driver) throws Exception {
         super(driver);
         PageFactory.initElements(driver, this);
     }
 
-    public void waitForCreateStateReady() throws Exception {
-        // TODO: may not need this page, setting it here as framework first
+    protected void pageLoadLogin() throws Exception {
+        // timing here is bad. By the time the modal is rendered, the sendKeys
+//        // can sometimes be already run (or partially run?), and for whatever reason only some of
+//        // the values get sent. :(
+//        // This first wait for seems the most stable answer to the problem...
+//
+//        waitForElementClickable(SP_MODAL_LOGIN);
+//
+//        // TODO in CADC-9211: pull username/pwd from the system environment as they
+//        // are already in the build.gradle file. -
+//        //sendKeys(modalUsernameInput,"CADCtest");
+//        //sendKeys(modalPasswordInput, "sywymUL4");
+//        modalPasswordInput.submit();
+//
+//        waitForElementNotPresent(SP_MODAL_LOGIN);
     }
+
+    protected void logout() throws Exception {
+//        waitForElementClickable(userActionDropdown);
+//        click(userActionDropdown);
+//        waitForElementPresent(SP_LOGOUT_BY);
+//        click(logout);
+    }
+
+    protected boolean isStateOkay() {
+        return statusBar.getAttribute("class").contains("progress-bar-success");
+    }
+
 }
