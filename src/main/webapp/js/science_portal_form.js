@@ -1,0 +1,316 @@
+;(function($) {
+  // register namespace
+  $.extend(true, window, {
+    cadc: {
+      web: {
+        science: {
+          portal: {
+            form: {
+              PortalForm: PortalForm,
+              // Events
+              events: {
+                onLoadFormDataDone: new jQuery.Event('sciPort:onLoadFormDataDone'),
+                onLoadFormDataError: new jQuery.Event('sciPort:onLoadFormDataError'),
+                onLoadImageDataDone: new jQuery.Event('sciPort:onLoadImageDataDone'),
+                onLoadImageDataError: new jQuery.Event('sciPort:onLoadImageDataError'),
+                onLoadContextDataDone: new jQuery.Event('sciPort:onLoadContextDataDone'),
+                onLoadContextDataError: new jQuery.Event('sciPort:onLoadContextDataError'),
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+
+
+  /**
+   * Class for handling data and interaction with Skaha for launching sessions
+   * @constructor
+   */
+  function PortalForm() {
+    var _selfPortalForm = this
+
+
+    //images: [
+    //  { type: <type>,
+    //  imageListRaw: {
+    //
+    //  },
+    //  imageNameArray: [name, name,...]
+    //  }
+    //},...
+    //]
+    //context: {
+    //  <as it comes from skaha>
+    //}
+
+
+    this._imageData = new Array()
+    this._contextData = {}
+    this._sessionTypeList = null
+    this._sessionTypeMap = {}
+
+    // Used to determine when all the data is collected from the form
+    // 1 - call for context informtaion
+    // 2 - n: for calls to get image lists for each type
+    this._ajaxCallCount = 0
+
+    // Values in this object will come from PortalCore
+    this.sessionURLs = {}
+
+    function setServiceURLs(URLObject) {
+      // More than one endpoint is pulled from URLObject
+      // so store entire thing
+      _selfPortalForm.sessionURLs = URLObject
+    }
+
+    // ------ Session type functions
+    function getSessionTypeList() {
+      return _selfPortalForm._sessionTypeList
+    }
+
+    // -- init form data gather functions
+    function getFormData() {
+
+      // Build session type list
+      var tempTypeList = new Array()
+      for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
+        // each entry has id, type, digest, only 'id' is needed
+        tempTypeList.push( _selfPortalForm._sessionTypeMap.session_types[i].name)
+      }
+      _selfPortalForm._sessionTypeList = tempTypeList
+
+      // Set up counter for ajax calls used to load page data
+      // 1 = call for contexts
+      _selfPortalForm._ajaxCallCount = 1 + _selfPortalForm._sessionTypeMap.session_types.length;
+
+      // Start loading context data
+      _selfPortalForm.getContextData()
+
+      // Start loading container image lists
+      _selfPortalForm.getImageData()
+    }
+
+
+    //----------- sessionTypeMap functions
+
+    /**
+     * Get the a map of help text and headers from the content file
+     */
+    function loadSessionTypeMap() {
+      var contentFileURL = 'json/sessiontype_map_en.json'
+
+      // Using a json input file because it's anticipated that the
+      // number of sessions will increase fairly soon.
+      $.getJSON(contentFileURL, function (jsonData) {
+        _selfPortalForm._sessionTypeMap = jsonData
+      })
+      // TODO: is default even used?
+      _selfPortalForm._sessionTypeMap.default = 'notebook'
+    }
+
+    function getSessionTypeDefault() {
+      return _selfPortalForm._sessionTypeMap.default
+    }
+
+    function getMapEntry(sessionName) {
+      for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
+        if (_selfPortalForm._sessionTypeMap.session_types[i].name === sessionName) {
+          return _selfPortalForm._sessionTypeMap.session_types[i]
+        }
+      }
+      return null
+    }
+
+
+    // --------------- Image list functions
+
+    function getImageData() {
+
+      for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
+        var curTypename = _selfPortalForm._sessionTypeMap.session_types[i].name
+
+        // This needs to be done by type, and the type need to be
+        // pushed through to the 'then' so the right
+        // values are populated in the image object
+        var curTypeURL = _selfPortalForm.sessionURLs.images + '?type=' + curTypename
+
+        // Do this so each call has it's own curTypeURL
+        // If the Promise is in this same function, the timing of the ajax
+        // calls is such that curTypeURL is the same for all lists so
+        // there's no effective lookup.
+        _getImageDataForType(curTypeURL, curTypename)
+
+        //Promise.resolve(_getAjaxData(curTypeURL))
+        //  .then(function (imageList) {
+        //
+        //    _selfPortalForm._ajaxCallCount--
+        //    _selfPortalForm._imageData.push({
+        //      "name": curTypename,
+        //      "imageList": imageList
+        //    })
+        //
+        //    if (_selfPortalForm._ajaxCallCount === 0) {
+        //      trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+        //    }
+        //
+        //  })
+        //  .catch(function (message) {
+        //    trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadImageDataError, message)
+        //  })
+      }
+
+    }
+
+    function _getImageDataForType(callURL, sessionType ){
+      Promise.resolve(_getAjaxData(callURL))
+        .then(function (imageList) {
+
+          var imageIDList = new Array()
+          for (var i = 0; i < imageList.length; i++) {
+                imageIDList.push(imageList[i].id)
+          }
+
+          _selfPortalForm._ajaxCallCount--
+          _selfPortalForm._imageData.push({
+            "sessionType": sessionType,
+            "imageList": imageList,
+            "imageIDList": imageIDList
+          })
+
+          if (_selfPortalForm._ajaxCallCount === 0) {
+            trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+          }
+
+        })
+        .catch(function (message) {
+          trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadImageDataError, message)
+        })
+    }
+
+    // Q: is the full session data being passed in or just the type?
+    //function getImageListForSessionType(sessionData) {
+    //  return getImageListForType(sessionData.name)
+    //}
+
+
+    // TODO: is it better to use a map for the type to imageIDList? Would be faster
+    // to get the info
+    function getImageListForType(sessionType) {
+      // return what it's asking for, in an array of IDs.
+      var imageList = null
+      for (var i = 0; i < _selfPortalForm._imageData.length; i++) {
+        if (_selfPortalForm._imageData[i].sessionType === sessionType) {
+          imageList = _selfPortalForm._imageData[i].imageIDList
+        }
+      }
+      return imageList
+    }
+
+
+    // ---------- Context Data functions ----------
+
+    function getRAMArray() {
+      return _selfPortalForm._contextData.availableRAM
+    }
+
+    function getCoresArray() {
+      return _selfPortalForm._contextData.availableCores
+    }
+
+    /**
+     * Get context information from skaha
+     */
+    function getContextData() {
+      Promise.resolve(_getAjaxData(_selfPortalForm.sessionURLs.context))
+        .then(function(curContext) {
+          // Not everything sent from the server is used by the front end yet.
+          // In future, the data can be stored as
+          // _selfPortalForm._contextData.rawData, but it'd be a waste of storage
+          // to do it currently.
+          // Save items that are used by the front end
+          _selfPortalForm._contextData.availableCores = curContext.availableCores
+          _selfPortalForm._contextData.availableRAM = curContext.availableRAM
+
+          _selfPortalForm._ajaxCallCount--
+          if (_selfPortalForm._ajaxCallCount === 0) {
+            trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+          }
+        })
+        .catch(function(message) {
+          trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadContextDataError, message)
+        })
+    }
+
+    function _getAjaxData(serviceURL) {
+      return new Promise(function (resolve, reject) {
+        var request = new XMLHttpRequest()
+
+        // 'load' is the XMLHttpRequest 'finished' event
+        request.addEventListener(
+          'load',
+          function () {
+            if (request.status === 200) {
+              var jsonData = parseJSONStr(request.responseText)
+              resolve(jsonData)
+            } else {
+              reject(request)
+            }
+          },
+          false
+        )
+        // withCredentials enables cookies to be sent
+        // Note: SameSite cookie header isn't set with this method,
+        // may cause problems with Chrome and other browsers? Feb 2021
+        request.withCredentials = true
+        request.open('GET', serviceURL)
+        request.send(null)
+      })
+    }
+
+    // ---------- Common functions ----------
+
+    function parseJSONStr(data) {
+      var parsedStr = ''
+      if (data.length > 0) {
+        var escapedStr = '';
+        // This will escape any single backslashes so the JSON.parse passes.
+        // Mostly to capture elements like \msun, etc.
+        // Could definitely be more bomb-proof than it is, but it's a start
+        // to capture known issues with titles and author names
+        if (data.indexOf("\"") > 0) {
+          escapedStr = (data + '').replace(/[\\]/g, '\\$&').replace(/\u0000/g, '\\0')
+        } else {
+          escapedStr = data
+        }
+
+        parsedStr = JSON.parse(escapedStr)
+      }
+      return parsedStr
+    }
+
+
+      // ---------- Event Handling Functions ----------
+
+      function trigger(target, event, eventData) {
+        $(target).trigger(event, eventData)
+      }
+
+      // ----------- Declare functions --------
+      $.extend(this, {
+        getContextData: getContextData,
+        getRAMArray: getRAMArray,
+        getCoresArray: getCoresArray,
+        getImageData: getImageData,
+        getImageListForType: getImageListForType,
+        getSessionTypeDefault: getSessionTypeDefault,
+        getSessionTypeList: getSessionTypeList,
+        getMapEntry: getMapEntry,
+        getFormData: getFormData,
+        loadSessionTypeMap: loadSessionTypeMap,
+        setServiceURLs: setServiceURLs,
+      })
+    }
+
+})(jQuery)
