@@ -18,7 +18,10 @@
   })
 
   /**
-   * Controller for Science Portal Launch UI.
+   * Controller for Science Portal UI. Contains event management backbone for the form, session list
+   * and error handling. Behaviour of page is controlled from here, including showing and hiding
+   * various page elements which are included in the index.jsp file for the project.
+   * Individual session list items are built dynamically within this code.
    *
    * @constructor
    * @param {{}} inputs   Input configuration.
@@ -32,13 +35,15 @@
   function PortalApp(inputs) {
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
+    var portalForm = new cadc.web.science.portal.form.PortalForm(inputs)
     var _selfPortalApp = this
     this.baseURL = inputs.baseURL
     this.isPolling = false
 
     // Used for populating type dropdown and displaying appropriate form fields
     // per session type
-    var _sessionTypeMap
+    //var _sessionTypeMap
+
     // Complete list of form fields available
     var _launchFormFields = ['name', 'type', 'image', 'memory', 'cores']
     var _curSessionType
@@ -47,13 +52,15 @@
 
     function init() {
       attachListeners()
-      loadSessionTypeMap()
+      // loads from session_type_map_en.json. No known timing issues
+      portalForm.loadSessionTypeMap()
 
       // add tooltips
       $('[data-toggle="tooltip"]').tooltip()
       
       // Nothing happens if user is not authenticated, so no other page
       // load information is done until this call comes back (see onAuthenticated event below)
+      // onAuthenticated event triggered if everything is oK.
       portalCore.checkAuthentication()
     }
 
@@ -84,14 +91,20 @@
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
         // Contacts the registry to discover where the sessions web service is,
-        // builds endpoints used in launch app
+        // builds endpoints used to manage sessions, get session, context, image lists, etc.
         portalCore.init()
       })
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onServiceURLOK, function (e, data) {
         // This will forward to an existing session if it exists
         // Enforces 'one session per user' rule
-        portalSessions.setServiceURLs(portalCore.sessionServiceURL)
+        portalSessions.setServiceURLs(portalCore.sessionServiceURLs)
+        portalForm.setServiceURLs(portalCore.sessionServiceURLs)
+
+        // Get portalForm to start collecting form data
+        portalForm.getFormData()
+
+        // Start loading session lists
         checkForSessions()
       })
 
@@ -108,7 +121,9 @@
         portalCore.setProgressBar("okay")
         portalCore.hideInfoModal(true)
 
-        if ( _selfPortalApp.isPolling === false) {
+        if (( _selfPortalApp.isPolling === false)
+          && (portalSessions.isAllSessionsStable() === false) ){
+
           // Flag polling is occurring so only one instance is running at a time.
           // Any changes in session list will be picked up by the single polling instance
           _selfPortalApp.isPolling == true
@@ -129,8 +144,8 @@
 
           _selfPortalApp.isPolling = false
         }
-
       })
+
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, function (e, request){
         // This should be triggered if the user doesn't have access to Skaha resources, as well as
@@ -161,7 +176,30 @@
         checkForSessions()
       })
 
+
+      // TODO: make sure this works somehow - try triggering it in
+      // a situation where the context call works?
+      // If this method does work, change the sesion list error to use it as well
+      // This should only happen once during a page load
+      portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadFormDataDone, initForm)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.form.events.onLoadContextDataError, handleServiceError)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.form.events.onLoadImageDataError, handleServiceError)
+
     } // end attachListeners()
+
+
+    function handleServiceError(e, request) {
+      // This should be triggered if the user doesn't have access to Skaha resources, as well as
+      // other error conditions. Without access to Skaha, the user should be blocked from using the page,
+      // but be directed to some place they can ask for what they need (a resource allocation.)
+
+      if (request.status == 403) {
+        portalCore.setInfoModal('Skaha authorization issue', portalCore.getRcDisplayText(request), true, false, false)
+      } else {
+        // There some other problem contacting the session service. Report the error
+        portalCore.setAjaxFail(request)
+      }
+    }
 
     // ------------ Data display functions
 
@@ -240,7 +278,7 @@
           $anchorDiv.append($anchorItem)
 
           // get display data from _sessiontype_map
-          var mapEntry = getMapEntry(this.type)
+          var mapEntry = portalForm.getMapEntry(this.type)
           var $iconItem
           $iconItem = $('<img />')
 
@@ -306,15 +344,6 @@
       }
     }
 
-    function getMapEntry(sessionName) {
-      for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
-        if (_sessionTypeMap.session_types[i].name === sessionName) {
-          return _sessionTypeMap.session_types[i]
-        }
-      }
-      return null
-    }
-
     /**
      * This function provides a default session name that integrates
      * the number of sessions of that type. Name can be overridden by user
@@ -327,7 +356,7 @@
     }
 
     function setFormFields(sessionType) {
-      var mapEntry = getMapEntry(sessionType)
+      var mapEntry = portalForm.getMapEntry(sessionType)
       if (mapEntry != null) {
         var formList = mapEntry.form_fields
 
@@ -362,15 +391,16 @@
       }
 
       // Build new list
-      $(optionData).each(function () {
+      for (i=0; i<optionData.length; i++) {
+        var curOption = optionData[i]
         var option = $('<option />')
-        option.val(this.optionID)
-        if (this.optionID == defaultOptionID ) {
+        option.val(curOption)
+        if (curOption === defaultOptionID ) {
           option.prop('selected', true)
         }
-        option.html(this.name)
+        option.html(curOption)
         $selectToAugment.append(option)
-      });
+      }
     }
 
 
@@ -417,11 +447,16 @@
      * Triggered from '+' button on session list button bar
      */
     function handleAddSession() {
+      // TODO: this might not be needed
       // populate the dropdown lists
-      populateForm();
+      //populateForm();
 
       // Show the launch form
       showLaunchForm(true)
+    }
+
+    function showHideLaunchButton() {
+      $('.sp-add-session').click(handleAddSession)
     }
 
     /**
@@ -463,7 +498,7 @@
       var formData = gatherFormData()
 
       portalCore.setInfoModal('Requesting Session', 'Requesting new session', false, true, true)
-      Promise.resolve(postSessionRequestAjax(portalCore.sessionServiceURL.session, formData))
+      Promise.resolve(postSessionRequestAjax(portalCore.sessionServiceURLs.session, formData))
         .then(function(sessionInfo) {
           portalCore.setProgressBar('okay')
           portalCore.hideInfoModal(true)
@@ -518,38 +553,44 @@
     // ---------------- GETs ----------------
     // ------- Dropdown Ajax functions
 
-    /**
-     * Get the a map of help text and headers from the content file
-     * @private
-     */
-    function loadSessionTypeMap() {
-      var contentFileURL = 'json/sessiontype_map_en.json'
 
-      // Using a json input file because it's anticipated that the
-      // number of sessions will increase fairly soon.
-      $.getJSON(contentFileURL, function (jsonData) {
-        _sessionTypeMap = jsonData
-      })
-    }
-
-    function populateForm() {
-      // parse out the option data
-      var tempTypeList = new Array()
-      for (var i = 0; i < _sessionTypeMap.session_types.length; i++) {
-        // each entry has id, type, digest, only 'id' is needed
-        tempTypeList.push({name: _sessionTypeMap.session_types[i].name, optionID: _sessionTypeMap.session_types[i].name})
-      }
-
-      populateSelect('sp_session_type', tempTypeList, 'select type',_sessionTypeMap.default)
+    // This can only happen after the portalForm has grabbed all the data
+    function initForm() {
 
       // notebook is default
-      _curSessionType = _sessionTypeMap.default;
-      setLaunchFormForType(_sessionTypeMap.default, true)
+      _curSessionType = portalForm.getSessionTypeDefault();
+
+      // put values into the 'type' dropdown on the launch form
+      // This part of the form will not change throughout the session
+      populateSelect('sp_session_type', portalForm.getSessionTypeList(), 'select type', _curSessionType)
+
+      // For now the RAM and # or cores selections do not change, other than their display
+      var ramList = portalForm.getRAMArray()
+      populateSelect('sp_memory', ramList, 'select RAM', ramList[0])
+
+      var coresList = portalForm.getCoresArray()
+      populateSelect('sp_cores', coresList, "select # cores", coresList[0])
+
+      // Set the parts of the launch form that may change per type selection
+      setLaunchFormForType(_curSessionType, true)
+
+      // Enable the Launch button
+      $('.sp-add-session').removeAttr('disabled')
+      $('.sp-add-session').removeClass('sp-button-disable')
     }
 
     function setLaunchFormForType(sessionType, isReset) {
-      loadContainerImages(sessionType)
-      loadContext()
+      // TODO: these functions will still be called, but will
+      // need to get the appropriate values from the PortalForm object.
+      //loadContainerImages(sessionType)
+      // the getImageListForType() function will return an array
+      // of IDs only.
+      //loadContainerImages(portalForm.getImageListForType(sessionType))
+
+      var tempImageList = portalForm.getImageListForType(sessionType)
+      populateSelect('sp_software_stack', tempImageList, 'select stack', tempImageList[0])
+
+      // Display or hide form fields as needed by the session type (ie RAM or cores...)
       setFormFields(sessionType)
 
       // Don't set the next default session name if the user
@@ -562,137 +603,16 @@
       _curSessionType = sessionType
     }
 
-    function loadContainerImages(sessionType) {
-      portalCore.setInfoModal('Loading Container Images', 'Getting container list', false, true, true)
-      portalCore.clearAjaxAlert()
-      portalCore.setProgressBar('busy')
-
-      Promise.resolve(getImageListAjax(portalCore.sessionServiceURL.images + '?type=' + sessionType, {}))
-        .then(function(imageList) {
-          portalCore.hideInfoModal(true)
-          portalCore.setProgressBar('okay')
-
-          if (imageList.length > 0) {
-
-            var cores = imageList.availableCores
-            var tempImageList = new Array()
-            for (var i = 0; i < imageList.length; i++) {
-              // each entry has id, type, digest, only 'id' is needed
-              tempImageList.push({name: imageList[i].id, optionID: imageList[i].id})
-            }
-            // Make the first entry be default until something else is decided
-            populateSelect('sp_software_stack', tempImageList, 'select stack', tempImageList[0].name)
-          } else {
-            portalCore.setInfoModal('No Images found','No public container images found for your username.',
-              true, false, false)
-          }
-
-        })
-        .catch(function(message) {
-          var msgStr =  portalCore.getRcDisplayTextPlusCode(message)
-          portalCore.setProgressBar('error')
-          portalCore.setInfoModal('Problem loading container images', 'Problem loading container image list. '
-            + 'Try to reset the form to reload. ' + msgStr, true, false, false)
-        })
-    }
-
-    function getImageListAjax(serviceURL, sessionData) {
-      return new Promise(function (resolve, reject) {
-        var request = new XMLHttpRequest()
-
-        // 'load' is the XMLHttpRequest 'finished' event
-        request.addEventListener(
-          'load',
-          function () {
-            if (request.status === 200) {
-              var jsonData = portalCore.parseJSONStr(request.responseText)
-              resolve(jsonData)
-            } else {
-              reject(request)
-            }
-          },
-          false
-        )
-        // withCredentials enables cookies to be sent
-        // Note: SameSite cookie header isn't set with this method,
-        // may cause problems with Chrome and other browsers? Feb 2021
-        request.withCredentials = true
-        request.open('GET', serviceURL)
-        request.send(null)
-      })
-    }
-
-    function loadContext() {
-      // go to /context endpoint and then populate the sp_cores and sp_memory dropdowns
-      portalCore.setInfoModal('Loading Context Resources', 'Getting current context resources',
-        false, true, true)
-
-      portalCore.clearAjaxAlert()
-      portalCore.setProgressBar('busy')
-
-      var tmpServiceURL = portalCore.sessionServiceURL.context
-
-      Promise.resolve(getCurrentContextAjax(tmpServiceURL, {}))
-        .then(function(curContext) {
-          portalCore.hideInfoModal(true)
-          portalCore.setProgressBar('okay')
-
-          var cores = curContext.availableCores
-          var tempCoresSelectData = new Array()
-          for (var i=0; i< cores.length; i++) {
-            tempCoresSelectData.push({name: cores[i], optionID: cores[i]})
-          }
-          populateSelect('sp_cores', tempCoresSelectData, 'select # cores', curContext.defaultCores)
-
-          var memory = curContext.availableRAM
-          var tempMemorySelectData = new Array()
-          for (var i=0; i< memory.length; i++) {
-            tempMemorySelectData.push({name: memory[i], optionID: memory[i]})
-          }
-          populateSelect('sp_memory', tempMemorySelectData, 'select RAM', curContext.defaultRAM)
-        })
-        .catch(function(message) {
-          portalCore.setInfoModal('Problem Loading Context', 'Problem loading server context resources. '
-            + 'Reload page to try again.', true, false, false)
-          portalCore.handleAjaxError(message)
-        })
-    }
-
-    function getCurrentContextAjax(serviceURL, sessionData) {
-      return new Promise(function (resolve, reject) {
-        var request = new XMLHttpRequest()
-
-        // 'load' is the XMLHttpRequest 'finished' event
-        request.addEventListener(
-          'load',
-          function () {
-            if (request.status === 200) {
-              var jsonData = portalCore.parseJSONStr(request.responseText)
-              resolve(jsonData)
-            } else {
-              reject(request)
-            }
-          },
-          false
-        )
-        // withCredentials enables cookies to be sent
-        // Note: SameSite cookie header isn't set with this method,
-        // may cause problems with Chrome and other browsers? Feb 2021
-        request.withCredentials = true
-        request.open('GET', serviceURL)
-        request.send(null)
-      }) // end Promise
-    }
-
     function handleResetFormState(event) {
       event.preventDefault()
       // Clear messages
       portalCore.clearAjaxAlert()
       portalCore.setProgressBar('okay')
+      var sessionTypeDefault = portalForm.getSessionTypeDefault()
 
       // set selected back to session type default
       $("#sp_session_type option").each(function() {
-        if ($(this).val() == _sessionTypeMap.default) {
+        if ($(this).val() === sessionTypeDefault) {
           $(this).attr('selected','selected')
         } else {
           $(this).removeAttr('selected')
@@ -700,7 +620,7 @@
       });
 
       // reload the form for default session type
-      setLaunchFormForType(_sessionTypeMap.default, true)
+      setLaunchFormForType(sessionTypeDefault, true)
     }
 
     $.extend(this, {

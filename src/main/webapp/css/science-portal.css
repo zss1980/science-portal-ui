@@ -324,6 +324,14 @@ button.sp-session-delete {
   font-style: italic;
 }
 
+.sp-button-disable {
+  opacity: 20%;
+}
+
+.sp-button-disable:hover {
+  cursor:not-allowed
+}
+
 .sp-session-anchor {
   padding-top: 15px;
 }
