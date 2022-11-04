@@ -1,6 +1,6 @@
 # CANFAR Science Portal
-### V 2.0
-##### April 2021
+### V 2.2
+##### Nov 4 2022
 
 UI for accessing and managing Jupyter notebook, carta or desktop sessions that back onto CANFAR resources. 
 
