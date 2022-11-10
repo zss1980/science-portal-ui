@@ -92,7 +92,7 @@
                   </div>
                 <div class="sp-button-bar sp-b-tooltip">
                   <%-- session action button bar --%>
-                  <button class="sp-button-bar-button sp-add-session fa fa-plus" data-toggle="tooltip" title="launch session"></button>
+                  <button class="sp-button-bar-button sp-add-session sp-button-disable fa fa-plus" data-toggle="tooltip" title="launch session" disabled></button>
                   <button class="sp-button-bar-button sp-session-reload fa fa-redo" data-toggle="tooltip" title="reload session list"></button>
                 </div>
 
@@ -291,6 +291,7 @@
     <script type="application/javascript" src="<c:out value=" ${baseURL}/canfar/javascript/cadc.progressbar.js" />"></script>
     <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_core.js" />"></script>
     <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_session.js" />"></script>
+    <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal_form.js" />"></script>
     <script type="application/javascript" src="<c:out value=" ${baseURL}/science-portal/js/science_portal.js" />"></script>
 
     <script type="application/javascript">

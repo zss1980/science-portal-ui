@@ -74,7 +74,7 @@
     function init() {
       _progressBar.init()
       _listProgressBar.init()
-      setSessionServiceURL()
+      setSessionServiceURLs()
     }
 
     // ------------ Page state management functions ------------
@@ -142,13 +142,13 @@
 
     // ------ Set up web service URLs ------
 
-    function setSessionServiceURL() {
+    function setSessionServiceURLs() {
       setInfoModal('Loading Page Resources', 'Locating session web service.', false, true, true)
       Promise.resolve(prepareRegistry())
         .then(function(serviceURL) {
             if (typeof serviceURL != 'undefined') {
 
-              _selfPortalCore.sessionServiceURL = {
+              _selfPortalCore.sessionServiceURLs = {
                 'base': serviceURL,
                 'session': serviceURL + '/session',
                 'context': serviceURL + '/context',
@@ -307,6 +307,9 @@
 
     // #auth_modal is in /canfar/includes/_application_header.shtml
     function setNotAuthenticated() {
+      // hide existing modal
+      hideInfoModal(true)
+
       $('#auth_modal').modal({
         backdrop: 'static',
         keyboard: false
@@ -336,29 +339,10 @@
       $('.modal-backdrop').remove()
     }
 
-    function parseJSONStr(data) {
-      var parsedStr = ''
-      if (data.length > 0) {
-        var escapedStr = '';
-        // This will escape any single backslashes so the JSON.parse passes.
-        // Mostly to capture elements like \msun, etc.
-        // Could definitely be more bomb-proof than it is, but it's a start
-        // to capture known issues with titles and author names
-        if (data.indexOf("\"") > 0) {
-          escapedStr = (data + '').replace(/[\\]/g, '\\$&').replace(/\u0000/g, '\\0')
-        } else {
-          escapedStr = data
-        }
-
-        parsedStr = JSON.parse(escapedStr)
-      }
-      return parsedStr
-    }
-
     $.extend(this, {
       init: init,
       prepareRegistry: prepareRegistry,
-      setSessionServiceURL: setSessionServiceURL,
+      setSessionServiceURLs: setSessionServiceURLs,
       setAjaxSuccess: setAjaxSuccess,
       setAjaxFail: setAjaxFail,
       handleAjaxError: handleAjaxError,
@@ -374,7 +358,6 @@
       hideModals: hideModals,
       getRcDisplayText: getRcDisplayText,
       getRcDisplayTextPlusCode: getRcDisplayTextPlusCode,
-      parseJSONStr: parseJSONStr,
     })
   }
 

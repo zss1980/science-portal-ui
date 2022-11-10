@@ -31,23 +31,33 @@
     var _selfPortalSess = this
     var _isEmpty = true
     this._sessionList = {}
+    this._filteredSessionList = {}
     this.sessionURLs = {}
 
     function setServiceURLs(URLObject) {
-      _selfPortalSess.sessionURLs = URLObject
+      _selfPortalSess.sessionServiceURL = URLObject.session
     }
 
-    function initSessionList() {
+    function initSessionLists() {
       _isEmpty = true
       _selfPortalSess._sessionList = {}
+      _selfPortalSess._filteredSessionList = {}
     }
 
     function getSessionList() {
       if (_selfPortalSess._sessionList === {}) {
-        initSessionList()
+        initSessionLists()
       }
       return _selfPortalSess._sessionList
     }
+
+    function getFilteredSessionList() {
+      if (_selfPortalSess._filteredSessionList === {}) {
+        initSessionLists()
+      }
+      return _selfPortalSess._filteredSessionList
+    }
+
 
     function getSessionByID(sessionID) {
       var session = null
@@ -142,6 +152,20 @@
       }
     }
 
+    // TODO: have a 'setFilteredSessionList(filterOutList, filterInList) {}
+
+    function setFilteredSessionList(filterOutList) {
+      if (sessionList.length > 0) {
+        // TODO: consider what session types are filtered out by default
+        _selfPortalSess._sessionList = sessionList
+        _selfPortalSess._isEmpty = false
+      } else {
+        _selfPortalSess._filteredSessionList = {}
+        _selfPortalSess._isEmpty = true
+      }
+
+    }
+
     function isSessionListEmpty() {
       return _selfPortalSess._isEmpty
     }
@@ -150,7 +174,7 @@
      * Run this on page load to see if there's something to start up.
     */
     function loadSessionList() {
-      Promise.resolve(getSessionListAjax(_selfPortalSess.sessionURLs.session, {}))
+      Promise.resolve(getSessionListAjax(_selfPortalSess.sessionServiceURL, {}))
         .then(function(sessionList) {
 
           setSessionList(sessionList)
@@ -191,7 +215,7 @@
     }
 
     function deleteSession(sessionID) {
-      Promise.resolve(deleteSessionAjax(_selfPortalSess.sessionURLs.session + "/" + sessionID, sessionID))
+      Promise.resolve(deleteSessionAjax(_selfPortalSess.sessionServiceURL + "/" + sessionID, sessionID))
         .then(function(sessionID) {
           trigger(_selfPortalSess, cadc.web.science.portal.session.events.onSessionDeleteOK, sessionID)
         })
@@ -232,7 +256,7 @@
         interval = interval || 200
 
         var checkCondition = function (resolve, reject) {
-          getSessionListAjax(_selfPortalSess.sessionURLs.session)
+          getSessionListAjax(_selfPortalSess.sessionServiceURL)
             .then(function (sessionList) {
               _selfPortalSess.setSessionList(sessionList)
               if (_selfPortalSess.isAllSessionsStable()) {
@@ -267,15 +291,16 @@
     }
 
 
-    initSessionList()
+    initSessionLists()
 
       $.extend(this, {
         setServiceURLs: setServiceURLs,
-        initSessionList: initSessionList,
+        initSessionLists: initSessionLists,
         getDefaultSessionName: getDefaultSessionName,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
         getSessionList: getSessionList,
+        getFilteredSessionList: getFilteredSessionList,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
         isAllSessionsStable: isAllSessionsStable,
