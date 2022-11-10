@@ -60,9 +60,10 @@
       
       // Nothing happens if user is not authenticated, so no other page
       // load information is done until this call comes back (see onAuthenticated event below)
-      // onAuthenticated event triggered if everything is oK.
-
-      portalCore.setInfoModal('Authenticating', 'Validating authentication credentials',
+      // onAuthenticated event triggered if everything is OK.
+      // Put this up because the authentication step can be a bit tardy, otherwise
+      // it looks like the portal isn't doing anything.
+      portalCore.setInfoModal('Initialising', 'Validating credentials',
         false, true, true)
       portalCore.checkAuthentication()
     }

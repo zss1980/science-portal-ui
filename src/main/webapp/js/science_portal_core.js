@@ -307,6 +307,9 @@
 
     // #auth_modal is in /canfar/includes/_application_header.shtml
     function setNotAuthenticated() {
+      // hide existing modal
+      hideInfoModal(true)
+
       $('#auth_modal').modal({
         backdrop: 'static',
         keyboard: false
