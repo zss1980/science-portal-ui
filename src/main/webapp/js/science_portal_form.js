@@ -31,21 +31,6 @@
   function PortalForm() {
     var _selfPortalForm = this
 
-
-    //images: [
-    //  { type: <type>,
-    //  imageListRaw: {
-    //
-    //  },
-    //  imageNameArray: [name, name,...]
-    //  }
-    //},...
-    //]
-    //context: {
-    //  <as it comes from skaha>
-    //}
-
-
     this._imageData = new Array()
     this._contextData = {}
     this._sessionTypeList = null
@@ -106,7 +91,7 @@
       $.getJSON(contentFileURL, function (jsonData) {
         _selfPortalForm._sessionTypeMap = jsonData
       })
-      // TODO: is default even used?
+      // Used to reset launch form
       _selfPortalForm._sessionTypeMap.default = 'notebook'
     }
 
@@ -141,46 +126,29 @@
         // calls is such that curTypeURL is the same for all lists so
         // there's no effective lookup.
         _getImageDataForType(curTypeURL, curTypename)
-
-        //Promise.resolve(_getAjaxData(curTypeURL))
-        //  .then(function (imageList) {
-        //
-        //    _selfPortalForm._ajaxCallCount--
-        //    _selfPortalForm._imageData.push({
-        //      "name": curTypename,
-        //      "imageList": imageList
-        //    })
-        //
-        //    if (_selfPortalForm._ajaxCallCount === 0) {
-        //      trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
-        //    }
-        //
-        //  })
-        //  .catch(function (message) {
-        //    trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadImageDataError, message)
-        //  })
       }
-
     }
 
     function _getImageDataForType(callURL, sessionType ){
       Promise.resolve(_getAjaxData(callURL))
         .then(function (imageList) {
 
-          var imageIDList = new Array()
-          for (var i = 0; i < imageList.length; i++) {
-                imageIDList.push(imageList[i].id)
-          }
+          if (_selfPortalForm._ajaxCallCount !== -9) {
+            var imageIDList = new Array()
+            for (var i = 0; i < imageList.length; i++) {
+              imageIDList.push(imageList[i].id)
+            }
 
-          _selfPortalForm._ajaxCallCount--
-          _selfPortalForm._imageData.push({
-            "sessionType": sessionType,
-            "imageList": imageList,
-            "imageIDList": imageIDList
-          })
+            _selfPortalForm._ajaxCallCount--
+            _selfPortalForm._imageData.push({
+              "sessionType": sessionType,
+              "imageList": imageList,
+              "imageIDList": imageIDList
+            })
 
-          if (_selfPortalForm._ajaxCallCount === 0) {
-            trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+            if (_selfPortalForm._ajaxCallCount === 0) {
+              trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+            }
           }
 
         })
@@ -195,8 +163,6 @@
     //}
 
 
-    // TODO: is it better to use a map for the type to imageIDList? Would be faster
-    // to get the info
     function getImageListForType(sessionType) {
       // return what it's asking for, in an array of IDs.
       var imageList = null
@@ -215,8 +181,26 @@
       return _selfPortalForm._contextData.availableRAM
     }
 
+    function getRAMDefault() {
+      // Convert value to string. (The + "" will do just that.
+      // They will come out of curContext as numbers that can't be compared sanely
+      return _selfPortalForm._contextData.defaultRAM + ""
+    }
+
     function getCoresArray() {
       return _selfPortalForm._contextData.availableCores
+    }
+
+    function getCoresDefault() {
+      // Convert  value to string. (The + "" will do just that.
+      // They will come out of curContext as numbers that can't be compared sanely
+      return _selfPortalForm._contextData.defaultCores + ""
+    }
+
+
+    function interruptAjaxProcessing() {
+      // Yes, basically a 'kill -9'
+      _selfPortalForm._ajaxCallCount = -9
     }
 
     /**
@@ -225,17 +209,23 @@
     function getContextData() {
       Promise.resolve(_getAjaxData(_selfPortalForm.sessionURLs.context))
         .then(function(curContext) {
-          // Not everything sent from the server is used by the front end yet.
-          // In future, the data can be stored as
-          // _selfPortalForm._contextData.rawData, but it'd be a waste of storage
-          // to do it currently.
-          // Save items that are used by the front end
-          _selfPortalForm._contextData.availableCores = curContext.availableCores
-          _selfPortalForm._contextData.availableRAM = curContext.availableRAM
+          // Check to see if functions have been interrupted
+          if (_selfPortalForm._ajaxCallCount !== -9) {
 
-          _selfPortalForm._ajaxCallCount--
-          if (_selfPortalForm._ajaxCallCount === 0) {
-            trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+            // Not everything sent from the server is used by the front end yet.
+            // In future, the data can be stored as
+            // _selfPortalForm._contextData.rawData, but it'd be a waste of storage
+            // to do it currently.
+            // Save items that are used by the front end
+            _selfPortalForm._contextData.availableCores = curContext.availableCores
+            _selfPortalForm._contextData.availableRAM = curContext.availableRAM
+            _selfPortalForm._contextData.defaultCores = curContext.defaultCores
+            _selfPortalForm._contextData.defaultRAM = curContext.defaultRAM
+
+            _selfPortalForm._ajaxCallCount--
+            if (_selfPortalForm._ajaxCallCount === 0) {
+              trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+            }
           }
         })
         .catch(function(message) {
@@ -301,13 +291,16 @@
       $.extend(this, {
         getContextData: getContextData,
         getRAMArray: getRAMArray,
+        getRAMDefault: getRAMDefault,
         getCoresArray: getCoresArray,
+        getCoresDefault: getCoresDefault,
         getImageData: getImageData,
         getImageListForType: getImageListForType,
         getSessionTypeDefault: getSessionTypeDefault,
         getSessionTypeList: getSessionTypeList,
         getMapEntry: getMapEntry,
         getFormData: getFormData,
+        interruptAjaxProcessing: interruptAjaxProcessing,
         loadSessionTypeMap: loadSessionTypeMap,
         setServiceURLs: setServiceURLs,
       })
