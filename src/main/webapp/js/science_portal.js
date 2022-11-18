@@ -150,19 +150,7 @@
         }
       })
 
-
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, function (e, request){
-        // This should be triggered if the user doesn't have access to Skaha resources, as well as
-        // other error conditions. Without access to Skaha, the user should be blocked from using the page,
-        // but be directed to some place they can ask for what they need (a resource allocation.)
-
-        if (request.status == 403) {
-          portalCore.setInfoModal('Skaha authorization issue', portalCore.getRcDisplayText(request), true, false, false)
-        } else {
-          // There some other problem contacting the session service. Report the error
-          portalCore.setAjaxFail(request)
-        }
-      })
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, handleServiceError)
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onPollingContinue, function (e) {
         // Rebuild session list on top of page
@@ -180,29 +168,30 @@
         checkForSessions()
       })
 
-
-      // TODO: make sure this works somehow - try triggering it in
-      // a situation where the context call works?
-      // If this method does work, change the sesion list error to use it as well
-      // This should only happen once during a page load
+      // Portal Form listeners
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadFormDataDone, initForm)
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.form.events.onLoadContextDataError, handleServiceError)
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.form.events.onLoadImageDataError, handleServiceError)
+      portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadContextDataError, handleServiceError)
+      portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadImageDataError, handleServiceError)
 
     } // end attachListeners()
 
-
     function handleServiceError(e, request) {
+
+      // Stop any outstanding ajax calls from being processed. If one has failed,
+      // it's assumed the skaha service is unreachable or has something else wrong,
+      // so the page becomes unavailable
+      portalForm.interruptAjaxProcessing()
+
       // This should be triggered if the user doesn't have access to Skaha resources, as well as
       // other error conditions. Without access to Skaha, the user should be blocked from using the page,
       // but be directed to some place they can ask for what they need (a resource allocation.)
-
-      if (request.status == 403) {
-        portalCore.setInfoModal('Skaha authorization issue', portalCore.getRcDisplayText(request), true, false, false)
-      } else {
-        // There some other problem contacting the session service. Report the error
-        portalCore.setAjaxFail(request)
+      var msgHeader = 'Service Error'
+      var msgBody = portalCore.getRcDisplayText(request)
+      if (request.status === 403 || request.status === 401) {
+        msgHeader = 'Skaha authorization issue'
+        msgBody = 'Your userid is not authorized to use Skaha resources. Contact CANFAR admin for assistance.'
       }
+      portalCore.setInfoModal(msgHeader, msgBody, true, false, false)
     }
 
     // ------------ Data display functions
@@ -381,6 +370,10 @@
           + 'Reload this page to try again. ', true, false, false)
       }
 
+      // set dropdown defaults for context
+      // image default is handled when it's populated elsewhere
+      _resetFormDropdown("sp_cores", portalForm.getCoresDefault())
+      _resetFormDropdown("sp_memory", portalForm.getRAMDefault())
     }
 
     function populateSelect(selectID, optionData, placeholderText, defaultOptionID) {
@@ -399,6 +392,7 @@
         var curOption = optionData[i]
         var option = $('<option />')
         option.val(curOption)
+        option.attr("val", curOption)
         if (curOption === defaultOptionID ) {
           option.prop('selected', true)
         }
@@ -407,9 +401,8 @@
       }
     }
 
-
     function checkForSessions() {
-      portalCore.setInfoModal('Session Check', 'Grabbing session list', false, false)
+      portalCore.setInfoModal('Session Check', 'Grabbing session list', false, true)
       // This is an ajax function that will fire either onFindSessionOK or onFindSessionFail
       // and listeners to those will respond accordingly
       portalCore.clearAjaxAlert()
@@ -560,51 +553,51 @@
 
     // This can only happen after the portalForm has grabbed all the data
     function initForm() {
-
-      // notebook is default
+      // Start with default value
       _curSessionType = portalForm.getSessionTypeDefault();
 
-      // put values into the 'type' dropdown on the launch form
-      // This part of the form will not change throughout the session
+      // These 3 dropdowns won't change content over the lifetime of a session:
+      // type, RAM, cores. Populate them here.
       populateSelect('sp_session_type', portalForm.getSessionTypeList(), 'select type', _curSessionType)
 
       // For now the RAM and # or cores selections do not change, other than their display
       var ramList = portalForm.getRAMArray()
-      populateSelect('sp_memory', ramList, 'select RAM', ramList[0])
+      populateSelect('sp_memory', ramList, 'select RAM', portalForm.getRAMDefault())
 
       var coresList = portalForm.getCoresArray()
-      populateSelect('sp_cores', coresList, "select # cores", coresList[0])
+      populateSelect('sp_cores', coresList, "select # cores", portalForm.getCoresDefault())
 
       // Set the parts of the launch form that may change per type selection
       setLaunchFormForType(_curSessionType, true)
 
-      // Enable the Launch button
+      // Enable the Launch button as the form is now ready
       $('.sp-add-session').removeAttr('disabled')
       $('.sp-add-session').removeClass('sp-button-disable')
     }
 
-    function setLaunchFormForType(sessionType, isReset) {
-      // TODO: these functions will still be called, but will
-      // need to get the appropriate values from the PortalForm object.
-      //loadContainerImages(sessionType)
-      // the getImageListForType() function will return an array
-      // of IDs only.
-      //loadContainerImages(portalForm.getImageListForType(sessionType))
-
+    function setLaunchFormForType(sessionType) {
       var tempImageList = portalForm.getImageListForType(sessionType)
       populateSelect('sp_software_stack', tempImageList, 'select stack', tempImageList[0])
 
       // Display or hide form fields as needed by the session type (ie RAM or cores...)
       setFormFields(sessionType)
 
-      // Don't set the next default session name if the user
-      // appears to have changed the name, unless it has been cleared
-      var curSessionName = $('#sp_session_name').val().trim()
-      if (isReset === true || curSessionName === "" ||
-        (curSessionName === portalSessions.getDefaultSessionName(_curSessionType))) {
-          setDefaultSessionName(sessionType.trim())
-      }
+      setDefaultSessionName(sessionType.trim())
+
       _curSessionType = sessionType
+    }
+
+    function _resetFormDropdown(selector, defaultVar) {
+
+      // Clear existing selections
+      $('#' + selector + ' option').each(function() {
+          if ($(this).attr("val") === defaultVar) {
+          $(this).prop('selected',true)
+            // break out of the loop
+            $(this).change()
+            return false
+        }
+      });
     }
 
     function handleResetFormState(event) {
@@ -614,15 +607,7 @@
       portalCore.setProgressBar('okay')
       var sessionTypeDefault = portalForm.getSessionTypeDefault()
 
-      // set selected back to session type default
-      $("#sp_session_type option").each(function() {
-        if ($(this).val() === sessionTypeDefault) {
-          $(this).attr('selected','selected')
-        } else {
-          $(this).removeAttr('selected')
-        }
-      });
-
+      _resetFormDropdown("sp_session_type", sessionTypeDefault)
       // reload the form for default session type
       setLaunchFormForType(sessionTypeDefault, true)
     }
