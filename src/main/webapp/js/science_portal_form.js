@@ -9,6 +9,7 @@
               PortalForm: PortalForm,
               // Events
               events: {
+                onLoadTypeMapDone: new jQuery.Event('sciPort:onLoadTypeMapDone'),
                 onLoadFormDataDone: new jQuery.Event('sciPort:onLoadFormDataDone'),
                 onLoadFormDataError: new jQuery.Event('sciPort:onLoadFormDataError'),
                 onLoadImageDataDone: new jQuery.Event('sciPort:onLoadImageDataDone'),
@@ -57,15 +58,6 @@
 
     // -- init form data gather functions
     function getFormData() {
-
-      // Build session type list
-      var tempTypeList = new Array()
-      for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
-        // each entry has id, type, digest, only 'id' is needed
-        tempTypeList.push( _selfPortalForm._sessionTypeMap.session_types[i].name)
-      }
-      _selfPortalForm._sessionTypeList = tempTypeList
-
       // Set up counter for ajax calls used to load page data
       // 1 = call for contexts
       _selfPortalForm._ajaxCallCount = 1 + _selfPortalForm._sessionTypeMap.session_types.length;
@@ -90,6 +82,16 @@
       // number of sessions will increase fairly soon.
       $.getJSON(contentFileURL, function (jsonData) {
         _selfPortalForm._sessionTypeMap = jsonData
+
+        // Build session type list
+        var tempTypeList = new Array()
+        for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
+          // each entry has id, type, digest, only 'id' is needed
+          tempTypeList.push( _selfPortalForm._sessionTypeMap.session_types[i].name)
+        }
+        _selfPortalForm._sessionTypeList = tempTypeList
+
+        trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadTypeMapDone)
       })
       // Used to reset launch form
       _selfPortalForm._sessionTypeMap.default = 'notebook'

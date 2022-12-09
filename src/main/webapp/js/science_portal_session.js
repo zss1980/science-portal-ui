@@ -34,8 +34,16 @@
     this._filteredSessionList = {}
     this.sessionURLs = {}
 
+    // This is here because it can be used in case of timing issues
+    // with loading the session type map.
+    this._sessionTypeList = new Array()
+
     function setServiceURLs(URLObject) {
       _selfPortalSess.sessionServiceURL = URLObject.session
+    }
+
+    function setSessionTypeList(thelist) {
+      _selfPortalSess._sessionTypeList = thelist
     }
 
     function initSessionLists() {
@@ -52,10 +60,25 @@
     }
 
     function getFilteredSessionList() {
-      if (_selfPortalSess._filteredSessionList === {}) {
-        initSessionLists()
+      _selfPortalSess._filteredSessionList = new Array()
+
+      var tmpList = new Array()
+
+      for (var i=0; i<_selfPortalSess._sessionList.length; i++) {
+        var curSes = _selfPortalSess._sessionList[i]
+
+        const isInList = (element) => element === curSes.type
+        var typeIndex = _selfPortalSess._sessionTypeList.findIndex(isInList)
+
+        if (typeIndex !== -1) {
+          if ( curSes.status === 'Running' || curSes.status === 'Pending') {
+            tmpList.push(curSes)
+          }
+        }
       }
-      return _selfPortalSess._filteredSessionList
+      _selfPortalSess._filteredSessionList = tmpList
+
+      return tmpList
     }
 
 
@@ -112,8 +135,8 @@
       var allStable = true
 
       for (var i = 0; i < _selfPortalSess._sessionList.length; i++) {
-        if ( (_selfPortalSess._sessionList[i].status !== 'Running') &&
-          (_selfPortalSess._sessionList[i].status !== 'Succeeded') ) {
+        // Only Pending state will trigger a poll
+        if (_selfPortalSess._sessionList[i].status === 'Pending') {
           allStable = false
           break
         }
@@ -152,9 +175,9 @@
       }
     }
 
-    // TODO: have a 'setFilteredSessionList(filterOutList, filterInList) {}
 
-    function setFilteredSessionList(filterOutList) {
+    function setFilteredSessionList() {
+      // Filter for 'Running' and 'Pending' of the valid list
       if (sessionList.length > 0) {
         // TODO: consider what session types are filtered out by default
         _selfPortalSess._sessionList = sessionList
@@ -310,6 +333,7 @@
         isSessionListEmpty : isSessionListEmpty,
         pollSessionList: pollSessionList,
         deleteSession: deleteSession,
+        setSessionTypeList: setSessionTypeList
       })
     }
 
