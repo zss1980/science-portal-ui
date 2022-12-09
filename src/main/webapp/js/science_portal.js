@@ -129,7 +129,6 @@
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
         // Build session list on top of page
-        //var allowedTypes = portalForm.getSessionTypeList()
         var filteredList = portalSessions.getFilteredSessionList()
         populateSessionList(filteredList)
 

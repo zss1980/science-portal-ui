@@ -94,7 +94,7 @@
         trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadTypeMapDone)
       })
       // Used to reset launch form
-      //_selfPortalForm._sessionTypeMap.default = 'notebook'
+      _selfPortalForm._sessionTypeMap.default = 'notebook'
     }
 
     function getSessionTypeDefault() {
