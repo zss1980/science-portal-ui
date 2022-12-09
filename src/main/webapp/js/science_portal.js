@@ -53,20 +53,28 @@
     function init() {
       attachListeners()
       // loads from session_type_map_en.json. No known timing issues
+      // Issues onLoadTypeMapDone, which will call continueInit
+      // Needed because the session types declared in the config file
+      // are needed for filtering session lists
       portalForm.loadSessionTypeMap()
 
       // add tooltips
       $('[data-toggle="tooltip"]').tooltip()
-      
+
+    }
+
+    function continueInit() {
       // Nothing happens if user is not authenticated, so no other page
       // load information is done until this call comes back (see onAuthenticated event below)
       // onAuthenticated event triggered if everything is OK.
       // Put this up because the authentication step can be a bit tardy, otherwise
       // it looks like the portal isn't doing anything.
+      portalSessions.setSessionTypeList(portalForm.getSessionTypeList())
       portalCore.setInfoModal('Initialising', 'Validating credentials',
         false, true, true)
       portalCore.checkAuthentication()
     }
+
 
     function attachListeners() {
       // Button/page click listeners
@@ -121,7 +129,10 @@
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
         // Build session list on top of page
-        populateSessionList(portalSessions.getSessionList())
+        //var allowedTypes = portalForm.getSessionTypeList()
+        var filteredList = portalSessions.getFilteredSessionList()
+        populateSessionList(filteredList)
+
         portalCore.setProgressBar("okay")
         portalCore.hideInfoModal(true)
 
@@ -137,7 +148,8 @@
             .then(function (finalState) {
               if (finalState == 'done') {
                 // Grab new session list
-                populateSessionList(portalSessions.getSessionList())
+                var filteredList = portalSessions.getFilteredSessionList()
+                populateSessionList(filteredList)
               }
             })
             .catch(function (message) {
@@ -154,7 +166,7 @@
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onPollingContinue, function (e) {
         // Rebuild session list on top of page
-        populateSessionList(portalSessions.getSessionList())
+        populateSessionList(portalSessions.getFilteredSessionList())
       })
 
       portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
@@ -169,6 +181,7 @@
       })
 
       // Portal Form listeners
+      portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadTypeMapDone, continueInit)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadFormDataDone, initForm)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadContextDataError, handleServiceError)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadImageDataError, handleServiceError)
