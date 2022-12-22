@@ -32,7 +32,7 @@ dependencies {
 
 sourceCompatibility = '1.8'
 group = 'ca.nrc.cadc'
-version = '1010'
+version = '1011'
 
 ext {
     intTest_user_name = 'CADCtest'
