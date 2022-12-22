@@ -66,7 +66,7 @@
       _selfPortalForm.getContextData()
 
       // Start loading container image lists
-      _selfPortalForm.getImageData()
+      _selfPortalForm.getFullImageList()
     }
 
 
@@ -110,48 +110,45 @@
       return null
     }
 
-
-    // --------------- Image list functions
-
-    function getImageData() {
-
-      for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
-        var curTypename = _selfPortalForm._sessionTypeMap.session_types[i].name
-
-        // This needs to be done by type, and the type need to be
-        // pushed through to the 'then' so the right
-        // values are populated in the image object
-        var curTypeURL = _selfPortalForm.sessionURLs.images + '?type=' + curTypename
-
-        // Do this so each call has it's own curTypeURL
-        // If the Promise is in this same function, the timing of the ajax
-        // calls is such that curTypeURL is the same for all lists so
-        // there's no effective lookup.
-        _getImageDataForType(curTypeURL, curTypename)
+    function isTypeInList(imageType) {
+      var isInList = (element) => element === imageType
+      var typeIndex = _selfPortalForm._sessionTypeList.findIndex(isInList)
+      if (typeIndex === -1) {
+        return false
+      } else {
+        return true
       }
     }
 
-    function _getImageDataForType(callURL, sessionType ){
-      Promise.resolve(_getAjaxData(callURL))
+    // --------------- Image list functions
+
+
+    function getFullImageList(){
+      var fullListURL = _selfPortalForm.sessionURLs.images
+      Promise.resolve(_getAjaxData(fullListURL))
         .then(function (imageList) {
 
-          if (_selfPortalForm._ajaxCallCount !== -9) {
-            var imageIDList = new Array()
-            for (var i = 0; i < imageList.length; i++) {
-              imageIDList.push(imageList[i].id)
-            }
-
-            _selfPortalForm._ajaxCallCount--
-            _selfPortalForm._imageData.push({
-              "sessionType": sessionType,
-              "imageList": imageList,
-              "imageIDList": imageIDList
-            })
-
-            if (_selfPortalForm._ajaxCallCount === 0) {
-              trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+          // init the image list structure to simplify the loop below
+          _selfPortalForm._imageData = {}
+          for (var j=0; j<_selfPortalForm._sessionTypeList.length; j++) {
+            _selfPortalForm._imageData[_selfPortalForm._sessionTypeList[j]] = {
+              'imageList': new Array(),
+              "imageIDList": new Array()
             }
           }
+
+          for (var i=0; i<imageList.length; i++) {
+            var curImage = imageList[i]
+            if (isTypeInList(curImage.type)) {
+              // add into the imageList structure
+              _selfPortalForm._imageData[curImage.type].imageList.push(curImage)
+              _selfPortalForm._imageData[curImage.type].imageIDList.push(curImage.id)
+            }
+            // else skip is it's not a type currently supported in the UI for
+            // launching sessions.
+          }
+
+          trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
 
         })
         .catch(function (message) {
@@ -159,21 +156,14 @@
         })
     }
 
-    // Q: is the full session data being passed in or just the type?
-    //function getImageListForSessionType(sessionData) {
-    //  return getImageListForType(sessionData.name)
-    //}
-
-
     function getImageListForType(sessionType) {
       // return what it's asking for, in an array of IDs.
       var imageList = null
-      for (var i = 0; i < _selfPortalForm._imageData.length; i++) {
-        if (_selfPortalForm._imageData[i].sessionType === sessionType) {
-          imageList = _selfPortalForm._imageData[i].imageIDList
-        }
+      if (typeof _selfPortalForm._imageData[sessionType] !== 'undefined') {
+        return _selfPortalForm._imageData[sessionType].imageIDList
+      } else {
+        return imageList
       }
-      return imageList
     }
 
 
@@ -296,7 +286,7 @@
         getRAMDefault: getRAMDefault,
         getCoresArray: getCoresArray,
         getCoresDefault: getCoresDefault,
-        getImageData: getImageData,
+        getFullImageList: getFullImageList,
         getImageListForType: getImageListForType,
         getSessionTypeDefault: getSessionTypeDefault,
         getSessionTypeList: getSessionTypeList,
@@ -305,6 +295,7 @@
         interruptAjaxProcessing: interruptAjaxProcessing,
         loadSessionTypeMap: loadSessionTypeMap,
         setServiceURLs: setServiceURLs,
+        isTypeInList: isTypeInList
       })
     }
 
