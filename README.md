@@ -1,8 +1,8 @@
 # CANFAR Science Portal
-### V 2.2
-##### Nov 4 2022
+### V 3.0
+##### Jan 15, 2023
 
-UI for accessing and managing Jupyter notebook, carta or desktop sessions that back onto CANFAR resources. 
+UI for accessing and managing Jupyterlab notebooks, carta, desktop and other interactive sessions that back onto CANFAR resources. 
 
 ## Description
 This CANFAR service provides the ability to access and manage Jupyter notebook, desktop (vnc), and carta sessions that back
@@ -28,22 +28,22 @@ All workflows assume you are logged in with a CADC account
 ### Connecting to existing sessions
 
 1) From the main page: https://www.canfar.net/science-portal
-2) Science Portal will poll for and display any sessions you currently have
-3) Clicking on a session icon will connect to and forward you to the session
+2) Science Portal will poll for and display any sessions you currently have, including
+session metadata
+3) Clicking on a session card will connect to and forward you to the session
 
 
 ### Launch a new session
 
 1) From the main page: https://www.canfar.net/science-portal
 2) Science Portal will poll for and display any sessions you currently have
-3) Clicking on the '+' icon below the session list
-4) A form will be displayed for gathering data for your session 
-5) Select the type of session you want to launch (default is 'notebook')
-6) The container image list will be updated for the session type
-7) Optionally change the name of the session, and any available context values
+3) After the form has loaded, scroll down to access 
+4) Select the type of session you want to launch (default is 'notebook')
+5) The container image list will be updated for the session type
+6) Optionally change the name of the session, and any available context values
 (ie memory or # of cores)
-8) Select 'Launch'
-9) Science Portal will request the session be started, will add the session 
+7) Select 'Launch'
+8) Science Portal will request the session be started, will add the session 
 to the list at the top of the page. 
 
 
@@ -51,12 +51,10 @@ to the list at the top of the page.
 
 1) From the main page: https://www.canfar.net/science-portal
 2) Science Portal will poll for and display any sessions you currently have
-3) Clicking on the 'X' icon at the top right of a session listing will bring
+3) Clicking on the trash can icon on the session card will bring
 up a confirmation box. 
 4) Continue to delete or cancel
-5) Science Portal will request the session be deleted, will mark the session 
-   as inaccessible in the list at the top of the page, polling Skaha until 
-   the session is deleted, at which point it's removed from the list
-
+5) Science Portal will request the session be deleted, and will remove it
+from your session list
 
 

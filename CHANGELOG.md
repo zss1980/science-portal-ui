@@ -1,4 +1,12 @@
+## Jan 15, 2023
+### 3.0
 
+## Dec 23, 2022
+### 2.3
+User-facing changes
+Number of network calls to load data for launch form reduced from to 1.
+This, combined with database configuration fixed the number 
+and frequency of 'FORBIDDEN' errors that occurred on page load.
 
 ## Nov 4, 2022
 ### 2.2

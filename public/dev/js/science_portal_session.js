@@ -9,11 +9,11 @@
               PortalSession: PortalSession,
               // Events
               events: {
-                onLoadSessionListDone: new jQuery.Event('sciPort:onLoadSessionListDone'),
-                onLoadSessionListError: new jQuery.Event('sciPort:onLoadSessionListError'),
-                onSessionDeleteOK: new jQuery.Event('sciPort:onSessionDeleteOK'),
-                onSessionDeleteError: new jQuery.Event('sciPort:onSessionDeleteError'),
-                onPollingContinue: new jQuery.Event('sciPort:onPollingContinue'),
+                onLoadSessionListDone: new jQuery.Event("sciPort:onLoadSessionListDone"),
+                onLoadSessionListError: new jQuery.Event("sciPort:onLoadSessionListError"),
+                onSessionDeleteOK: new jQuery.Event("sciPort:onSessionDeleteOK"),
+                onSessionDeleteError: new jQuery.Event("sciPort:onSessionDeleteError"),
+                onPollingContinue: new jQuery.Event("sciPort:onPollingContinue"),
               }
             }
           }
@@ -31,19 +31,10 @@
     var _selfPortalSess = this
     var _isEmpty = true
     this._sessionList = {}
-    this._filteredSessionList = {}
-    this.sessionURLs = {}
-
-    // This is here because it can be used in case of timing issues
-    // with loading the session type map.
-    this._sessionTypeList = new Array()
+    this._sessionTypeList = []
 
     function setServiceURLs(URLObject) {
       _selfPortalSess.sessionServiceURL = URLObject.session
-    }
-
-    function setSessionTypeList(thelist) {
-      _selfPortalSess._sessionTypeList = thelist
     }
 
     function initSessionLists() {
@@ -59,26 +50,89 @@
       return _selfPortalSess._sessionList
     }
 
-    function getFilteredSessionList() {
-      _selfPortalSess._filteredSessionList = new Array()
+    function setSessionTypeList(thelist) {
+      _selfPortalSess._sessionTypeList = thelist
+    }
 
-      var tmpList = new Array()
+    var statusDisplayPriority = {
+      "running" : 1,
+      "pending" : 2,
+      "terminating" : 3,
+      "succeeded" : 4,
+      "failed" : 5,
+      "unknown": 6
+    }
 
-      for (var i=0; i<_selfPortalSess._sessionList.length; i++) {
-        var curSes = _selfPortalSess._sessionList[i]
+    var typeDisplayPriority = {
+      "notebook" : 1,
+      "desktop" : 2,
+      "carta" : 3,
+      "contributed" : 4,
+      "headless" : 5
+    }
 
-        const isInList = (element) => element === curSes.type
-        var typeIndex = _selfPortalSess._sessionTypeList.findIndex(isInList)
+    function sortSessions(sList) {
+      sList.forEach((e) => {
+        console.log(`${e.type} ${e.status} ${e.name}`);
+      });
 
-        if (typeIndex !== -1) {
-          if ( curSes.status === 'Running' || curSes.status === 'Pending') {
-            tmpList.push(curSes)
+
+      sList.sort((a, b) => {
+        // Sort order: type, status, name
+
+        // rough sort by type first
+        let typeA = a.type.toLowerCase()
+        let typeOrderA = typeDisplayPriority[typeA]
+        let typeB = b.type.toLowerCase()
+        let typeOrderB = typeDisplayPriority[typeB]
+
+        if (typeOrderA < typeOrderB) {
+          return -1
+        }
+        if (typeOrderA > typeOrderB) {
+          return 1
+        }
+
+        if (typeOrderA === typeOrderB) {
+
+          let statusA = a.status.toLowerCase()
+          let orderA = statusDisplayPriority[statusA]
+          let statusB = b.status.toLowerCase()
+          let orderB = statusDisplayPriority[statusB]
+
+          if (orderA < orderB) {
+            return -1
+          }
+
+          if (orderA > orderB) {
+            return 1
+          }
+
+          if (orderA === orderB) {
+
+            let nameA = a.name.toLowerCase()
+            let nameB = b.name.toLowerCase()
+
+
+            if (nameA < nameB) {
+              return -1
+            }
+
+            if (nameA > nameB) {
+              return 1
+            }
+
+            return 0
           }
         }
-      }
-      _selfPortalSess._filteredSessionList = tmpList
 
-      return tmpList
+      })
+
+      sList.forEach((e) => {
+        console.log(`${e.type} ${e.status} ${e.name}`);
+      });
+
+      return sList
     }
 
 
@@ -103,6 +157,8 @@
       return session
     }
 
+
+
     /**
      * Check if session for sessionID is of the given status
      * @param sessionID
@@ -122,27 +178,48 @@
       return isStatus
     }
 
+
     function isRunningSession(session) {
-      return isSessionStatus(session, 'Running')
+      return isSessionStatus(session, "Running")
     }
 
-    /**
-     * 'Stable' status means the session isn't going to change state unless the user
-     * does something explicit, like deleting or shutting down.
-     * @returns {boolean}
-     */
+
+    function getFilteredSessionList() {
+      _selfPortalSess._filteredSessionList = new Array()
+
+      var tmpList = new Array()
+
+      for (var i=0; i<_selfPortalSess._sessionList.length; i++) {
+        var curSes = _selfPortalSess._sessionList[i]
+
+        const isInList = (element) => element === curSes.type
+        var typeIndex = _selfPortalSess._sessionTypeList.findIndex(isInList)
+
+        if (typeIndex !== -1) {
+          if ( curSes.status === "Running" || curSes.status === "Pending") {
+            tmpList.push(curSes)
+          }
+        }
+      }
+      _selfPortalSess._filteredSessionList = tmpList
+
+      return tmpList
+    }
+
+
     function isAllSessionsStable() {
       var allStable = true
 
       for (var i = 0; i < _selfPortalSess._sessionList.length; i++) {
         // Only Pending state will trigger a poll
-        if (_selfPortalSess._sessionList[i].status === 'Pending') {
+        if (_selfPortalSess._sessionList[i].status === "Pending") {
           allStable = false
           break
         }
       }
       return allStable
     }
+
 
     function isSessionStatus(session, sessionStatus) {
       return session.status === sessionStatus
@@ -155,7 +232,7 @@
      * @returns {*}
      */
     function getDefaultSessionName(sessionType) {
-      // First entry will have a '1'
+      // First entry will have a "1"
       var count = 1
       for (var i = 0; i < _selfPortalSess._sessionList.length; i++) {
         if (_selfPortalSess._sessionList[i].type === sessionType) {
@@ -175,19 +252,6 @@
       }
     }
 
-
-    function setFilteredSessionList() {
-      // Filter for 'Running' and 'Pending' of the valid list
-      if (sessionList.length > 0) {
-        // TODO: consider what session types are filtered out by default
-        _selfPortalSess._sessionList = sessionList
-        _selfPortalSess._isEmpty = false
-      } else {
-        _selfPortalSess._filteredSessionList = {}
-        _selfPortalSess._isEmpty = true
-      }
-
-    }
 
     function isSessionListEmpty() {
       return _selfPortalSess._isEmpty
@@ -215,9 +279,9 @@
       return new Promise(function (resolve, reject) {
         var request = new XMLHttpRequest()
 
-        // 'load' is the XMLHttpRequest 'finished' event
+        // "load" is the XMLHttpRequest "finished" event
         request.addEventListener(
-          'load',
+          "load",
           function () {
             if (request.status === 200) {
               var jsonData = JSON.parse(request.responseText)
@@ -232,7 +296,7 @@
         // Note: SameSite cookie header isn't set with this method,
         // may cause problems with Chrome and other browsers? Feb 2021
         request.withCredentials = true
-        request.open('GET', serviceURL)
+        request.open("GET", serviceURL)
         request.send(null)
       })
     }
@@ -252,9 +316,9 @@
       return new Promise(function (resolve, reject) {
         var request = new XMLHttpRequest()
 
-        // 'load' is the XMLHttpRequest 'finished' event
+        // "load" is the XMLHttpRequest "finished" event
         request.addEventListener(
-          'load',
+          "load",
           function () {
             if (request.status === 200) {
               resolve(sessionID)
@@ -268,7 +332,7 @@
         // Note: SameSite cookie header isn't set with this method,
         // may cause problems with Chrome and other browsers? Feb 2021
         request.withCredentials = true
-        request.open('DELETE', serviceURL)
+        request.open("DELETE", serviceURL)
         request.send(null)
       })
     }
@@ -293,7 +357,7 @@
               }
             })
             .catch(function (message) {
-              reject(new Error('Error polling session list. Reload page to try again or contact CANFAR admin for assistance.'))
+              reject(new Error("Error polling session list. Reload page to try again or contact CANFAR admin for assistance."))
             })
         } // end checkCondition
         return new Promise(checkCondition)
@@ -326,6 +390,7 @@
         getFilteredSessionList: getFilteredSessionList,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
+        setSessionTypeList: setSessionTypeList,
         isAllSessionsStable: isAllSessionsStable,
         isSessionStatus: isSessionStatus,
         isRunningSession: isRunningSession,
@@ -333,7 +398,7 @@
         isSessionListEmpty : isSessionListEmpty,
         pollSessionList: pollSessionList,
         deleteSession: deleteSession,
-        setSessionTypeList: setSessionTypeList
+        sortSessions: sortSessions
       })
     }
 

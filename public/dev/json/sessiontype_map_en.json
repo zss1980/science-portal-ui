@@ -4,7 +4,7 @@
         "name": "notebook",
         "form_fields": ["name", "type", "image", "memory", "cores"],
         "portal_icon": "jupyterLogo.jpg",
-        "portal_text": "Jupyter"
+        "portal_text": "JupyterLab"
       },
       {
         "name": "desktop",

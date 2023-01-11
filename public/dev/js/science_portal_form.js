@@ -10,6 +10,7 @@
               // Events
               events: {
                 onLoadTypeMapDone: new jQuery.Event('sciPort:onLoadTypeMapDone'),
+                onLoadTypeMapError: new jQuery.Event('sciPort:onLoadTypeMapError'),
                 onLoadFormDataDone: new jQuery.Event('sciPort:onLoadFormDataDone'),
                 onLoadFormDataError: new jQuery.Event('sciPort:onLoadFormDataError'),
                 onLoadImageDataDone: new jQuery.Event('sciPort:onLoadImageDataDone'),
@@ -51,6 +52,12 @@
       _selfPortalForm.sessionURLs = URLObject
     }
 
+    function setContentBase(contentBase) {
+      // More than one endpoint is pulled from URLObject
+      // so store entire thing
+      _selfPortalForm.contentBase = contentBase
+    }
+
     // ------ Session type functions
     function getSessionTypeList() {
       return _selfPortalForm._sessionTypeList
@@ -58,9 +65,10 @@
 
     // -- init form data gather functions
     function getFormData() {
+
       // Set up counter for ajax calls used to load page data
-      // 1 = call for contexts
-      _selfPortalForm._ajaxCallCount = 1 + _selfPortalForm._sessionTypeMap.session_types.length;
+      // context + image list
+      _selfPortalForm._ajaxCallCount = 2;
 
       // Start loading context data
       _selfPortalForm.getContextData()
@@ -76,7 +84,9 @@
      * Get the a map of help text and headers from the content file
      */
     function loadSessionTypeMap() {
-      var contentFileURL = 'json/sessiontype_map_en.json'
+      // This information would be better pulled from skaha itself,
+      // but it's not available yet
+      var contentFileURL =  _selfPortalForm.contentBase + "/json/sessiontype_map_en.json"
 
       // Using a json input file because it's anticipated that the
       // number of sessions will increase fairly soon.
@@ -94,7 +104,7 @@
         trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadTypeMapDone)
       })
       // Used to reset launch form
-      _selfPortalForm._sessionTypeMap.default = 'notebook'
+      _selfPortalForm._sessionTypeMap.default = "notebook"
     }
 
     function getSessionTypeDefault() {
@@ -120,8 +130,8 @@
       }
     }
 
-    // --------------- Image list functions
 
+    // --------------- Image list functions
 
     function getFullImageList(){
       var fullListURL = _selfPortalForm.sessionURLs.images
@@ -132,7 +142,7 @@
           _selfPortalForm._imageData = {}
           for (var j=0; j<_selfPortalForm._sessionTypeList.length; j++) {
             _selfPortalForm._imageData[_selfPortalForm._sessionTypeList[j]] = {
-              'imageList': new Array(),
+              "imageList": new Array(),
               "imageIDList": new Array()
             }
           }
@@ -148,7 +158,10 @@
             // launching sessions.
           }
 
-          trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+          _selfPortalForm._ajaxCallCount--
+          if (_selfPortalForm._ajaxCallCount === 0) {
+            trigger(_selfPortalForm, cadc.web.science.portal.form.events.onLoadFormDataDone)
+          }
 
         })
         .catch(function (message) {
@@ -159,11 +172,37 @@
     function getImageListForType(sessionType) {
       // return what it's asking for, in an array of IDs.
       var imageList = null
-      if (typeof _selfPortalForm._imageData[sessionType] !== 'undefined') {
+      if (typeof _selfPortalForm._imageData[sessionType] !== "undefined") {
         return _selfPortalForm._imageData[sessionType].imageIDList
       } else {
         return imageList
       }
+    }
+
+    function getFormDataForType(sessionType, sessionName) {
+      var _formData = {}
+      _formData.contextData = _selfPortalForm._contextData
+      _formData.imageList=  _selfPortalForm.getImageListForType(sessionType)
+      _formData.types = _selfPortalForm._sessionTypeList
+      _formData.selectedType = sessionType
+      _formData.sessionName = sessionName
+
+      var tmpMapEntry = _selfPortalForm.getMapEntry(sessionType)
+
+      // Translate list of allowed fields into booleans for variable fields
+      // ie: showRAM and showCores
+
+      var showcores = false
+      if (tmpMapEntry.form_fields.includes("cores")) {
+        showcores = true
+      }
+      var showram = false
+      if (tmpMapEntry.form_fields.includes("memory")) {
+        showram = true
+      }
+      _formData.formFields = {"showCores": showcores, "showRAM": showram}
+
+      return _formData
     }
 
 
@@ -231,7 +270,7 @@
 
         // 'load' is the XMLHttpRequest 'finished' event
         request.addEventListener(
-          'load',
+          "load",
           function () {
             if (request.status === 200) {
               var jsonData = parseJSONStr(request.responseText)
@@ -246,7 +285,7 @@
         // Note: SameSite cookie header isn't set with this method,
         // may cause problems with Chrome and other browsers? Feb 2021
         request.withCredentials = true
-        request.open('GET', serviceURL)
+        request.open("GET", serviceURL)
         request.send(null)
       })
     }
@@ -254,9 +293,9 @@
     // ---------- Common functions ----------
 
     function parseJSONStr(data) {
-      var parsedStr = ''
+      var parsedStr = ""
       if (data.length > 0) {
-        var escapedStr = '';
+        var escapedStr = "";
         // This will escape any single backslashes so the JSON.parse passes.
         // Mostly to capture elements like \msun, etc.
         // Could definitely be more bomb-proof than it is, but it's a start
@@ -292,8 +331,10 @@
         getSessionTypeList: getSessionTypeList,
         getMapEntry: getMapEntry,
         getFormData: getFormData,
+        getFormDataForType: getFormDataForType,
         interruptAjaxProcessing: interruptAjaxProcessing,
         loadSessionTypeMap: loadSessionTypeMap,
+        setContentBase: setContentBase,
         setServiceURLs: setServiceURLs,
         isTypeInList: isTypeInList
       })
