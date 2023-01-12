@@ -90,14 +90,14 @@ function SessionItem(props) {
           <Card>
             <Card.Body>
               <Row className="sp-title-placeholder"><Col>
-                <Placeholder as={Card.Header} animation="glow">
-                  <Placeholder xs={12} />
+                <Placeholder className="sp-form-p" as={Card.Header} animation="glow">
+                  <Placeholder className="sp-form-placeholder" xs={12} />
                 </Placeholder>
               </Col></Row>
-              
-              <Placeholder as={Card.Text} animation="glow">
-                <Placeholder xs={12} /> <Placeholder xs={12} />
-                <Placeholder xs={12} /> <Placeholder xs={12} />{" "}
+
+              <Placeholder className="sp-form-p"  as={Card.Text} animation="glow">
+                <Placeholder className="sp-form-placeholder" xs={12} /> <Placeholder xs={12} />
+                <Placeholder className="sp-form-placeholder" xs={12} /> <Placeholder xs={12} />{" "}
               </Placeholder>
 
             </Card.Body>

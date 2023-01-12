@@ -154,7 +154,8 @@ div.sp-emptylist-card {
   height: 75px;
 }
 
-p.sp-form-p {
+/* Needed to apply the correct opacity on the Placeholder elements */
+p.sp-form-p, div.sp-form-p {
   margin-bottom: 0px;
   opacity: .45;
 }
