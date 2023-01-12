@@ -1,4 +1,20 @@
+## Jan 12, 2023
+### 3.0
+Supporting Changes
+Science Portal UI is now built using React. Interactions with the site should be more smooth
+now, and more responsive.
 
+User-facing changes
+Launch form is visible at all times now. Placeholders used when supporting data is loading.
+Cards used for each session, including more information about the session.
+
+
+## Dec 23, 2022
+### 2.3
+User-facing changes
+Number of network calls to load data for launch form reduced from to 1.
+This, combined with database configuration fixed the number 
+and frequency of 'FORBIDDEN' errors that occurred on page load.
 
 ## Nov 4, 2022
 ### 2.2
