@@ -15,6 +15,7 @@
 /src/main/webapp/dist
 
 # misc
+.env
 .DS_Store
 .env.local
 .env.development.local
