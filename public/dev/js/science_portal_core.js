@@ -54,8 +54,6 @@
       })
     }
 
-    //var redirectUtil = new ca.nrc.cadc.RedirectUtil()
-
     var portalLogin = new cadc.web.science.portal.login.PortalLogin(inputs)
     this.userManager = new cadc.web.UserManager(inputs)
 
@@ -155,10 +153,6 @@
       setPageState("success", false, reactAppLink)
     }
 
-    function setProgressBar(state) {
-      var a = "TODO"
-    }
-
     // Communicate AJAX progress and status using progress bar
     function setPageState(barType, isAnimated, reactAppLink, alertMsg) {
       var pageState = {
@@ -196,6 +190,38 @@
     function handleAjaxError(request, reactAppLink) {
       hideModal(reactAppLink)
       setAjaxFail(request, reactAppLink)
+    }
+
+    // ----------- Data Filtering and Display Functions -----------------
+
+    function getDisplayStartTime(startTime) {
+      // v 3.0: Times come from skaha in UTC, with 'T' and 'Z'
+      var tmpTime = ""
+      if (startTime !== undefined) {
+        tmpTime = startTime.replace("T", " ")
+        tmpTime = tmpTime.replace("Z", "")
+      } else {
+        tmpTime = "not available"
+      }
+      return tmpTime
+    }
+
+    function getDisplayImageName(imageName) {
+      // v 3.0: each image has the host name of the
+      // harbor instance as it's first element. For now,
+      // this is pruned off as it's the same for all images
+      // served by the portal
+      var firstSlashIdx = imageName.indexOf("/")
+      var prunedImage = imageName.substr(firstSlashIdx + 1, imageName.length)
+      return prunedImage
+    }
+
+    // Structure is used to pass into science_portal_form to produce the image list for display,
+    // also used in science_portal to set data to be passed into SessionItem react component.
+    // values are the functions immediately above this declaration
+    this.dataFilters = {
+      "startTime" : getDisplayStartTime,
+      "imageName" : getDisplayImageName
     }
 
     // ---------- Event Handling Functions ----------
@@ -410,7 +436,6 @@
       setAjaxSuccess: setAjaxSuccess,
       setAjaxFail: setAjaxFail,
       handleAjaxError: handleAjaxError,
-      setProgressBar: setProgressBar,
       setPageState: setPageState,
       setReactAppRef: setReactAppRef,
       clearAjaxAlert: clearAjaxAlert,

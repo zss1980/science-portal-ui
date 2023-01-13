@@ -114,6 +114,8 @@
         portalSessions.setServiceURLs(portalCore.sessionServiceURLs)
         portalForm.setServiceURLs(portalCore.sessionServiceURLs)
 
+        portalForm.setDataFilters(portalCore.dataFilters)
+
         // Get portalForm to start collecting form data
         portalForm.getFormData()
 
@@ -257,12 +259,12 @@
             "name" : this.name,
             "status": this.status,
             "logo": iconSrc,
-            "image": this.image,
+            "image": portalCore.dataFilters.imageName(this.image),
             "RAM": "2G",
             "cores": "2",
             "altText": iconLabel,
             "connectURL": this.connectURL,
-            "startTime": portalSessions.getDisplayStartTime(this),
+            "startTime": portalCore.dataFilters.startTime(this.startTime),
             "type" : this.type,
             "deleteHandler": handleDeleteSession,
             "connectHandler": handleConnectRequest
@@ -370,7 +372,6 @@
       portalCore.setModal(_reactApp, "Requesting Session", "Requesting new session", true, false, false)
       Promise.resolve(postSessionRequestAjax(portalCore.sessionServiceURLs.session, _prunedFormData))
         .then(function(sessionInfo) {
-          //portalCore.setProgressBar("okay")
           portalCore.setPageState("success", false, _reactApp)
           portalCore.hideModal(_reactApp)
           portalCore.trigger(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, sessionInfo)
