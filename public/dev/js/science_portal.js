@@ -262,7 +262,7 @@
             "cores": "2",
             "altText": iconLabel,
             "connectURL": this.connectURL,
-            "startTime": this.startTime,
+            "startTime": portalSessions.getDisplayStartTime(this),
             "type" : this.type,
             "deleteHandler": handleDeleteSession,
             "connectHandler": handleConnectRequest
@@ -417,11 +417,6 @@
       //_curSessionType = portalForm.getSessionTypeDefault()
       //setLaunchForm(_curSessionType)
       resetLaunchForm()
-
-      // Enable the Launch button as the form is now ready
-      // TODO: will need to do something similar with the accordion switch in the react app
-      //$(".sp-add-session").removeAttr("disabled")
-      //$(".sp-add-session").removeClass("sp-button-disable")
     }
 
     function buildFormDataForType(sType) {

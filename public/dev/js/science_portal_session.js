@@ -363,6 +363,20 @@
         return new Promise(checkCondition)
     }
 
+    // ---------- Session metadata conversion functions ----------
+
+    function getDisplayStartTime(sessionItem) {
+      // Times come from skaha in UTC, with 'T' and 'Z'
+      var tmpTime = sessionItem.startTime
+      if (tmpTime !== undefined) {
+        tmpTime = tmpTime.replace("T", " ")
+        tmpTime = tmpTime.replace("Z", "")
+      } else {
+        tmpTime = "not available"
+      }
+      return tmpTime
+    }
+
     // ---------- Event Handling Functions ----------
 
     function subscribe(target, event, eHandler) {
@@ -384,6 +398,7 @@
         setServiceURLs: setServiceURLs,
         initSessionLists: initSessionLists,
         getDefaultSessionName: getDefaultSessionName,
+        getDisplayStartTime: getDisplayStartTime,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
         getSessionList: getSessionList,

@@ -83,7 +83,7 @@ class SciencePortalForm extends React.Component {
           </Popover>
         }
       >
-        <FontAwesomeIcon className="popover-blue" icon={faQuestionCircle} />
+        <FontAwesomeIcon className="sp-form-cursor popover-blue" icon={faQuestionCircle} />
       </OverlayTrigger>
   }
 
@@ -130,6 +130,7 @@ class SciencePortalForm extends React.Component {
                     onChange={this.state.fData.changeTypeHandler}
                     name="type"
                     size="sm"
+                    className="sp-form-cursor"
                   >
                     {this.state.fData.types.map(mapObj => (
                       <option className="sp-form" key={mapObj} name={mapObj} value={mapObj}>{mapObj}</option>
@@ -140,12 +141,13 @@ class SciencePortalForm extends React.Component {
               <Row className="sp-form-row">
                 <Col sm={3}>
                   <Form.Label  className="sp-form-label">container image
-                    {this.renderPopover("Container Image","Reference to an image to use to start the session container")}
+                    {this.renderPopover("Container Image","The Docker image for the session.")}
                   </Form.Label>
                 </Col>
                 <Col md={6}>
                   <Form.Select
                     name="image"
+                    className="sp-form-cursor"
                     >
                     {this.state.fData.imageList.map(mapObj => (
                       <option className="sp-form" key={mapObj} value={mapObj}>{mapObj}</option>
@@ -156,13 +158,13 @@ class SciencePortalForm extends React.Component {
               <Row className="sp-form-row">
                 <Col sm={3}>
                   <Form.Label className="sp-form-label">name
-                    {this.renderPopover("Session Name","Name for the session. Default name reflects the current number of sessions of the selected type.\n" +
-                      "Alphanumeric characters only. 15 character maximum.")}
+                    {this.renderPopover("Session Name","Name for the session. Alphanumeric and '-' characters only.")}
                   </Form.Label>
                 </Col>
                 <Col md={6}>
                   <Form.Control
                       type="text"
+                      maxLength={15}
                       placeholder="Enter session name"
                       value={this.state.fData.sessionName}
                       onChange={this.handleChange}
@@ -175,13 +177,14 @@ class SciencePortalForm extends React.Component {
               <Row className="sp-form-row">
                 <Col sm={3}>
                   <Form.Label className="sp-form-label">memory
-                    {this.renderPopover("Memory", "System memory (RAM) to be used for the session. Default: 16G")}
+                    {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
                   </Form.Label>
                 </Col>
                 <Col md={6}>
                   <Form.Select
                     value={this.state.selectedRAM || this.state.fData.contextData.defaultRAM}
                     name="ram"
+                    className="sp-form-cursor"
                     onChange={this.handleRAMChange.bind(this)}>
                     {this.state.fData.contextData.availableRAM.map(mapObj => (
                       <option key={mapObj} value={mapObj}>{mapObj}</option>
@@ -200,6 +203,7 @@ class SciencePortalForm extends React.Component {
                 <Col md={6}>
                   <Form.Select
                     name="cores"
+                    className="sp-form-cursor"
                     value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
                     onChange={this.handleCoresChange.bind(this)}>
                     {this.state.fData.contextData.availableCores.map(mapObj => (
