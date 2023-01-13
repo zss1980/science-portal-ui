@@ -150,7 +150,7 @@ class SciencePortalForm extends React.Component {
                     className="sp-form-cursor"
                     >
                     {this.state.fData.imageList.map(mapObj => (
-                      <option className="sp-form" key={mapObj} value={mapObj}>{mapObj}</option>
+                      <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
                     ))}
                   </Form.Select>
                 </Col>

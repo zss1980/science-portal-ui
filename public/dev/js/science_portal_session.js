@@ -30,7 +30,7 @@
   function PortalSession() {
     var _selfPortalSess = this
     var _isEmpty = true
-    this._sessionList = {}
+    this._sessionList = []
     this._sessionTypeList = []
 
     function setServiceURLs(URLObject) {
@@ -247,7 +247,7 @@
         _selfPortalSess._sessionList = sessionList
         _selfPortalSess._isEmpty = false
       } else {
-        _selfPortalSess._sessionList = {}
+        _selfPortalSess._sessionList = []
         _selfPortalSess._isEmpty = true
       }
     }
@@ -363,20 +363,6 @@
         return new Promise(checkCondition)
     }
 
-    // ---------- Session metadata conversion functions ----------
-
-    function getDisplayStartTime(sessionItem) {
-      // Times come from skaha in UTC, with 'T' and 'Z'
-      var tmpTime = sessionItem.startTime
-      if (tmpTime !== undefined) {
-        tmpTime = tmpTime.replace("T", " ")
-        tmpTime = tmpTime.replace("Z", "")
-      } else {
-        tmpTime = "not available"
-      }
-      return tmpTime
-    }
-
     // ---------- Event Handling Functions ----------
 
     function subscribe(target, event, eHandler) {
@@ -398,7 +384,6 @@
         setServiceURLs: setServiceURLs,
         initSessionLists: initSessionLists,
         getDefaultSessionName: getDefaultSessionName,
-        getDisplayStartTime: getDisplayStartTime,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
         getSessionList: getSessionList,

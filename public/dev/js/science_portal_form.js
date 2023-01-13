@@ -45,11 +45,17 @@
 
     // Values in this object will come from PortalCore
     this.sessionURLs = {}
+    this.dataFilters = {}
 
     function setServiceURLs(URLObject) {
       // More than one endpoint is pulled from URLObject
       // so store entire thing
       _selfPortalForm.sessionURLs = URLObject
+    }
+
+    function setDataFilters(filterObject) {
+      // Raw data from skaha endpoint needs to be filtered
+      _selfPortalForm.dataFilters = filterObject
     }
 
     function setContentBase(contentBase) {
@@ -143,7 +149,7 @@
           for (var j=0; j<_selfPortalForm._sessionTypeList.length; j++) {
             _selfPortalForm._imageData[_selfPortalForm._sessionTypeList[j]] = {
               "imageList": new Array(),
-              "imageIDList": new Array()
+              "imageDisplayList": new Array()
             }
           }
 
@@ -152,7 +158,17 @@
             if (isTypeInList(curImage.type)) {
               // add into the imageList structure
               _selfPortalForm._imageData[curImage.type].imageList.push(curImage)
-              _selfPortalForm._imageData[curImage.type].imageIDList.push(curImage.id)
+
+              var imageName = curImage.id
+              // Filter if possible
+              if (typeof _selfPortalForm.dataFilters.imageName !== undefined) {
+                imageName = _selfPortalForm.dataFilters.imageName(curImage.id)
+              }
+              var imageData = {
+                "id": curImage.id,
+                "name" : imageName
+              }
+              _selfPortalForm._imageData[curImage.type].imageDisplayList.push(imageData)
             }
             // else skip is it's not a type currently supported in the UI for
             // launching sessions.
@@ -173,7 +189,7 @@
       // return what it's asking for, in an array of IDs.
       var imageList = null
       if (typeof _selfPortalForm._imageData[sessionType] !== "undefined") {
-        return _selfPortalForm._imageData[sessionType].imageIDList
+        return _selfPortalForm._imageData[sessionType].imageDisplayList
       } else {
         return imageList
       }
@@ -335,6 +351,7 @@
         interruptAjaxProcessing: interruptAjaxProcessing,
         loadSessionTypeMap: loadSessionTypeMap,
         setContentBase: setContentBase,
+        setDataFilters: setDataFilters,
         setServiceURLs: setServiceURLs,
         isTypeInList: isTypeInList
       })
