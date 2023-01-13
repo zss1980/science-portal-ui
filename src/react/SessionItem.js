@@ -12,14 +12,34 @@ import './sp-session-list.css';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import Modal from "react-bootstrap/Modal";
 
 function SessionItem(props) {
 
   // Set up badging colours
-  var bgClass = "";
-  if (props.listType == "list") {
+  var bgClass = ""
+  var showSpinner = false
+
+  var uberCSS = ""
+  var cardCSS = "sp-e-session-card"
+  var connectCSS = "sp-e-session-connect"
+  var deleteCSS = "sp-card-text sp-e-session-delete"
+
+  if (props.listType === "list") {
     if (props.sessData.status === "Running") {
       bgClass = "success"
+    } else if (props.sessData.status === "Pending") {
+      // Set CSS and control for pending state, to block
+      // cursor events and show progress cursor when
+      // item is hovered over
+      bgClass = "secondary"
+      var pendingCSS = " sp-pending"
+      showSpinner = true
+      cardCSS = cardCSS + pendingCSS
+      connectCSS = connectCSS + pendingCSS
+      deleteCSS = deleteCSS + pendingCSS
+      uberCSS = "sp-pending-cursor"
     } else {
       bgClass = "secondary"
     }
@@ -28,11 +48,9 @@ function SessionItem(props) {
   return (
     <>
       {props.listType === "list" &&
-      <Card className="sp-e-session-connect"
-           >
-        <Card.Body className="">
-          <div
-            className="sp-connect-div"
+      <Card className={uberCSS}>
+        <Card.Body className={cardCSS}>
+          <div className={connectCSS}
             onClick={props.sessData.connectHandler}
             data-connecturl={props.sessData.connectURL}>
             <Row><Col>
@@ -45,6 +63,8 @@ function SessionItem(props) {
               <div className="sp-card-pill sp-card-text">
                 {/* For next pass */}
                 {/*<Badge pill bg="warning">Expiring Soon</Badge>*/}
+                <span className="sp-session-spinner">{showSpinner === true && <Spinner animation="border" variant="primary" size="sm"/> }</span>
+
                 <Badge pill bg={bgClass}>{props.sessData.status}</Badge>
               </div>
             </Col></Row>
@@ -60,7 +80,7 @@ function SessionItem(props) {
             </Col></Row>
           </div>
           <Row><Col>
-            <div className="sp-card-button sp-e-del-session">
+            <div className="sp-card-button">
               <OverlayTrigger
                 key="top"
                 placement="top"
@@ -75,7 +95,7 @@ function SessionItem(props) {
                   onClick={props.sessData.deleteHandler}
                   data-id={props.sessData.id}
                   data-name={props.sessData.name}
-                  className="sp-card-text"
+                  className={deleteCSS}
                   icon={faTrashAlt}/>
               </OverlayTrigger>
             </div>

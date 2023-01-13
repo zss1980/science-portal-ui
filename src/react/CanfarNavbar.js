@@ -45,13 +45,6 @@ class CanfarNavbar extends React.Component {
     render() {
       const baseURLCanfar = this.state.headerURLs.baseURLCanfar
 
-      //var authModal = ""
-      //if (this.state.isAuthenticated === false) {
-      //  authModal = <CanfarLoginModal isOpen={true}
-      //                                modalURLs={this.state.headerURLs}
-      //                                submitHandler={this.state.headerURLs.loginHandler}/>
-      //}
-
       var showBanner = false
       if (typeof this.props.bannerText !== "undefined"
         && this.props.bannerText !== "") {
@@ -62,11 +55,11 @@ class CanfarNavbar extends React.Component {
         <div className="canfar-header">
         <Navbar expand="md">
           <Container fluid>
-            <Navbar.Brand href="#home"><img src={baseURLCanfar + "/css/images/logo.png"}></img></Navbar.Brand>
+            <Navbar.Brand href={baseURLCanfar}><img src={baseURLCanfar + "/css/images/logo.png"}></img></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse className="justify-content-end">
               <Nav className="justify-content-end flex-grow-1 pe-3">
-              <Nav.Link href={this.state.baseURLcanfar + "/en/docs/quick_start/"}>Documentation</Nav.Link>
+              <Nav.Link href={baseURLCanfar + "/en/docs/quick_start/"}>Documentation</Nav.Link>
               <NavDropdown title="Services">
                 <NavDropdown.Item href={baseURLCanfar + "/storage/list"}  target="_blank">Storage Management</NavDropdown.Item>
                 <NavDropdown.Item href={this.state.headerURLs.groups} target="_blank">Group Management</NavDropdown.Item>
