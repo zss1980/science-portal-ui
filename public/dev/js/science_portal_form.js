@@ -158,9 +158,15 @@
             if (isTypeInList(curImage.type)) {
               // add into the imageList structure
               _selfPortalForm._imageData[curImage.type].imageList.push(curImage)
+
+              var imageName = curImage.id
+              // Filter if possible
+              if (typeof _selfPortalForm.dataFilters.imageName !== undefined) {
+                imageName = _selfPortalForm.dataFilters.imageName(curImage.id)
+              }
               var imageData = {
                 "id": curImage.id,
-                "name" : _selfPortalForm.dataFilters.imageName(curImage.id)
+                "name" : imageName
               }
               _selfPortalForm._imageData[curImage.type].imageDisplayList.push(imageData)
             }
