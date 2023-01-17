@@ -357,7 +357,7 @@
     function handleRenewSession(event) {
       portalCore.clearAjaxAlert()
       var sessionData = event.currentTarget.dataset
-      portalCore.setModal(_reactApp, "Renew Session Request", "Extending session time by 2 weeks", true, false, false)
+      portalCore.setModal(_reactApp, "Renew Session Request", "Extending session time", true, false, false)
       portalSessions.renewSession(sessionData.id)
     }
 
