@@ -273,7 +273,7 @@
             "altText": iconLabel,
             "connectURL": this.connectURL,
             "startTime": portalCore.dataFilters.startTime(this.startTime),
-            'expiryTime': portalCore.dataFilters.startTime(this.expiryTime),
+            "expiryTime": portalCore.dataFilters.startTime(this.expiryTime),
             "type" : this.type,
             "deleteHandler": handleDeleteSession,
             "connectHandler": handleConnectRequest,

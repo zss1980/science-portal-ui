@@ -294,8 +294,6 @@
           false
         )
         // withCredentials enables cookies to be sent
-        // Note: SameSite cookie header isn't set with this method,
-        // may cause problems with Chrome and other browsers? Feb 2021
         request.withCredentials = true
         request.open("GET", serviceURL)
         request.send(null)
@@ -330,8 +328,6 @@
           false
         )
         // withCredentials enables cookies to be sent
-        // Note: SameSite cookie header isn't set with this method,
-        // may cause problems with Chrome and other browsers? Feb 2021
         request.withCredentials = true
         request.open("DELETE", serviceURL)
         request.send(null)
@@ -370,8 +366,6 @@
           false
         )
         // withCredentials enables cookies to be sent
-        // Note: SameSite cookie header isn't set with this method,
-        // may cause problems with Chrome and other browsers? Feb 2021
         request.withCredentials = true
         request.open("POST", serviceURL)
         request.send(sessionAction)
