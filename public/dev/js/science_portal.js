@@ -352,7 +352,7 @@
     }
 
     /**
-     * Triggered from the delete modal
+     * Triggered from the renew icon on a session card
      */
     function handleRenewSession(event) {
       portalCore.clearAjaxAlert()

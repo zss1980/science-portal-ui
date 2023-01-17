@@ -136,7 +136,7 @@ function SessionItem(props) {
                   className="sp-b-tooltip"
                   overlay={
                     <Tooltip className="sp-b-tooltip">
-                      renew session<br/> (add 2 weeks time)
+                      renew session
                     </Tooltip>
                   }>
                   <FontAwesomeIcon
@@ -171,7 +171,11 @@ function SessionItem(props) {
               </Placeholder>
 
             </Card.Body>
-            <Card.Footer></Card.Footer>
+            <Card.Footer>
+              <Placeholder className="sp-form-p"  as={Card.Text} animation="glow">
+                <Placeholder className="sp-form-placeholder sp-card-placeholder" xs={12} />
+              </Placeholder>
+            </Card.Footer>
           </Card>
         </>
       }

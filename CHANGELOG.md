@@ -1,3 +1,15 @@
+## Jan 17, 2023
+### 3.1
+Supporting Changes
+- Added underlying call to Skaha to renew session expiry date.
+
+User-facing changes
+- more information added to session metadata.
+- function button added to issue request to extend time for 
+session by the current window allowed by skaha API. (Currently it's
+2 weeks.)
+
+
 ## Jan 12, 2023
 ### 3.0
 Supporting Changes
