@@ -6,6 +6,7 @@ import Placeholder from 'react-bootstrap/Placeholder';
 import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt'
+import { faClock } from '@fortawesome/free-solid-svg-icons'
 
 import './css/index.css';
 import './sp-session-list.css';
@@ -24,7 +25,7 @@ function SessionItem(props) {
   var uberCSS = ""
   var cardCSS = "sp-e-session-card"
   var connectCSS = "sp-e-session-connect"
-  var deleteCSS = "sp-card-text sp-e-session-delete"
+  var buttonCSS = "sp-card-text sp-session-button"
 
   if (props.listType === "list") {
     if (props.sessData.status === "Running") {
@@ -38,7 +39,7 @@ function SessionItem(props) {
       showSpinner = true
       cardCSS = cardCSS + pendingCSS
       connectCSS = connectCSS + pendingCSS
-      deleteCSS = deleteCSS + pendingCSS
+      buttonCSS = buttonCSS + pendingCSS
       uberCSS = "sp-pending-cursor"
     } else {
       bgClass = "secondary"
@@ -68,41 +69,88 @@ function SessionItem(props) {
                 <Badge pill bg={bgClass}>{props.sessData.status}</Badge>
               </div>
             </Col></Row>
-            <Row><Col>
-              <div className="sp-card-text">{props.sessData.image}</div>
-              <br/>
-              {/* For next pass */}
-              {/*<div className="sp-card-text">cores: {props.sessData.cores} &nbsp; RAM: {props.sessData.RAM}</div><br/>*/}
+            <Row className="sp-card-group-top"><Col>
+              <div className="sp-card-text">
+               <span className="sp-card-text-data">{props.sessData.image}</span>
+              </div>
+              {/*<br/>*/}
+
             </Col></Row>
-            <Row><Col>
-              <div className="sp-card-text">up since: {props.sessData.startTime}</div>
+            <Row className="sp-card-group-top"><Col>
+              <div className="sp-card-text">
+                <span className="sp-card-text-label">started:</span>
+                <span className="sp-card-text-data">{props.sessData.startTime}</span>
+              </div>
+              {/*<br/>*/}
+            </Col></Row>
+            <Row className="sp-card-group-middle"><Col>
+              <div className="sp-card-text">
+                <span className="sp-card-text-label">expires:</span>
+                <span className="sp-card-text-data">{props.sessData.expiryTime}</span>
+              </div>
               <br/>
             </Col></Row>
+            <Row className="sp-card-group-top">
+              <Col>
+                <div className="sp-card-text">
+                  <span className="sp-card-text-label">memory:</span>
+                  <span className="sp-card-text-data">{props.sessData.ramInUse} / {props.sessData.requestedRAM}</span>
+                </div>
+            </Col>
+          </Row>
+          <Row className="sp-card-group-middle"><Col>
+              <div className="sp-card-text">
+                <span className="sp-card-text-label">cores:</span>
+                <span className="sp-card-text-data">{props.sessData.coresInUse} / {props.sessData.requestedCPUCores}</span>
+              </div>
+          </Col></Row>
+          {/*  End of the connectCSS area, used for event handling */}
           </div>
+        </Card.Body>
+        <Card.Footer>
           <Row><Col>
             <div className="sp-card-button">
-              <OverlayTrigger
-                key="top"
-                placement="top"
-                className="sp-b-tooltip"
-                overlay={
-                  <Tooltip className="sp-b-tooltip">
-                    delete session
-                  </Tooltip>
-                }
-              >
-                <FontAwesomeIcon
-                  onClick={props.sessData.deleteHandler}
-                  data-id={props.sessData.id}
-                  data-name={props.sessData.name}
-                  className={deleteCSS}
-                  icon={faTrashAlt}/>
-              </OverlayTrigger>
-            </div>
 
-            <br/>
+                <span className="sp-card-button-span">
+                  <OverlayTrigger
+                    key="top"
+                    placement="top"
+                    className="sp-b-tooltip"
+                    overlay={
+                      <Tooltip className="sp-b-tooltip">
+                        delete session
+                      </Tooltip>
+                    }>
+                    <FontAwesomeIcon
+                      onClick={props.sessData.deleteHandler}
+                      data-id={props.sessData.id}
+                      data-name={props.sessData.name}
+                      className={buttonCSS}
+                      icon={faTrashAlt}/>
+                  </OverlayTrigger>
+                </span>
+              <span className="sp-card-button-span">
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  className="sp-b-tooltip"
+                  overlay={
+                    <Tooltip className="sp-b-tooltip">
+                      renew session<br/> (add 2 weeks time)
+                    </Tooltip>
+                  }>
+                  <FontAwesomeIcon
+                    onClick={props.sessData.renewHandler}
+                    data-id={props.sessData.id}
+                    className={buttonCSS}
+                    icon={faClock}/>
+                </OverlayTrigger>
+              </span>
+
+              </div>
           </Col></Row>
-        </Card.Body>
+        </Card.Footer>
+
       </Card>
       }
       {props.listType === "loading" &&
@@ -116,11 +164,14 @@ function SessionItem(props) {
               </Col></Row>
 
               <Placeholder className="sp-form-p"  as={Card.Text} animation="glow">
-                <Placeholder className="sp-form-placeholder" xs={12} /> <Placeholder xs={12} />
-                <Placeholder className="sp-form-placeholder" xs={12} /> <Placeholder xs={12} />{" "}
+                <Placeholder className="sp-form-placeholder sp-card-placeholder" xs={12} />
+                <Placeholder className="sp-form-placeholder sp-card-placeholder" xs={12} />{" "}
+                <Placeholder className="sp-form-placeholder sp-card-placeholder" xs={12} /> {" "}
+                <Placeholder className="sp-form-placeholder sp-card-placeholder" xs={12} /> {" "}
               </Placeholder>
 
             </Card.Body>
+            <Card.Footer></Card.Footer>
           </Card>
         </>
       }

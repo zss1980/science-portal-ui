@@ -99,6 +99,11 @@ const PAGE_STATE = {
     "type": "secondary",
     "message": "test message"
   },
+  "sessionActionAlert" : {
+    "show": false,
+    "type": "secondary",
+    "message": "test message"
+  },
   "progressBar" : {
     "type": "success",
     "animated": true
@@ -253,6 +258,9 @@ class SciencePortalApp extends React.Component {
                              animated className="sp-progress-bar" /> }
                 { this.state.pageState.progressBar.animated === false && <ProgressBar variant={this.state.pageState.progressBar.type} now={100}
                                                                            className="sp-progress-bar" /> }
+                {this.state.pageState.sessionActionAlert !== undefined && this.state.pageState.sessionActionAlert.show === true &&
+                <Alert key={this.state.pageState.sessionActionAlert.type} variant={this.state.pageState.sessionActionAlert.type}>
+                  {this.state.pageState.sessionActionAlert.message} </Alert> }
                </Col></Row>
 
 
@@ -293,7 +301,8 @@ class SciencePortalApp extends React.Component {
                 { this.state.pageState.progressBar.animated === true && <ProgressBar variant={this.state.pageState.progressBar.type} now={100}
                                                                            animated className="sp-progress-bar" /> }
                 { this.state.pageState.progressBar.animated === false && <ProgressBar variant={this.state.pageState.progressBar.type} now={100} className="sp-progress-bar" /> }
-                {this.state.pageState.alert.show === true && <Alert key={this.state.pageState.alert.type} variant={this.state.pageState.alert.type}>
+                {this.state.pageState.alert.show === true &&
+                <Alert key={this.state.pageState.alert.type} variant={this.state.pageState.alert.type}>
                   {this.state.pageState.alert.message} </Alert> }
               </Col></Row>
 

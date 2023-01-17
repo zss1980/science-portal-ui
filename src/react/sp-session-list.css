@@ -26,6 +26,32 @@
   float:right;
   font-size: 10pt;
   flex-wrap: wrap;
+  padding-right: 4px;
+}
+
+div.sp-card-text-data, span.sp-card-text-data {
+  font-weight: bold;
+  width: 120px;
+}
+
+.sp-card-text-label {
+  margin-right: 4px;
+  width: 40px
+}
+
+.sp-card-text-label {
+  margin-right: 4px;
+  width: 20px;
+}
+
+div.sp-card-group-top {
+  margin-top: 10px;
+  height: 15px;
+}
+
+div.sp-card-group-middle {
+  margin-top: 5px;
+  height: 15px;
 }
 
 .sp-card-button {
@@ -34,6 +60,10 @@
   flex-wrap: wrap;
   text-align: right;
   width:100%;
+}
+
+span.sp-card-button-span {
+  margin-left: 15px;
 }
 
 .sp-form-button {
@@ -92,7 +122,11 @@ select.form-select, input.form-control {
 div.sp-card-container {
   float: left;
   width: 300px;
-  height: 200px;
+  height: 270px;
+}
+
+div.sp-card-header {
+  height: 40px;
 }
 
 .sp-session-list-container {
@@ -126,6 +160,10 @@ div.sp-form {
   font-size: .875rem;
   border-radius: 0.25rem;
   opacity: .35%;
+}
+
+.sp-card-placeholder {
+  margin-top: 2px;
 }
 
 .sp-button-placeholder {
@@ -178,13 +216,14 @@ p.sp-form-p, div.sp-form-p {
 div.progress {
   height: 8px;
 }
-.sp-e-session-connect {
-   height : 100%;
-   cursor : pointer;
- }
 
-.sp-e-session-delete {
-  cursor : pointer;
+.sp-session-button {
+  margin-left: 15px;
+  font-size: 13pt;
+  /*color: #0d6efd;*/
+  /*color: #337ab7;*/
+
+  color: #265a88;
 }
 
 .sp-pending {
@@ -196,10 +235,6 @@ div.progress {
   cursor: progress;
 }
 
-.sp-session-item {
-  width:2650px;
-  margin-right: 15px;
-}
 
 div.sp-session-pending {
   opacity: 50%;
@@ -366,35 +401,35 @@ a.nav-link {
   margin-bottom: 5px;
 }
 
-.sp-button {
-  margin-left: 5px;
-}
+/*.sp-button {*/
+/*  margin-left: 5px;*/
+/*}*/
 
-.sp-button-group {
-  /* because col-sm-* has padding that misaligns the buttons */
-  padding-left: 0px;
-}
+/*.sp-button-group {*/
+/*  !* because col-sm-* has padding that misaligns the buttons *!*/
+/*  padding-left: 0px;*/
+/*}*/
 
-.sp-small-button {
-  height: 22px;
-  width: 22px;
-  text-align: center;
-  padding: 0px;
-  opacity: .6;
-  display: inline-block;
-  float: none;
-  vertical-align: middle;
-}
+/*.sp-small-button {*/
+/*  height: 22px;*/
+/*  width: 22px;*/
+/*  text-align: center;*/
+/*  padding: 0px;*/
+/*  opacity: .6;*/
+/*  display: inline-block;*/
+/*  float: none;*/
+/*  vertical-align: middle;*/
+/*}*/
 
-.sp-vertical-align {
-  display: inline-block;
-  float: none;
-  vertical-align: middle;
-}
+/*.sp-vertical-align {*/
+/*  display: inline-block;*/
+/*  float: none;*/
+/*  vertical-align: middle;*/
+/*}*/
 
-.sp-small-button:hover {
-  opacity: .8;
-}
+/*.sp-small-button:hover {*/
+/*  opacity: .8;*/
+/*}*/
 
 .sp-listpage-header {
   margin-left: 10px;
@@ -407,9 +442,9 @@ a.nav-link {
   min-height: 40px;
 }
 
-.panel-body {
-  background-image: linear-gradient(to bottom, #ededed 0, #f5f5f5 100%);
-}
+/*.panel-body {*/
+/*  background-image: linear-gradient(to bottom, #ededed 0, #f5f5f5 100%);*/
+/*}*/
 
 .sp-form-input {
   height: 36px;
@@ -426,19 +461,19 @@ a.nav-link {
   vertical-align: middle;
 }
 
-.sp-inline-radio {
-  padding: 0px;
-}
+/*.sp-inline-radio {*/
+/*  padding: 0px;*/
+/*}*/
 
-#sp_language {
-  padding-top: 4px;
-  padding-bottom: 2px;
-}
+/*#sp_language {*/
+/*  padding-top: 4px;*/
+/*  padding-bottom: 2px;*/
+/*}*/
 
-#sp_language > label {
-  padding-top: 4px;
-  padding-bottom: 2px;
-}
+/*#sp_language > label {*/
+/*  padding-top: 4px;*/
+/*  padding-bottom: 2px;*/
+/*}*/
 
 .sp-display {
   margin-top: 8px;
@@ -588,8 +623,8 @@ a.nav-link {
 }
 
 .sp-icon-img {
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
 }
 
 

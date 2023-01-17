@@ -149,12 +149,12 @@
       _rApp.openLoginodal(false)
     }
 
-    function clearAjaxAlert(reactAppLink) {
-      setPageState("success", false, reactAppLink)
+    function clearAjaxAlert() {
+      setPageState("success", false)
     }
 
     // Communicate AJAX progress and status using progress bar
-    function setPageState(barType, isAnimated, reactAppLink, alertMsg) {
+    function setPageState(barType, isAnimated, alertMsg, sessionActionAlertMsg) {
       var pageState = {
         "progressBar": {
           "type": barType,
@@ -163,28 +163,47 @@
         "isAuthenticated" : _isAuthenticated
       }
 
-      if (typeof alertMsg !== "undefined") {
+      if (typeof sessionActionAlertMsg !== "undefined") {
+        pageState.sessionActionAlert = {
+          "type": barType,
+          "show":  true,
+          "message": sessionActionAlertMsg
+        }
+      } else {
+        pageState.sessionActionAlertMsg = {
+          "show": false
+        }
+      }
+
+
+      if ((typeof alertMsg !== "undefined") && (alertMsg !== "")) {
         pageState.alert = {
-                        "type": barType,
-                        "show":  true,
-                        "message": alertMsg
-                      }
+            "type": barType,
+            "show":  true,
+            "message": alertMsg
+          }
       } else {
         pageState.alert = {
           "show": false
         }
       }
-      reactAppLink.setPageStatus(pageState)
+      _rApp.setPageStatus(pageState)
     }
 
     function setAjaxFail(message, reactAppLink) {
       var alertMsg = message.status + ": " + getRcDisplayText(message)
-      setPageState("danger", false, reactAppLink, alertMsg)
+      setPageState("danger", false, alertMsg)
       hideModal(reactAppLink)
     }
 
-    function setAjaxSuccess(message, reactAppLink) {
-      setPageState("success", false, reactAppLink, message)
+    function setSessionActionAjaxFail(requestObj) {
+      var alertMsg = requestObj.status + ": " + requestObj.responseText
+      setPageState("danger", false, "", alertMsg)
+      hideModal(_rApp)
+    }
+
+    function setAjaxSuccess(message) {
+      setPageState("success", false, message)
     }
 
     function handleAjaxError(request, reactAppLink) {
@@ -199,7 +218,9 @@
       var tmpTime = ""
       if (startTime !== undefined) {
         tmpTime = startTime.replace("T", " ")
-        tmpTime = tmpTime.replace("Z", "")
+        // Truncate seconds and "Z" from time stamp
+        tmpTime = tmpTime.substr(0, tmpTime.lastIndexOf(":"))
+
       } else {
         tmpTime = "not available"
       }
@@ -435,10 +456,11 @@
       setSessionServiceURLs: setSessionServiceURLs,
       setAjaxSuccess: setAjaxSuccess,
       setAjaxFail: setAjaxFail,
-      handleAjaxError: handleAjaxError,
+      setSessionActionAjaxFail: setSessionActionAjaxFail,
       setPageState: setPageState,
       setReactAppRef: setReactAppRef,
       clearAjaxAlert: clearAjaxAlert,
+      handleAjaxError: handleAjaxError,
       setConfirmModal: setConfirmModal,
       hideConfirmModal: hideConfirmModal,
       checkAuthentication: checkAuthentication,

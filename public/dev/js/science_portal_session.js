@@ -11,8 +11,9 @@
               events: {
                 onLoadSessionListDone: new jQuery.Event("sciPort:onLoadSessionListDone"),
                 onLoadSessionListError: new jQuery.Event("sciPort:onLoadSessionListError"),
-                onSessionDeleteOK: new jQuery.Event("sciPort:onSessionDeleteOK"),
-                onSessionDeleteError: new jQuery.Event("sciPort:onSessionDeleteError"),
+                onSessionActionDone: new jQuery.Event("sciPort:onSessionActionDone"),
+                //onSessionDeleteError: new jQuery.Event("sciPort:onSessionDeleteError"),
+                onSessionActionError: new jQuery.Event("sciPort:onSessionActionError"),
                 onPollingContinue: new jQuery.Event("sciPort:onPollingContinue"),
               }
             }
@@ -304,11 +305,11 @@
     function deleteSession(sessionID) {
       Promise.resolve(deleteSessionAjax(_selfPortalSess.sessionServiceURL + "/" + sessionID, sessionID))
         .then(function(sessionID) {
-          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onSessionDeleteOK, sessionID)
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onSessionActionDone, sessionID)
         })
         .catch(function(message) {
           // get session list failed in a way that can't allow page to continue
-          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onSessionDeleteError, message)
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onSessionActionError, message)
         })
     }
 
@@ -336,6 +337,48 @@
         request.send(null)
       })
     }
+
+
+    function renewSession(sessionID) {
+      var _formData = new FormData();
+      _formData.append("action", "renew")
+
+      Promise.resolve(renewSessionAjax(_selfPortalSess.sessionServiceURL + "/" + sessionID, sessionID, _formData))
+        .then(function(sessionID) {
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onSessionActionDone, sessionID)
+        })
+        .catch(function(message) {
+          // get session list failed in a way that can't allow page to continue
+          trigger(_selfPortalSess, cadc.web.science.portal.session.events.onSessionActionError, message)
+        })
+    }
+
+    function renewSessionAjax(serviceURL, sessionID, sessionAction) {
+      return new Promise(function (resolve, reject) {
+        var request = new XMLHttpRequest()
+
+        // "load" is the XMLHttpRequest "finished" event
+        request.addEventListener(
+          "load",
+          function () {
+            if (request.status === 200) {
+              resolve(sessionID)
+            } else {
+              reject(request)
+            }
+          },
+          false
+        )
+        // withCredentials enables cookies to be sent
+        // Note: SameSite cookie header isn't set with this method,
+        // may cause problems with Chrome and other browsers? Feb 2021
+        request.withCredentials = true
+        request.open("POST", serviceURL)
+        request.send(sessionAction)
+      })
+    }
+
+
 
     function pollSessionList(interval) {
         // TODO: consider long-running timeout so panel left in background doesn't use
@@ -398,6 +441,7 @@
         isSessionListEmpty : isSessionListEmpty,
         pollSessionList: pollSessionList,
         deleteSession: deleteSession,
+        renewSession: renewSession,
         sortSessions: sortSessions
       })
     }
