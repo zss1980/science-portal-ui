@@ -1,9 +1,9 @@
-// Test config object
-// Use this to point your local version of Science Portal to appropriate service locations
+// Test config objects
+// Use to point your local version of Science Portal to appropriate service locations
 // Handy if for some reason you have to switch to point to production to test something,
 // or in case lack of VPN access blocks getting to the rc registry.
 
-const testSessionURLs = {
+const devtestSessionURLs = {
           'base': "https://rc-uv.canfar.net",
           'session': 'https://rc-uv.canfar.net/skaha/session',
           'context': 'https://rc-uv.canfar.net/skaha/context',
@@ -11,6 +11,17 @@ const testSessionURLs = {
           'authBaseURL': "https://rc-wwww.canfar.net/",
           'registryClient': "https://rc-ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca"
         }
+
+
+
+const prodtestSessionURLs = {
+  'base': "https://ws-uv.canfar.net",
+  'session': 'https://ws-uv.canfar.net/skaha/session',
+  'context': 'https://ws-uv.canfar.net/skaha/context',
+  'images': 'https://ws-uv.canfar.net/skaha/image',
+  'authBaseURL': "https://ws-wwww.canfar.net/",
+  'registryClient': "https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca"
+}
 
 
 // Folder location (relative to root) of the js and json config files

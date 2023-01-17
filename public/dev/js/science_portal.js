@@ -103,6 +103,7 @@
       $(".sp-session-reload").click(checkForSessions)
 
       // Data Flow/javascript object listeners
+      // portalCore listeners
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onAuthenticated, function (e, data) {
         // onServiceURLOK comes from here
         // Contacts the registry to discover where the sessions web service is,
@@ -125,7 +126,7 @@
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onServiceURLFail, function (e, data){
         // Unable to contact registry to get sessions web service URL
-        portalCore.setPageState("danger", false, _reactApp)
+        portalCore.setPageState("danger", false)
 
         portalCore.setModal(_reactApp, "Portal Unavailable",
           "Unable to establish communication with Skaha web service. "
@@ -133,11 +134,13 @@
           false, true, true)
       })
 
+
+      // portalSessions listeners
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListDone, function (e) {
         // Build session list on top of page
         var filteredList = portalSessions.getFilteredSessionList()
         populateSessionList(filteredList)
-        portalCore.setPageState("success", false, _reactApp)
+        portalCore.setPageState("success", false)
         portalCore.hideModal(_reactApp)
 
         if (( _selfPortalApp.isPolling === false)
@@ -167,30 +170,23 @@
         }
       })
 
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, handleServiceError)
-
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onPollingContinue, function (e) {
         // Rebuild session list on top of page
         var filteredList = portalSessions.getFilteredSessionList()
         populateSessionList(filteredList)
       })
 
-      portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, function (e, sessionData) {
-        _curSessionType = portalForm.getSessionTypeDefault()
-        setLaunchForm(_curSessionType)
-        checkForSessions()
-      })
-
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionDeleteOK, function (e, sessionID) {
-        portalCore.hideModal(_reactApp)
-        checkForSessions()
-      })
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, handleServiceError)
+      portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, refreshSessionForm)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionActionDone, refreshSessionForm)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionActionError, handleSessionActionError)
 
       // Portal Form listeners
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadFormDataDone, initForm)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadTypeMapDone, continueInit)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadContextDataError, handleServiceError)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadImageDataError, handleServiceError)
+
 
     } // end attachListeners()
 
@@ -211,6 +207,16 @@
         msgBody = "Your userid is not authorized to use Skaha resources. Contact CANFAR admin for assistance."
       }
       portalCore.setModal(_reactApp, msgHeader, msgBody, false, true, true)
+    }
+
+    function handleSessionActionError(e, request) {
+      portalCore.setSessionActionAjaxFail(request)
+    }
+
+    function refreshSessionForm() {
+      _curSessionType = portalForm.getSessionTypeDefault()
+      setLaunchForm(_curSessionType)
+      checkForSessions()
     }
 
     // ------------ Data display functions
@@ -260,14 +266,18 @@
             "status": this.status,
             "logo": iconSrc,
             "image": portalCore.dataFilters.imageName(this.image),
-            "RAM": "2G",
-            "cores": "2",
+            "requestedRAM": this.requestedRAM,
+            "ramInUse": this.ramInUse,
+            "requestedCPUCores": this.requestedCPUCores,
+            "coresInUse": this.coresInUse,
             "altText": iconLabel,
             "connectURL": this.connectURL,
             "startTime": portalCore.dataFilters.startTime(this.startTime),
+            "expiryTime": portalCore.dataFilters.startTime(this.expiryTime),
             "type" : this.type,
             "deleteHandler": handleDeleteSession,
-            "connectHandler": handleConnectRequest
+            "connectHandler": handleConnectRequest,
+            "renewHandler": handleRenewSession
           }
 
           // Add to the list
@@ -287,7 +297,7 @@
 
     function checkForSessions() {
       portalCore.setModal(_reactApp,"Session Check", "Grabbing session list", true, false, false)
-      portalCore.setPageState("success", true, _reactApp)
+      portalCore.setPageState("success", true)
       portalSessions.loadSessionList()
     }
 
@@ -302,7 +312,7 @@
       event.preventDefault()
       // Pull data-* information from anchor element
       var sessionData = $(event.currentTarget).data()
-      portalCore.setPageState("success", false, _reactApp)
+      portalCore.setPageState("success", false)
       window.open(sessionData.connecturl, "_blank")
     }
 
@@ -313,20 +323,12 @@
       window.location.reload()
     }
 
-    //function showLaunchForm(show) {
-    //  if (show === true) {
-    //    $("#sp_launch_form_div").removeClass("hidden")
-    //  } else {
-    //    $("#sp_launch_form_div").addClass("hidden")
-    //  }
-    //}
-
     /**
      * Triggered from delete element on individual session
      */
     function handleDeleteSession(event) {
       event.preventDefault()
-      portalCore.clearAjaxAlert(_reactApp)
+      portalCore.clearAjaxAlert()
       var sessionData = event.currentTarget.dataset
       _state.currentSessionData = sessionData
       portalCore.setConfirmModal(_reactApp, handleConfirmedDelete, sessionData)
@@ -348,6 +350,18 @@
     function handleCancelDelete(event) {
       portalCore.hideConfirmModal(_reactApp)
     }
+
+    /**
+     * Triggered from the renew icon on a session card
+     */
+    function handleRenewSession(event) {
+      portalCore.clearAjaxAlert()
+      var sessionData = event.currentTarget.dataset
+      portalCore.setModal(_reactApp, "Renew Session Request", "Extending session time", true, false, false)
+      portalSessions.renewSession(sessionData.id)
+    }
+
+
 
     // ------------ HTTP/Ajax functions & event handlers ------------
     // ---------------- POST ------------------
@@ -372,7 +386,7 @@
       portalCore.setModal(_reactApp, "Requesting Session", "Requesting new session", true, false, false)
       Promise.resolve(postSessionRequestAjax(portalCore.sessionServiceURLs.session, _prunedFormData))
         .then(function(sessionInfo) {
-          portalCore.setPageState("success", false, _reactApp)
+          portalCore.setPageState("success", false)
           portalCore.hideModal(_reactApp)
           portalCore.trigger(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, sessionInfo)
         })
