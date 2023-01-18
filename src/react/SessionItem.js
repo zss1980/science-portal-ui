@@ -79,14 +79,14 @@ function SessionItem(props) {
             <Row className="sp-card-group-top"><Col>
               <div className="sp-card-text">
                 <span className="sp-card-text-label">started:</span>
-                <span className="sp-card-text-data">{props.sessData.startTime}</span>
+                <span className="sp-card-text-data">{props.sessData.startTime}</span> UTC
               </div>
               {/*<br/>*/}
             </Col></Row>
             <Row className="sp-card-group-middle"><Col>
               <div className="sp-card-text">
                 <span className="sp-card-text-label">expires:</span>
-                <span className="sp-card-text-data">{props.sessData.expiryTime}</span>
+                <span className="sp-card-text-data">{props.sessData.expiryTime}</span> UTC
               </div>
               <br/>
             </Col></Row>

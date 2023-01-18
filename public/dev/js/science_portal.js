@@ -296,7 +296,7 @@
 
 
     function checkForSessions() {
-      portalCore.setModal(_reactApp,"Session Check", "Grabbing session list", true, false, false)
+      portalCore.setModal(_reactApp,"Session Check", "Fetching session list", true, false, false)
       portalCore.setPageState("success", true)
       portalSessions.loadSessionList()
     }
