@@ -12,9 +12,7 @@ import './css/index.css';
 import './sp-session-list.css';
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
-import Modal from "react-bootstrap/Modal";
 
 function SessionItem(props) {
 
@@ -26,6 +24,7 @@ function SessionItem(props) {
   var cardCSS = "sp-e-session-card"
   var connectCSS = "sp-e-session-connect"
   var buttonCSS = "sp-card-text sp-session-button"
+  var deleteCSS = "sp-card-text sp-session-button"
 
   if (props.listType === "list") {
     if (props.sessData.status === "Running") {
@@ -125,7 +124,7 @@ function SessionItem(props) {
                       onClick={props.sessData.deleteHandler}
                       data-id={props.sessData.id}
                       data-name={props.sessData.name}
-                      className={buttonCSS}
+                      className={deleteCSS}
                       icon={faTrashAlt}/>
                   </OverlayTrigger>
                 </span>

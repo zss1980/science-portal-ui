@@ -22,6 +22,14 @@ HTTPS=true
 in mind there are CORS issues with having a domain different than the system skaha is 
 deployed on.) 
 
+#### Troubleshooting .env file usage
+(*) If this file is not in place, 'npm start' will start the app up on localhost which won't
+work. If the .env file is in place in the 
+
+(*) If your IDE can't find a .env file that is clearly in the root of your
+project, make sure the references to node and npm locations are correct for 
+the project.
+
 #### Host File Entry
 
 NOTE: the HOST entry can be whatever you wish, as long as it also appears in your local
