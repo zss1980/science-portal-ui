@@ -1,3 +1,13 @@
+## Jan 30, 2023
+### 3.2
+Supporting Changes
+- Added calls and plumbing for session stats
+
+User-facing changes
+- pending delete is now possible (fixing bug injected in v 3.0)
+- global session stats displayed in panel next to launch form
+- reset button available for global session stats
+
 ## Jan 17, 2023
 ### 3.1
 Supporting Changes
