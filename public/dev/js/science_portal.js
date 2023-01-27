@@ -41,7 +41,6 @@
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
     var portalForm = new cadc.web.science.portal.form.PortalForm(inputs)
 
-
     var _selfPortalApp = this
 
     this.baseURL = inputs.baseURL
@@ -55,7 +54,7 @@
       this.isDev = inputs.isDev
     }
 
-    // TODO: this is for dev or situations where a registry app
+    // NOTE: this is for dev or situations where a registry app
     // might not be available
     var URLOverrides = inputs.URLOverrides
 
@@ -63,9 +62,6 @@
     var _state = {
       currentSessionData: {}
     }
-
-    // Complete list of form fields available
-    //var _launchFormFields = ["name", "type", "image", "memory", "cores"]
     var _curSessionType
 
     // ------------ Page load functions ------------
@@ -89,8 +85,8 @@
       portalCore.initConfirmModal(_reactApp, handleConfirmedDelete, handleCancelDelete)
 
       if (typeof inputs.bannerText !== "undefined") {
-      _reactApp.setBanner(inputs.bannerText)
-    }
+        _reactApp.setBanner(inputs.bannerText)
+      }
 
       // Nothing happens if user is not authenticated, so no other page
       // load information is done until this call comes back (see onAuthenticated event below)
@@ -120,13 +116,18 @@
         // Get portalForm to start collecting form data
         portalForm.getFormData()
 
+        // Get global session statistics
+        portalSessions.loadGlobalStats()
+
         // Start loading session lists
         checkForSessions()
+
+
       })
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onServiceURLFail, function (e, data){
         // Unable to contact registry to get sessions web service URL
-        portalCore.setPageState("danger", false)
+        portalCore.setPageState(portalCore.pageSections.all,"danger", false)
 
         portalCore.setModal(_reactApp, "Portal Unavailable",
           "Unable to establish communication with Skaha web service. "
@@ -140,7 +141,7 @@
         // Build session list on top of page
         var filteredList = portalSessions.getFilteredSessionList()
         populateSessionList(filteredList)
-        portalCore.setPageState("success", false)
+        portalCore.setPageState(portalCore.pageSections.sessionList, "success", false)
         portalCore.hideModal(_reactApp)
 
         if (( _selfPortalApp.isPolling === false)
@@ -148,7 +149,7 @@
 
           // Flag polling is occurring so only one instance is running at a time.
           // Any changes in session list will be picked up by the single polling instance
-          _selfPortalApp.isPolling == true
+          _selfPortalApp.isPolling = true
 
           // If everything is stable, stop. If no, kick off polling
           portalSessions.pollSessionList(8000)
@@ -177,9 +178,13 @@
       })
 
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, handleServiceError)
-      portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, refreshSessionForm)
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionActionDone, refreshSessionForm)
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionActionError, handleSessionActionError)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadGlobalStatsDone, populateGlobalStats)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadGlobalStatsError, handleSessionActionError)
+
+      // Listeners for this class (science_portal.js)
+      portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, refreshSessionForm)
 
       // Portal Form listeners
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadFormDataDone, initForm)
@@ -210,7 +215,8 @@
     }
 
     function handleSessionActionError(e, request) {
-      portalCore.setSessionActionAjaxFail(request)
+      // portalCore.setSessionActionAjaxFail(request)
+      portalCore.setAjaxFail(portalCore.pageSections.sessionList, request)
     }
 
     function refreshSessionForm() {
@@ -221,6 +227,13 @@
 
     // ------------ Data display functions
 
+    function populateGlobalStats() {
+      var globalStats = portalSessions.getGlobalStats()
+
+      // pass globalStats to the react App for rendering
+      _reactApp.updateGlobalStats(globalStats)
+    }
+
     function populateSessionList(sessionData) {
       var $sessionListDiv = $("#sp_session_list")
 
@@ -230,7 +243,7 @@
           "listType" : "empty",
           "sessData" : []
         }
-        _reactApp.updateSessionList(sessDataObj)
+        var currentState = _reactApp.updateSessionList(sessDataObj)
       } else {
 
         // Build new list
@@ -290,14 +303,16 @@
           "listType" : "list",
           "sessData" : newSessionList
         }
-        _reactApp.updateSessionList(sessDataObj)
+        var currentState = _reactApp.updateSessionList(sessDataObj)
+        var todo='remove me'
       }
     }
 
 
     function checkForSessions() {
       portalCore.setModal(_reactApp,"Session Check", "Fetching session list", true, false, false)
-      portalCore.setPageState("success", true)
+      portalCore.clearAjaxAlert(portalCore.pageSections.sessionList)
+      portalCore.setPageState(portalCore.pageSections.sessionList, "success", true)
       portalSessions.loadSessionList()
     }
 
@@ -312,7 +327,7 @@
       event.preventDefault()
       // Pull data-* information from anchor element
       var sessionData = $(event.currentTarget).data()
-      portalCore.setPageState("success", false)
+      portalCore.setPageState(portalCore.pageSections.all,"success", false)
       window.open(sessionData.connecturl, "_blank")
     }
 
@@ -328,7 +343,7 @@
      */
     function handleDeleteSession(event) {
       event.preventDefault()
-      portalCore.clearAjaxAlert()
+      portalCore.clearAjaxAlert(portalCore.pageSections.sessionList)
       var sessionData = event.currentTarget.dataset
       _state.currentSessionData = sessionData
       portalCore.setConfirmModal(_reactApp, handleConfirmedDelete, sessionData)
@@ -355,7 +370,7 @@
      * Triggered from the renew icon on a session card
      */
     function handleRenewSession(event) {
-      portalCore.clearAjaxAlert()
+      portalCore.clearAjaxAlert(portalCore.pageSections.sessionList)
       var sessionData = event.currentTarget.dataset
       portalCore.setModal(_reactApp, "Renew Session Request", "Extending session time", true, false, false)
       portalSessions.renewSession(sessionData.id)
@@ -373,7 +388,7 @@
     function handleSessionRequest(event) {
       // Stop normal form submit
       event.preventDefault()
-      portalCore.clearAjaxAlert(_reactApp)
+      portalCore.clearAjaxAlert(portalCore.pageSections.form)
 
       var _prunedFormData = new FormData();
 
@@ -386,12 +401,12 @@
       portalCore.setModal(_reactApp, "Requesting Session", "Requesting new session", true, false, false)
       Promise.resolve(postSessionRequestAjax(portalCore.sessionServiceURLs.session, _prunedFormData))
         .then(function(sessionInfo) {
-          portalCore.setPageState("success", false)
+          portalCore.setPageState(portalCore.pageSections.form,"success", false)
           portalCore.hideModal(_reactApp)
           portalCore.trigger(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, sessionInfo)
         })
         .catch(function(request) {
-          portalCore.handleAjaxError(request, _reactApp)
+          portalCore.handleAjaxError(portalCore.pageSections.form, request)
         })
     }
 
@@ -452,7 +467,7 @@
     }
 
     function resetLaunchForm() {
-      portalCore.clearAjaxAlert(_reactApp)
+      portalCore.clearAjaxAlert()
       _curSessionType = portalForm.getSessionTypeDefault()
       setLaunchForm(_curSessionType)
     }

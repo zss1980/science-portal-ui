@@ -12,8 +12,9 @@
                 onLoadSessionListDone: new jQuery.Event("sciPort:onLoadSessionListDone"),
                 onLoadSessionListError: new jQuery.Event("sciPort:onLoadSessionListError"),
                 onSessionActionDone: new jQuery.Event("sciPort:onSessionActionDone"),
-                //onSessionDeleteError: new jQuery.Event("sciPort:onSessionDeleteError"),
                 onSessionActionError: new jQuery.Event("sciPort:onSessionActionError"),
+                onLoadGlobalStatsDone: new jQuery.Event("sciPort:onLoadGlobalStatsDone"),
+                onLoadGlobalStatsError: new jQuery.Event("sciPort:onLoadGlobalStatsError"),
                 onPollingContinue: new jQuery.Event("sciPort:onPollingContinue"),
               }
             }
@@ -33,6 +34,8 @@
     var _isEmpty = true
     this._sessionList = []
     this._sessionTypeList = []
+    this._globalStats = {}
+    this._globalStatsRaw = {}
 
     function setServiceURLs(URLObject) {
       _selfPortalSess.sessionServiceURL = URLObject.session
@@ -44,8 +47,13 @@
       _selfPortalSess._filteredSessionList = {}
     }
 
+
+    function getGlobalStats() {
+      return _selfPortalSess._globalStats
+    }
+
     function getSessionList() {
-      if (_selfPortalSess._sessionList === {}) {
+      if (_selfPortalSess._sessionList === []) {
         initSessionLists()
       }
       return _selfPortalSess._sessionList
@@ -259,12 +267,69 @@
     }
 
     /**
-     * Run this on page load to see if there's something to start up.
+     * Run these on page load to get data for populating session list
+     * and global stats.
     */
-    function loadSessionList() {
-      Promise.resolve(getSessionListAjax(_selfPortalSess.sessionServiceURL, {}))
-        .then(function(sessionList) {
 
+    function loadGlobalStats() {
+      var statsURL = _selfPortalSess.sessionServiceURL + "?view=stats"
+      Promise.resolve(_getAjaxData(statsURL, {}))
+          .then(function(globalStats) {
+            // _selfPortalSess._globalStatsRaw = globalStats
+            var nowDate = new Date()
+            var month = nowDate.getUTCMonth() + 1
+            _selfPortalSess._globalStats.updated = nowDate.getUTCFullYear() + "-"
+                + month  + "-" + nowDate.getUTCDate()
+                + " " + nowDate.getUTCHours() + ":" + nowDate.getMinutes()
+
+
+            // Take the API data and convert to javascritp object
+            _selfPortalSess._globalStats.profiles = {
+              "cpu": {"ram": globalStats.cores.maxCPUCores.withRam,
+                      "cpu": globalStats.cores.maxCPUCores.cpuCores},
+              "memory": {"ram": globalStats.ram.maxRAM.ram,
+                "cpu": globalStats.ram.maxRAM.withCPUCores},
+            }
+
+            _selfPortalSess._globalStats.cpu = {
+              "used" : globalStats.cores.requestedCPUCores,
+              "free" : globalStats.cores.cpuCoresAvailable,
+              "total" : globalStats.cores.requestedCPUCores + globalStats.cores.cpuCoresAvailable
+            }
+
+            // These values may change over time, so store the key name
+            // in order to use it as a label
+            // _selfPortalSess._globalStats.instances = globalStats.instances
+            _selfPortalSess._globalStats.instances = {}
+            // var instancesKeys = Object.keys(globalStats.instances)
+            _selfPortalSess._globalStats.instances = {
+              labels: new Array(),
+              data: new Array(),
+              total: globalStats.instances.total
+            }
+
+            let entries = Object.entries(globalStats.instances)
+            var data = entries.map( ([key, val] = entry) => {
+              if (key !== 'total') {
+                _selfPortalSess._globalStats.instances.labels.push(key)
+                _selfPortalSess._globalStats.instances.data.push(val)
+              }
+            });
+
+            _selfPortalSess._globalStats.refreshHandler = _selfPortalSess.loadGlobalStats
+            _selfPortalSess._globalStats.listType = "data"
+
+            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadGlobalStatsDone)
+          })
+          .catch(function(message) {
+            // get session list failed in a way that can't allow page to continue
+            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadGlobalStatsError, message)
+          })
+    }
+
+    function loadSessionList() {
+      Promise.resolve(_getAjaxData(_selfPortalSess.sessionServiceURL, {}))
+        .then(function(sessionList) {
           setSessionList(sessionList)
           trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone)
 
@@ -275,30 +340,31 @@
         })
     }
 
-    function getSessionListAjax(serviceURL, sessionData) {
-
-      return new Promise(function (resolve, reject) {
-        var request = new XMLHttpRequest()
-
-        // "load" is the XMLHttpRequest "finished" event
-        request.addEventListener(
-          "load",
-          function () {
-            if (request.status === 200) {
-              var jsonData = JSON.parse(request.responseText)
-              resolve(jsonData)
-            } else {
-              reject(request)
-            }
-          },
-          false
-        )
-        // withCredentials enables cookies to be sent
-        request.withCredentials = true
-        request.open("GET", serviceURL)
-        request.send(null)
-      })
-    }
+    //
+    // function getSessionListAjax(serviceURL, sessionData) {
+    //
+    //   return new Promise(function (resolve, reject) {
+    //     var request = new XMLHttpRequest()
+    //
+    //     // "load" is the XMLHttpRequest "finished" event
+    //     request.addEventListener(
+    //       "load",
+    //       function () {
+    //         if (request.status === 200) {
+    //           var jsonData = JSON.parse(request.responseText)
+    //           resolve(jsonData)
+    //         } else {
+    //           reject(request)
+    //         }
+    //       },
+    //       false
+    //     )
+    //     // withCredentials enables cookies to be sent
+    //     request.withCredentials = true
+    //     request.open("GET", serviceURL)
+    //     request.send(null)
+    //   })
+    // }
 
     function deleteSession(sessionID) {
       Promise.resolve(deleteSessionAjax(_selfPortalSess.sessionServiceURL + "/" + sessionID, sessionID))
@@ -372,7 +438,32 @@
       })
     }
 
+    // Used for GETs: session list, session stats
+    function _getAjaxData(serviceURL) {
+      return new Promise(function (resolve, reject) {
+        var request = new XMLHttpRequest()
 
+        // 'load' is the XMLHttpRequest 'finished' event
+        request.addEventListener(
+            "load",
+            function () {
+              if (request.status === 200) {
+                var jsonData = JSON.parse(request.responseText)
+                resolve(jsonData)
+              } else {
+                reject(request)
+              }
+            },
+            false
+        )
+        // withCredentials enables cookies to be sent
+        // Note: SameSite cookie header isn't set with this method,
+        // may cause problems with Chrome and other browsers? Feb 2021
+        request.withCredentials = true
+        request.open("GET", serviceURL)
+        request.send(null)
+      })
+    }
 
     function pollSessionList(interval) {
         // TODO: consider long-running timeout so panel left in background doesn't use
@@ -380,7 +471,8 @@
         interval = interval || 200
 
         var checkCondition = function (resolve, reject) {
-          getSessionListAjax(_selfPortalSess.sessionServiceURL)
+          // getSessionListAjax(_selfPortalSess.sessionServiceURL)
+          _getAjaxData(_selfPortalSess.sessionServiceURL)
             .then(function (sessionList) {
               _selfPortalSess.setSessionList(sessionList)
               if (_selfPortalSess.isAllSessionsStable()) {
@@ -421,10 +513,12 @@
         setServiceURLs: setServiceURLs,
         initSessionLists: initSessionLists,
         getDefaultSessionName: getDefaultSessionName,
+        getGlobalStats: getGlobalStats,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
         getSessionList: getSessionList,
         getFilteredSessionList: getFilteredSessionList,
+        loadGlobalStats: loadGlobalStats,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
         setSessionTypeList: setSessionTypeList,

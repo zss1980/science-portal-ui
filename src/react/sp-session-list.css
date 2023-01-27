@@ -70,6 +70,76 @@ span.sp-card-button-span {
   margin-left: 15px;
 }
 
+div.sp-stats-text-div {
+  margin: 5px;
+  width: 170px;
+  font-size: 12px;
+  /*height: 50px;*/
+}
+
+div.sp-stats-text-div-title {
+  margin: 5px;
+  width: 200px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+div.sp-stats-text-date {
+  float: right;
+  font-size: small;
+  font-style: italic;
+}
+
+/*div.sp-stats-bar-div {*/
+/*  width: 300px;*/
+/*  height: 100px;*/
+/*}*/
+
+/*div.sp-stats-bar-div-tall {*/
+/*  width: 150px;*/
+/*  height: 400px;*/
+/*}*/
+
+
+div.sp-stats-pie-session {
+  width: 245px;
+  /*height: 200px;*/
+}
+
+div.sp-stats-pie-row {
+  margin-top: -30px;
+}
+
+div.sp-stats-updated-row {
+  margin-top: -45px;
+}
+
+div.sp-stats-pie-cpu {
+  width: 220px;
+  /*height: 200px;*/
+}
+
+div.sp-stats-pie-cpu-title {
+  margin-bottom: -15px;
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 40px;
+}
+
+div.sp-stats-pie-cpu > canvas {
+  margin-top: -20px;
+}
+
+div.sp-stats-pie-session > canvas {
+  margin-top: -30px;
+}
+
+span.sp-stats-text {
+  color: blue;
+  font-weight: bold;
+  font-size: 12px;
+}
+
 .sp-form-button {
   margin-right: 5px;
   background-image: linear-gradient(to bottom,#337ab7 0,#265a88 100%);
@@ -170,6 +240,10 @@ div.sp-form {
   margin-top: 2px;
 }
 
+.sp-card-placeholder-stats {
+  height: 200px;
+}
+
 .sp-button-placeholder {
   height:1.75rem;
   padding-top: 0.25rem;
@@ -204,6 +278,10 @@ div.sp-emptylist-card {
 
 .sp-title-placeholder {
   height: 75px;
+}
+
+.sp-title-placeholder-stats {
+  height: 50px;
 }
 
 /* Needed to apply the correct opacity on the Placeholder elements */

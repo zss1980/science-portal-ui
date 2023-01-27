@@ -12,7 +12,8 @@ react developer tools in chrome: https://chrome.google.com/webstore/detail/react
 host file entry (see Environment Files)
 
 ### Environment files
-.env file needs to be set up in the root of your local copy of the code, with contents similar to:
+.env file needs to be set up in the root of your local copy of the code, with contents similar to
+(note one entry one each line or npm won't recognize the values):
 
 PORT=443
 HOST=dev-www.canfar.net
