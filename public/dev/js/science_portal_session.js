@@ -37,6 +37,18 @@
     this._globalStats = {}
     this._globalStatsRaw = {}
 
+    this._backgroundColorPalette = [
+      "#0E4D92",
+      "#4682B4",
+      "#57A0D3",
+    ]
+
+    this._hoverBackgroundColorPalette = [
+      "#0080FF",
+      "#0F52BA",
+      "#008ECC"
+    ]
+
     function setServiceURLs(URLObject) {
       _selfPortalSess.sessionServiceURL = URLObject.session
     }
@@ -271,7 +283,7 @@
      * and global stats.
     */
 
-    function loadGlobalStats() {
+    function loadGlobalStats(refreshHandler) {
       var statsURL = _selfPortalSess.sessionServiceURL + "?view=stats"
       Promise.resolve(_getAjaxData(statsURL, {}))
           .then(function(globalStats) {
@@ -279,22 +291,32 @@
             var nowDate = new Date()
             var month = nowDate.getUTCMonth() + 1
             _selfPortalSess._globalStats.updated = nowDate.getUTCFullYear() + "-"
-                + month  + "-" + nowDate.getUTCDate()
+                + month + "-" + nowDate.getUTCDate()
                 + " " + nowDate.getUTCHours() + ":" + nowDate.getMinutes()
 
 
             // Take the API data and convert to javascritp object
             _selfPortalSess._globalStats.profiles = {
-              "cpu": {"ram": globalStats.cores.maxCPUCores.withRam,
-                      "cpu": globalStats.cores.maxCPUCores.cpuCores},
-              "memory": {"ram": globalStats.ram.maxRAM.ram,
-                "cpu": globalStats.ram.maxRAM.withCPUCores},
+              "cpu": {
+                "maxReqram": globalStats.cores.maxCPUCores.withRam,
+                "availRAM": globalStats.cores.maxCPUCores.withRam,
+                "maxReqcpu": globalStats.cores.maxCPUCores.cpuCores,
+                "availCPU": globalStats.cores.maxCPUCores.cpuCores
+              },
+              "memory": {
+                "maxReqram": globalStats.ram.maxRAM.ram,
+                "availRAM": globalStats.ram.maxRAM.ram,
+                "maxReqcpu": globalStats.ram.maxRAM.withCPUCores,
+                "availCPU": globalStats.ram.maxRAM.withCPUCores
+              },
+              "availCPU": globalStats.ram.maxRAM.withCPUCores
             }
+
 
             _selfPortalSess._globalStats.cpu = {
               "used" : globalStats.cores.requestedCPUCores,
-              "free" : globalStats.cores.cpuCoresAvailable,
-              "total" : globalStats.cores.requestedCPUCores + globalStats.cores.cpuCoresAvailable
+              "free" : globalStats.cores.cpuCoresAvailable - globalStats.cores.requestedCPUCores,
+              "total" : globalStats.cores.cpuCoresAvailable
             }
 
             // These values may change over time, so store the key name
@@ -305,18 +327,39 @@
             _selfPortalSess._globalStats.instances = {
               labels: new Array(),
               data: new Array(),
+              backgroundColor: new Array(),
+              hoverBackgroundColor: new Array(),
               total: globalStats.instances.total
             }
 
             let entries = Object.entries(globalStats.instances)
+            var i=0;
+            var biggestCount = 0;
             var data = entries.map( ([key, val] = entry) => {
               if (key !== 'total') {
-                _selfPortalSess._globalStats.instances.labels.push(key)
+                var displayKey = key
+                if (key === 'desktopApp') {
+                  displayKey = 'desktop application'
+                }
+                _selfPortalSess._globalStats.instances.labels.push(displayKey)
                 _selfPortalSess._globalStats.instances.data.push(val)
+                _selfPortalSess._globalStats.instances.backgroundColor.push(_selfPortalSess._backgroundColorPalette[i])
+                _selfPortalSess._globalStats.instances.hoverBackgroundColor.push(_selfPortalSess._hoverBackgroundColorPalette[i])
+                i++
+                if (val > biggestCount) {
+                  biggestCount = val
+                }
               }
             });
 
-            _selfPortalSess._globalStats.refreshHandler = _selfPortalSess.loadGlobalStats
+            // This will be used for the max height of the bar chart being displayed
+            // Code is here rather than in the SciencePortalGlobalStats component
+            // because it's better to do this work once than (potentially)
+            // every time the component is rendered
+            // var chartHeight = ((biggestCount + 10) % 10 ) * 10
+            var chartHeight = Math.ceil(biggestCount / 10) * 10
+            _selfPortalSess._globalStats.instances.biggestCount = chartHeight
+            _selfPortalSess._globalStats.refreshHandler = refreshHandler
             _selfPortalSess._globalStats.listType = "data"
 
             trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadGlobalStatsDone)

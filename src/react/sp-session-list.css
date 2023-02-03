@@ -88,56 +88,58 @@ div.sp-stats-text-date {
   float: right;
   font-size: small;
   font-style: italic;
+  margin-top: 10px;
 }
 
-/*div.sp-stats-bar-div {*/
-/*  width: 300px;*/
-/*  height: 100px;*/
-/*}*/
-
-/*div.sp-stats-bar-div-tall {*/
-/*  width: 150px;*/
-/*  height: 400px;*/
-/*}*/
-
-
-div.sp-stats-pie-session {
-  width: 245px;
-  /*height: 200px;*/
-}
-
-div.sp-stats-pie-row {
+div.sp-stats-bar-row {
   margin-top: -30px;
+}
+
+div.sp-stats-bar {
+  margin-top: 20px;
+  height: 75px;
+  margin-bottom: 10px;
 }
 
 div.sp-stats-updated-row {
   margin-top: -45px;
 }
 
-div.sp-stats-pie-cpu {
-  width: 220px;
-  /*height: 200px;*/
-}
-
-div.sp-stats-pie-cpu-title {
-  margin-bottom: -15px;
+div.sp-stats-cpu-title {
+  margin-bottom: -20px;
   font-weight: bold;
-  font-size: 14px;
-  margin-top: 40px;
+  font-size: 13px;
+  margin-top: 30px;
 }
 
-div.sp-stats-pie-cpu > canvas {
-  margin-top: -20px;
+div.sp-stats-bar > canvas {
+  margin-top: -10px;
 }
 
-div.sp-stats-pie-session > canvas {
-  margin-top: -30px;
+div.sp-stats-session-title {
+  font-weight: bold;
+  font-size: 13px;
+  margin-top: 35px;
+  margin-bottom: -20px;
 }
 
 span.sp-stats-text {
   color: blue;
   font-weight: bold;
   font-size: 12px;
+}
+
+span.sp-stats-placeholder {
+  height: 75px;
+  margin-top: 5px;
+  color: #bcbcbc;
+}
+
+span.sp-stats-title-placeholder {
+  height: 15px;
+  width: 175px;
+  margin-top: 5px;
+  color: #bcbcbc;
 }
 
 .sp-form-button {
@@ -276,13 +278,13 @@ div.sp-emptylist-card {
   float: right;
 }
 
-.sp-title-placeholder {
-  height: 75px;
+span.sp-title-placeholder {
+  height: 150px;
 }
 
-.sp-title-placeholder-stats {
-  height: 50px;
-}
+/*.sp-title-placeholder-stats {*/
+/*  height: 50px;*/
+/*}*/
 
 /* Needed to apply the correct opacity on the Placeholder elements */
 p.sp-form-p, div.sp-form-p {

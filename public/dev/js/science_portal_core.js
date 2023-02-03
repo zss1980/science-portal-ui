@@ -198,21 +198,27 @@
           // set all progress bars to red if there's a skaha service error
           pageState.spForm.alert.show = false
           pageState.spForm.progressBar = _mkProgressBarData(barType, isAnimated)
-          pageState.spSessionList.alert.show = false
+          pageState.spGlobalStats.alert.show = false
           pageState.spGlobalStats.progressBar = _mkProgressBarData(barType, isAnimated)
           pageState.spSessionList.alert.show = false
           pageState.spSessionList.progressBar = _mkProgressBarData(barType, isAnimated)
         } else {
-          pageState[pageSection].alert = _mkAlertData(barType, )
+          // pageState[pageSection].alert = _mkAlertData(barType, )
 
-          var show = true
-          if ((typeof msg !== "undefined") && (msg !== "") ) {
-            show = true
-            pageState[pageSection].progressBar = _mkProgressBarData(barType, isAnimated)
+          // var show = true
+          pageState[pageSection].progressBar = _mkProgressBarData(barType, isAnimated)
+          if (barType == "danger") {
+            pageState[pageSection].alert = _mkAlertData(barType, msg, true)
           } else {
-            show = false
+            pageState[pageSection].alert.show = false
           }
-          pageState[pageSection].alert = _mkAlertData(barType, msg, show)
+          // if ((typeof msg !== "undefined") && (msg !== "") ) {
+          //
+          //
+          // } else {
+          //
+          // }
+
         }
 
       _rApp.setPageStatus(pageState)

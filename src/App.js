@@ -7,7 +7,7 @@ import SessionItem from "./react/SessionItem";
 import SciencePortalConfirm from "./react/SciencePortalConfirm"
 import SciencePortalForm from "./react/SciencePortalForm";
 import SciencePortalModal from "./react/SciencePortalModal";
-import SciencePortalGlobalStats from "./react/SciencePortalGlobalStats";
+import SciencePortalPlatformLoad from "./react/SciencePortalPlatformLoad";
 
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -140,25 +140,21 @@ const GLOBAL_STATS_TEST = {
   "updated": "<time stamp goes here> utc",
   "profiles" : {
     "cpu" : {
-      "ram": 256,
-      "cpu": 32,
+      "maxReqram": 192,
+      "maxReqcpu": 16,
+      "availRAM": 256,
+      "availCPU": 32,
     },
     "memory" : {
-      "ram": 256,
-      "cpu": 16
+      "maxReqram": 192,
+      "maxReqcpu": 16,
+      "availRAM": 256,
+      "availCPU": 32,
     }
   },
-  "instances" : {
-    "labels": ["sessions", "desktopApp", "headless"],
-    "data": [350, 80, 400],
-    "total": 1100
-    },
-  "cpu" : {
-    "used" : 476,
-    "free" : 1176,
-    "total" : "1176 + 476"
-  },
-  "refreshHandler": refreshStats,
+  "instances" : {},
+  "cpu" : {},
+  // "refreshHandler": refreshStats,
   "listType": "loading"
 }
 
@@ -362,7 +358,7 @@ class SciencePortalApp extends React.Component {
               {/*</Col></Row>*/}
 
               <Row>
-                <Col sm={6}>
+                <Col sm={7}>
                   <Card>
 
                     {/*<Card.Title>*/}
@@ -386,7 +382,7 @@ class SciencePortalApp extends React.Component {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col sm={6}>
+                <Col sm={5}>
                   <Card>
                     <Card.Body>
                     {/*<Card.Title>*/}
@@ -395,7 +391,7 @@ class SciencePortalApp extends React.Component {
                     {/*<Card.Body>*/}
                       <Row><Col>
                         <div className="sp-title sp-panel-heading">
-                          Global Session Stats
+                          Platform Load
                           <span className="sp-header-button">
                     <OverlayTrigger
                         key="top"
@@ -407,7 +403,7 @@ class SciencePortalApp extends React.Component {
                           </Tooltip>
                         }
                     >
-                      <Button size="sm" variant="outline-primary" className="sp-session-stats"
+                      <Button size="sm" variant="outline-primary" className="sp-e-stats-reload sp-session-stats"
                       onClick={this.state.globalStats.refreshHandler}>
                         <FontAwesomeIcon icon={faRefresh}/>
                       </Button>
@@ -422,7 +418,7 @@ class SciencePortalApp extends React.Component {
                               {this.state.pageState.spGlobalStats.alert.message} </Alert> }
 
                       </Col></Row>
-                  <SciencePortalGlobalStats stats={this.state.globalStats}/>
+                  <SciencePortalPlatformLoad stats={this.state.globalStats}/>
                     </Card.Body>
                   </Card>
                 </Col>

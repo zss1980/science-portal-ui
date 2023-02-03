@@ -74,6 +74,7 @@
       portalCore.setHeaderURLs()
       portalForm.setContentBase(contentBase)
       portalForm.loadSessionTypeMap()
+      portalCore.setPageState("all", "primary", true, '')
     }
 
     function continueInit() {
@@ -97,6 +98,7 @@
     function attachListeners() {
       // Button/page click listeners
       $(".sp-session-reload").click(checkForSessions)
+      $(".sp-e-stats-reload").click(handleGlobalStatsLoad)
 
       // Data Flow/javascript object listeners
       // portalCore listeners
@@ -121,8 +123,6 @@
 
         // Start loading session lists
         checkForSessions()
-
-
       })
 
       portalCore.subscribe(portalCore, cadc.web.science.portal.core.events.onServiceURLFail, function (e, data){
@@ -142,7 +142,7 @@
         var filteredList = portalSessions.getFilteredSessionList()
         populateSessionList(filteredList)
         portalCore.setPageState(portalCore.pageSections.sessionList, "success", false)
-        portalCore.hideModal(_reactApp)
+        portalCore.hideModal()
 
         if (( _selfPortalApp.isPolling === false)
           && (portalSessions.isAllSessionsStable() === false) ){
@@ -195,6 +195,8 @@
 
     } // end attachListeners()
 
+
+
     function handleServiceError(e, request) {
 
       // Stop any outstanding ajax calls from being processed. If one has failed,
@@ -214,8 +216,15 @@
       portalCore.setModal(_reactApp, msgHeader, msgBody, false, true, true)
     }
 
+    function handleGlobalStatsLoad() {
+      // Leave the list as is, and update the progress bar to show something is happening.
+      // portalCore.setModal(_reactApp,"Statistics Check", "Fetching global stats", true, false, false)
+      portalCore.clearAjaxAlert(portalCore.pageSections.stats)
+      portalCore.setPageState(portalCore.pageSections.stats, "primary", true, "")
+      portalSessions.loadGlobalStats(_selfPortalApp.handleGlobalStats)
+    }
+
     function handleSessionActionError(e, request) {
-      // portalCore.setSessionActionAjaxFail(request)
       portalCore.setAjaxFail(portalCore.pageSections.sessionList, request)
     }
 
@@ -228,10 +237,17 @@
     // ------------ Data display functions
 
     function populateGlobalStats() {
+      // reset page state
+      portalCore.setPageState(portalCore.pageSections.stats, "success", false)
+      portalCore.hideModal()
+
       var globalStats = portalSessions.getGlobalStats()
 
+      // Add max profile size, as compared to what is reported as max available
+      var cappedGlobalStats = portalForm.setProfileMax(globalStats)
+
       // pass globalStats to the react App for rendering
-      _reactApp.updateGlobalStats(globalStats)
+      _reactApp.updateGlobalStats(cappedGlobalStats)
     }
 
     function populateSessionList(sessionData) {
@@ -312,7 +328,7 @@
     function checkForSessions() {
       portalCore.setModal(_reactApp,"Session Check", "Fetching session list", true, false, false)
       portalCore.clearAjaxAlert(portalCore.pageSections.sessionList)
-      portalCore.setPageState(portalCore.pageSections.sessionList, "success", true)
+      portalCore.setPageState(portalCore.pageSections.sessionList, "primary", true)
       portalSessions.loadSessionList()
     }
 
@@ -376,10 +392,7 @@
       portalSessions.renewSession(sessionData.id)
     }
 
-
-
     // ------------ HTTP/Ajax functions & event handlers ------------
-    // ---------------- POST ------------------
 
     /**
      * Submit button function
@@ -398,6 +411,7 @@
         console.log(currentValue.name + ": " + currentValue.value)
       }
 
+      portalCore.setPageState(portalCore.pageSections.form, "primary", true, '')
       portalCore.setModal(_reactApp, "Requesting Session", "Requesting new session", true, false, false)
       Promise.resolve(postSessionRequestAjax(portalCore.sessionServiceURLs.session, _prunedFormData))
         .then(function(sessionInfo) {
@@ -444,8 +458,6 @@
     // This can only happen after the portalForm has grabbed all the data
     // triggered when onLoadFormDataDone is issued
     function initForm() {
-      //_curSessionType = portalForm.getSessionTypeDefault()
-      //setLaunchForm(_curSessionType)
       resetLaunchForm()
     }
 

@@ -221,6 +221,84 @@
       return _formData
     }
 
+    function getMaxIncrement(compareVal, arrayOfVals){
+      var maxIdx = arrayOfVals.length
+      var curMax = 0
+
+      for (var i=0; i<maxIdx; i++) {
+        if (compareVal > arrayOfVals[i] ) {
+          // are past the next available increment
+          curMax =  arrayOfVals[i]
+        } else {
+          break
+        }
+      }
+      return curMax
+    }
+    function setProfileMax(curGlobalStats) {
+
+      if (_selfPortalForm._contextData !== {}) {
+        // var maxRAM = 192
+        // var maxCPU = 12
+      // array index is, of course, one less than the actual length
+      //   var maxCoresIndex = _selfPortalForm._contextData.availableCores.length - 1
+      //   var maxRAMIndex = _selfPortalForm._contextData.availableRAM.length - 1
+      //
+      //   maxRAM = _selfPortalForm._contextData.availableRAM[maxRAMIndex]
+      //   maxCPU = _selfPortalForm._contextData.availableCores[maxCoresIndex]
+
+        var tmpUnit = curGlobalStats.profiles.cpu.maxReqram.substring(
+            curGlobalStats.profiles.cpu.maxReqram.length - 1,
+            curGlobalStats.profiles.cpu.maxReqram.length)
+        var maxRAM = getMaxIncrement(
+            curGlobalStats.profiles.cpu.maxReqram.substring(
+                0,
+                curGlobalStats.profiles.cpu.maxReqram.length - 1),
+            _selfPortalForm._contextData.availableRAM)
+        curGlobalStats.profiles.cpu.maxReqram = maxRAM + tmpUnit
+
+        var tmpUnit = curGlobalStats.profiles.memory.maxReqram.substring(
+            curGlobalStats.profiles.memory.maxReqram.length - 1,
+            curGlobalStats.profiles.memory.maxReqram.length)
+        maxRAM = getMaxIncrement(
+            curGlobalStats.profiles.memory.maxReqram.substring(
+                0,
+                curGlobalStats.profiles.memory.maxReqram.length - 1),
+            _selfPortalForm._contextData.availableRAM)
+        curGlobalStats.profiles.memory.maxReqram = maxRAM + tmpUnit
+
+
+        // tmpUnit = curGlobalStats.profiles.memory.maxReqram.substring(
+        //     curGlobalStats.profiles.memory.maxReqram.length - 1,
+        //     curGlobalStats.profiles.memory.maxReqram.length)
+        // tmpmax = curGlobalStats.profiles.memory.maxReqram.substring(
+        //     0,
+        //     curGlobalStats.profiles.memory.maxReqram.length - 1)
+        // if (tmpmax > maxRAM) {
+        //   curGlobalStats.profiles.memory.maxReqram = maxRAM
+        // }
+
+        curGlobalStats.profiles.memory.maxReqcpu = getMaxIncrement(
+            curGlobalStats.profiles.memory.maxReqcpu,
+            _selfPortalForm._contextData.availableCores)
+
+        curGlobalStats.profiles.cpu.maxReqcpu = getMaxIncrement(
+            curGlobalStats.profiles.cpu.maxReqcpu,
+            _selfPortalForm._contextData.availableCores)
+
+        // if (curGlobalStats.profiles.cpu.maxReqcpu > maxCPU) {
+        //   curGlobalStats.profiles.cpu.maxReqcpu = maxCPU
+        // }
+        //
+        // if (curGlobalStats.profiles.memory.maxReqcpu > maxCPU) {
+        //   curGlobalStats.profiles.memory.maxReqcpu = maxCPU
+        // }
+      }
+
+      return curGlobalStats
+
+
+    }
 
     // ---------- Context Data functions ----------
 
@@ -352,6 +430,7 @@
         loadSessionTypeMap: loadSessionTypeMap,
         setContentBase: setContentBase,
         setDataFilters: setDataFilters,
+        setProfileMax: setProfileMax,
         setServiceURLs: setServiceURLs,
         isTypeInList: isTypeInList
       })
