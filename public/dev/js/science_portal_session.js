@@ -279,7 +279,7 @@
 
     /**
      * Run these on page load to get data for populating session list
-     * and global stats.
+     * and platform usage.
     */
 
     function loadPlatformUsage(refreshHandler) {
@@ -315,12 +315,8 @@
             var i=0;
             var biggestCount = 0;
             var data = entries.map( ([key, val] = entry) => {
-              if (key !== 'total') {
-                var displayKey = key
-                if (key === 'desktopApp') {
-                  displayKey = 'desktop application'
-                }
-                _selfPortalSess._platformUsage.instances.labels.push(displayKey)
+              if (key !== "total") {
+                _selfPortalSess._platformUsage.instances.labels.push(key)
                 _selfPortalSess._platformUsage.instances.data.push(val)
                 _selfPortalSess._platformUsage.instances.backgroundColor.push(_selfPortalSess._backgroundColorPalette[i])
                 _selfPortalSess._platformUsage.instances.hoverBackgroundColor.push(_selfPortalSess._hoverBackgroundColorPalette[i])

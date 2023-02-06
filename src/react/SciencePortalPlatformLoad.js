@@ -1,13 +1,12 @@
-import React from 'react';
+import React from "react";
 
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import './css/index.css';
-import './sp-session-list.css';
+import "./css/index.css";
+import "./sp-session-list.css";
 
 import {Bar} from "react-chartjs-2";
-// import {ArcElement} from 'chart.js'
 
 import {
   Chart as ChartJS,
@@ -17,11 +16,10 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+} from "chart.js";
 import Placeholder from "react-bootstrap/Placeholder";
 
 ChartJS.register(
-    // ArcElement,
     CategoryScale,
     LinearScale,
     BarElement,
@@ -50,7 +48,7 @@ function SciencePortalPlatformLoad(props) {
     // }
 
     var yAxisSessionData = {
-      labels: ['instances'],
+      labels: ["instances"],
       datasets: [
         {
           label: props.usage.instances.labels[0],
@@ -74,7 +72,7 @@ function SciencePortalPlatformLoad(props) {
     }
 
     var yAxisCPUData = {
-      labels: ['CPU usage'],
+      labels: ["CPU usage"],
       datasets: [
         {
           label: "used",
@@ -127,7 +125,7 @@ function SciencePortalPlatformLoad(props) {
 
   // CPU usage has its own max value, so this object is needed
   var horizontalStackedCPUOptions = {
-    indexAxis: 'y',
+    indexAxis: "y",
     maintainAspectRatio: false,
     plugins: {
       title: {
@@ -157,7 +155,7 @@ function SciencePortalPlatformLoad(props) {
   }
 
   var horizontalStackedBarOptions = {
-    indexAxis: 'y',
+    indexAxis: "y",
     maintainAspectRatio: false,
     plugins: {
       title: {
