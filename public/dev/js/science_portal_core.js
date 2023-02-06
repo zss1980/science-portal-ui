@@ -212,13 +212,6 @@
           } else {
             pageState[pageSection].alert.show = false
           }
-          // if ((typeof msg !== "undefined") && (msg !== "") ) {
-          //
-          //
-          // } else {
-          //
-          // }
-
         }
 
       _rApp.setPageStatus(pageState)
@@ -484,7 +477,6 @@
       setSessionServiceURLs: setSessionServiceURLs,
       setAjaxSuccess: setAjaxSuccess,
       setAjaxFail: setAjaxFail,
-      // setSessionActionAjaxFail: setSessionActionAjaxFail,
       setPageState: setPageState,
       setReactAppRef: setReactAppRef,
       clearAjaxAlert: clearAjaxAlert,
