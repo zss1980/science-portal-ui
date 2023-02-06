@@ -98,7 +98,7 @@
     function attachListeners() {
       // Button/page click listeners
       $(".sp-session-reload").click(checkForSessions)
-      $(".sp-e-stats-reload").click(handleGlobalStatsLoad)
+      $(".sp-e-usage-reload").click(handlePlatformUsageLoad)
 
       // Data Flow/javascript object listeners
       // portalCore listeners
@@ -118,8 +118,8 @@
         // Get portalForm to start collecting form data
         portalForm.getFormData()
 
-        // Get global session statistics
-        portalSessions.loadGlobalStats()
+        // Get platform Usage information
+        portalSessions.loadPlatformUsage()
 
         // Start loading session lists
         checkForSessions()
@@ -180,8 +180,8 @@
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadSessionListError, handleServiceError)
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionActionDone, refreshSessionForm)
       portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onSessionActionError, handleSessionActionError)
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadGlobalStatsDone, populateGlobalStats)
-      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadGlobalStatsError, handleSessionActionError)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadPlatformUsageDone, populatePlatformUsage)
+      portalCore.subscribe(portalSessions, cadc.web.science.portal.session.events.onLoadPlatformUsageError, handleSessionActionError)
 
       // Listeners for this class (science_portal.js)
       portalCore.subscribe(_selfPortalApp, cadc.web.science.portal.events.onSessionRequestOK, refreshSessionForm)
@@ -216,12 +216,12 @@
       portalCore.setModal(_reactApp, msgHeader, msgBody, false, true, true)
     }
 
-    function handleGlobalStatsLoad() {
+    function handlePlatformUsageLoad() {
       // Leave the list as is, and update the progress bar to show something is happening.
-      // portalCore.setModal(_reactApp,"Statistics Check", "Fetching global stats", true, false, false)
-      portalCore.clearAjaxAlert(portalCore.pageSections.stats)
-      portalCore.setPageState(portalCore.pageSections.stats, "primary", true, "")
-      portalSessions.loadGlobalStats(_selfPortalApp.handleGlobalStats)
+      // portalCore.setModal(_reactApp,"Statistics Check", "Fetching platform usage", true, false, false)
+      portalCore.clearAjaxAlert(portalCore.pageSections.usage)
+      portalCore.setPageState(portalCore.pageSections.usage, "primary", true, "")
+      portalSessions.loadPlatformUsage(_selfPortalApp.handlePlatformUsage)
     }
 
     function handleSessionActionError(e, request) {
@@ -236,18 +236,14 @@
 
     // ------------ Data display functions
 
-    function populateGlobalStats() {
+    function populatePlatformUsage() {
       // reset page state
-      portalCore.setPageState(portalCore.pageSections.stats, "success", false)
+      portalCore.setPageState(portalCore.pageSections.usage, "success", false)
       portalCore.hideModal()
+      var platformUsage = portalSessions.getPlatformUsage()
 
-      var globalStats = portalSessions.getGlobalStats()
-
-      // Add max profile size, as compared to what is reported as max available
-      var cappedGlobalStats = portalForm.setProfileMax(globalStats)
-
-      // pass globalStats to the react App for rendering
-      _reactApp.updateGlobalStats(cappedGlobalStats)
+      // pass platformUsage info to the react App for rendering
+      _reactApp.updatePlatformUsage(platformUsage)
     }
 
     function populateSessionList(sessionData) {
@@ -285,10 +281,6 @@
             }
           }
 
-          // TODO: fill in actual RAM & cores values from /session endpoint
-          // once that update is available. Jan 2023: they are not displayed
-          // on the SessionItem cards currently.
-
           var nextSessionItem = {
             "id" : this.id,
             "name" : this.name,
@@ -319,8 +311,7 @@
           "listType" : "list",
           "sessData" : newSessionList
         }
-        var currentState = _reactApp.updateSessionList(sessDataObj)
-        var todo='remove me'
+        _reactApp.updateSessionList(sessDataObj)
       }
     }
 

@@ -56,45 +56,6 @@ const HEADER_URL_DEFAULTS = {
   "baseURLCanfar": "https://www.canfar.net"
 }
 
-//function handleSubmit(e) {
-//  e.preventDefault();
-//  alert("no submission handler defined for launch form")
-//}
-//
-//function handleChangeType(e) {
-//  e.preventDefault();
-//  alert("no session type change handler defined for launch form")
-//}
-//
-//function handleDeleteSession(e) {
-//  e.preventDefault();
-//  var deleteData = e.currentTarget.dataset
-//  console.log("delete data found: " + deleteData.name + ": " + deleteData.id)
-//  alert("no session delete handler defined for launch form")
-//}
-//
-//function handleConnectRequest(e) {
-//  e.preventDefault();
-//  var sessionData = e.currentTarget.dataset
-//  console.log("session data found: "  + sessionData.id)
-//  alert("no session connect handler defined for launch form")
-//}
-//
-//function handleConfirm(e) {
-//  e.preventDefault();
-//  var deleteData = e.currentTarget.dataset
-//  console.log("delete data found: " + deleteData.name + ": " + deleteData.id)
-//  alert("no session delete handler defined for launch form")
-//}
-//
-//function handleLogin(e) {
-//  e.preventDefault();
-//  var username = e.currentTarget[0].value
-//  var pwd = e.currentTarget[1].value
-//  console.log("login data found: " + username + ": " + pwd)
-//  alert("no session login handler defined for launch form")
-//}
-
 const BASE_PAGE_STATE = {
   "spForm" : {
     "alert" : {
@@ -118,7 +79,7 @@ const BASE_PAGE_STATE = {
       "animated": true
     }
   },
-  "spGlobalStats" : {
+  "spPlatformUsage" : {
     "alert" : {
       "show": false,
       "type": "secondary",
@@ -131,12 +92,7 @@ const BASE_PAGE_STATE = {
   }
 }
 
-function refreshStats(e) {
-   e.preventDefault();
- alert("no global stats login handler sent from parent")
-}
-
-const GLOBAL_STATS_TEST = {
+const PLATFORM_USAGE_TEST = {
   "updated": "<time stamp goes here> utc",
   "profiles" : {
     "cpu" : {
@@ -154,7 +110,6 @@ const GLOBAL_STATS_TEST = {
   },
   "instances" : {},
   "cpu" : {},
-  // "refreshHandler": refreshStats,
   "listType": "loading"
 }
 
@@ -166,7 +121,7 @@ class SciencePortalApp extends React.Component {
       sessionData: {"listType": "loading", "sessData": []},
       modalData: MODAL_DATA,
       fData: {},
-      globalStats: GLOBAL_STATS_TEST,
+      platformUsage: PLATFORM_USAGE_TEST,
       urls: URLS,
       confirmModalData: {dynamicProps:{isOpen: false}},
       pageState: BASE_PAGE_STATE,
@@ -226,8 +181,8 @@ class SciencePortalApp extends React.Component {
     this.setState({fData: sFormData})
   }
 
-  updateGlobalStats(sGlobalStatsData) {
-    this.setState({globalStats: sGlobalStatsData})
+  updatePlatformUsage(sPlatformUsageData) {
+    this.setState({platformUsage: sPlatformUsageData})
   }
 
   updateURLs(sURLs) {
@@ -287,9 +242,6 @@ class SciencePortalApp extends React.Component {
             </Col></Row>
 
             <Container fluid className="bg-white sp-session-list-container rounded-1">
-              {/*<Row><Col>*/}
-              {/*  <SciencePortalStats/>*/}
-              {/*</Col></Row>*/}
               <Row><Col>
                 <div className="sp-title sp-panel-heading">Active Sessions
                   <span className="sp-header-button">
@@ -353,18 +305,10 @@ class SciencePortalApp extends React.Component {
             </Container>
 
             <Container fluid className="bg-white sp-container rounded-1">
-              {/*<Row><Col>*/}
-              {/*  <div className="sp-title sp-panel-heading">New Session</div>*/}
-              {/*</Col></Row>*/}
-
               <Row>
                 <Col sm={7}>
                   <Card>
-
-                    {/*<Card.Title>*/}
-                    {/*  New Session*/}
-                    {/*</Card.Title>*/}
-                    <Card.Body>
+                     <Card.Body>
                       <Row><Col>
                         <div className="sp-title sp-panel-heading">
                         New Session
@@ -385,40 +329,36 @@ class SciencePortalApp extends React.Component {
                 <Col sm={5}>
                   <Card>
                     <Card.Body>
-                    {/*<Card.Title>*/}
-
-                    {/*</Card.Title>*/}
-                    {/*<Card.Body>*/}
                       <Row><Col>
                         <div className="sp-title sp-panel-heading">
                           Platform Load
                           <span className="sp-header-button">
-                    <OverlayTrigger
-                        key="top"
-                        placement="top"
-                        className="sp-b-tooltip"
-                        overlay={
-                          <Tooltip className="sp-b-tooltip">
-                            refresh statistics
-                          </Tooltip>
-                        }
-                    >
-                      <Button size="sm" variant="outline-primary" className="sp-e-stats-reload sp-session-stats"
-                      onClick={this.state.globalStats.refreshHandler}>
-                        <FontAwesomeIcon icon={faRefresh}/>
-                      </Button>
-                    </OverlayTrigger>
-                  </span>
+                            <OverlayTrigger
+                                key="top"
+                                placement="top"
+                                className="sp-b-tooltip"
+                                overlay={
+                                  <Tooltip className="sp-b-tooltip">
+                                    refresh statistics
+                                  </Tooltip>
+                                }
+                            >
+                              <Button size="sm" variant="outline-primary" className="sp-e-usage-reload sp-session-usage"
+                              onClick={this.state.platformUsage.refreshHandler}>
+                                <FontAwesomeIcon icon={faRefresh}/>
+                              </Button>
+                            </OverlayTrigger>
+                          </span>
                         </div>
-                        { this.state.pageState.spGlobalStats.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spGlobalStats.progressBar.type} now={100}
+                        { this.state.pageState.spPlatformUsage.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100}
                                                                                                     animated className="sp-progress-bar" /> }
-                        { this.state.pageState.spGlobalStats.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spGlobalStats.progressBar.type} now={100} className="sp-progress-bar" /> }
-                        {this.state.pageState.spGlobalStats.alert.show === true &&
-                            <Alert key={this.state.pageState.spGlobalStats.alert.type} variant={this.state.pageState.spGlobalStats.alert.type}>
-                              {this.state.pageState.spGlobalStats.alert.message} </Alert> }
+                        { this.state.pageState.spPlatformUsage.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100} className="sp-progress-bar" /> }
+                        {this.state.pageState.spPlatformUsage.alert.show === true &&
+                            <Alert key={this.state.pageState.spPlatformUsage.alert.type} variant={this.state.pageState.spPlatformUsage.alert.type}>
+                              {this.state.pageState.spPlatformUsage.alert.message} </Alert> }
 
                       </Col></Row>
-                  <SciencePortalPlatformLoad stats={this.state.globalStats}/>
+                      <SciencePortalPlatformLoad usage={this.state.platformUsage}/>
                     </Card.Body>
                   </Card>
                 </Col>

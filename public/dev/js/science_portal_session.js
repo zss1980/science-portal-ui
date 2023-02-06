@@ -13,8 +13,8 @@
                 onLoadSessionListError: new jQuery.Event("sciPort:onLoadSessionListError"),
                 onSessionActionDone: new jQuery.Event("sciPort:onSessionActionDone"),
                 onSessionActionError: new jQuery.Event("sciPort:onSessionActionError"),
-                onLoadGlobalStatsDone: new jQuery.Event("sciPort:onLoadGlobalStatsDone"),
-                onLoadGlobalStatsError: new jQuery.Event("sciPort:onLoadGlobalStatsError"),
+                onLoadPlatformUsageDone: new jQuery.Event("sciPort:onLoadPlatformUsageDone"),
+                onLoadPlatformUsageError: new jQuery.Event("sciPort:onLoadPlatformUsageError"),
                 onPollingContinue: new jQuery.Event("sciPort:onPollingContinue"),
               }
             }
@@ -34,8 +34,7 @@
     var _isEmpty = true
     this._sessionList = []
     this._sessionTypeList = []
-    this._globalStats = {}
-    this._globalStatsRaw = {}
+    this._platformUsage = {}
 
     this._backgroundColorPalette = [
       "#0E4D92",
@@ -60,8 +59,8 @@
     }
 
 
-    function getGlobalStats() {
-      return _selfPortalSess._globalStats
+    function getPlatformUsage() {
+      return _selfPortalSess._platformUsage
     }
 
     function getSessionList() {
@@ -283,56 +282,36 @@
      * and global stats.
     */
 
-    function loadGlobalStats(refreshHandler) {
+    function loadPlatformUsage(refreshHandler) {
       var statsURL = _selfPortalSess.sessionServiceURL + "?view=stats"
       Promise.resolve(_getAjaxData(statsURL, {}))
-          .then(function(globalStats) {
-            // _selfPortalSess._globalStatsRaw = globalStats
+          .then(function(platformUsage) {
+
             var nowDate = new Date()
             var month = nowDate.getUTCMonth() + 1
-            _selfPortalSess._globalStats.updated = nowDate.getUTCFullYear() + "-"
+            _selfPortalSess._platformUsage.updated = nowDate.getUTCFullYear() + "-"
                 + month + "-" + nowDate.getUTCDate()
                 + " " + nowDate.getUTCHours() + ":" + nowDate.getMinutes()
 
-
-            // Take the API data and convert to javascritp object
-            _selfPortalSess._globalStats.profiles = {
-              "cpu": {
-                "maxReqram": globalStats.cores.maxCPUCores.withRam,
-                "availRAM": globalStats.cores.maxCPUCores.withRam,
-                "maxReqcpu": globalStats.cores.maxCPUCores.cpuCores,
-                "availCPU": globalStats.cores.maxCPUCores.cpuCores
-              },
-              "memory": {
-                "maxReqram": globalStats.ram.maxRAM.ram,
-                "availRAM": globalStats.ram.maxRAM.ram,
-                "maxReqcpu": globalStats.ram.maxRAM.withCPUCores,
-                "availCPU": globalStats.ram.maxRAM.withCPUCores
-              },
-              "availCPU": globalStats.ram.maxRAM.withCPUCores
-            }
-
-
-            _selfPortalSess._globalStats.cpu = {
-              "used" : globalStats.cores.requestedCPUCores,
-              "free" : globalStats.cores.cpuCoresAvailable - globalStats.cores.requestedCPUCores,
-              "total" : globalStats.cores.cpuCoresAvailable
+            _selfPortalSess._platformUsage.cpu = {
+              "used" : platformUsage.cores.requestedCPUCores,
+              "free" : platformUsage.cores.cpuCoresAvailable - platformUsage.cores.requestedCPUCores,
+              "total" : platformUsage.cores.cpuCoresAvailable
             }
 
             // These values may change over time, so store the key name
             // in order to use it as a label
-            // _selfPortalSess._globalStats.instances = globalStats.instances
-            _selfPortalSess._globalStats.instances = {}
-            // var instancesKeys = Object.keys(globalStats.instances)
-            _selfPortalSess._globalStats.instances = {
+            _selfPortalSess._platformUsage.instances = {}
+
+            _selfPortalSess._platformUsage.instances = {
               labels: new Array(),
               data: new Array(),
               backgroundColor: new Array(),
               hoverBackgroundColor: new Array(),
-              total: globalStats.instances.total
+              total: platformUsage.instances.total
             }
 
-            let entries = Object.entries(globalStats.instances)
+            let entries = Object.entries(platformUsage.instances)
             var i=0;
             var biggestCount = 0;
             var data = entries.map( ([key, val] = entry) => {
@@ -341,10 +320,10 @@
                 if (key === 'desktopApp') {
                   displayKey = 'desktop application'
                 }
-                _selfPortalSess._globalStats.instances.labels.push(displayKey)
-                _selfPortalSess._globalStats.instances.data.push(val)
-                _selfPortalSess._globalStats.instances.backgroundColor.push(_selfPortalSess._backgroundColorPalette[i])
-                _selfPortalSess._globalStats.instances.hoverBackgroundColor.push(_selfPortalSess._hoverBackgroundColorPalette[i])
+                _selfPortalSess._platformUsage.instances.labels.push(displayKey)
+                _selfPortalSess._platformUsage.instances.data.push(val)
+                _selfPortalSess._platformUsage.instances.backgroundColor.push(_selfPortalSess._backgroundColorPalette[i])
+                _selfPortalSess._platformUsage.instances.hoverBackgroundColor.push(_selfPortalSess._hoverBackgroundColorPalette[i])
                 i++
                 if (val > biggestCount) {
                   biggestCount = val
@@ -353,20 +332,20 @@
             });
 
             // This will be used for the max height of the bar chart being displayed
-            // Code is here rather than in the SciencePortalGlobalStats component
+            // Code is here rather than in the SciencePortalPlatformUsage component
             // because it's better to do this work once than (potentially)
             // every time the component is rendered
             // var chartHeight = ((biggestCount + 10) % 10 ) * 10
             var chartHeight = Math.ceil(biggestCount / 10) * 10
-            _selfPortalSess._globalStats.instances.biggestCount = chartHeight
-            _selfPortalSess._globalStats.refreshHandler = refreshHandler
-            _selfPortalSess._globalStats.listType = "data"
+            _selfPortalSess._platformUsage.instances.biggestCount = chartHeight
+            _selfPortalSess._platformUsage.refreshHandler = refreshHandler
+            _selfPortalSess._platformUsage.listType = "data"
 
-            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadGlobalStatsDone)
+            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadPlatformUsageDone)
           })
           .catch(function(message) {
             // get session list failed in a way that can't allow page to continue
-            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadGlobalStatsError, message)
+            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadPlatformUsageError, message)
           })
     }
 
@@ -556,12 +535,12 @@
         setServiceURLs: setServiceURLs,
         initSessionLists: initSessionLists,
         getDefaultSessionName: getDefaultSessionName,
-        getGlobalStats: getGlobalStats,
+        getPlatformUsage: getPlatformUsage,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
         getSessionList: getSessionList,
         getFilteredSessionList: getFilteredSessionList,
-        loadGlobalStats: loadGlobalStats,
+        loadPlatformUsage: loadPlatformUsage,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
         setSessionTypeList: setSessionTypeList,

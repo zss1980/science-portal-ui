@@ -64,7 +64,7 @@
       "all" : "all",
       "sessionList" : "spSessionList",
       "form" : "spForm",
-      "stats" : "spGlobalStats"
+      "usage" : "spPlatformUsage"
     }
 
     var _sessionServiceResourceID = inputs.sessionsResourceID
@@ -198,8 +198,8 @@
           // set all progress bars to red if there's a skaha service error
           pageState.spForm.alert.show = false
           pageState.spForm.progressBar = _mkProgressBarData(barType, isAnimated)
-          pageState.spGlobalStats.alert.show = false
-          pageState.spGlobalStats.progressBar = _mkProgressBarData(barType, isAnimated)
+          pageState.spPlatformUsage.alert.show = false
+          pageState.spPlatformUsage.progressBar = _mkProgressBarData(barType, isAnimated)
           pageState.spSessionList.alert.show = false
           pageState.spSessionList.progressBar = _mkProgressBarData(barType, isAnimated)
         } else {

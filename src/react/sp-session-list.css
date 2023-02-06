@@ -70,72 +70,72 @@ span.sp-card-button-span {
   margin-left: 15px;
 }
 
-div.sp-stats-text-div {
+div.sp-usage-text-div {
   margin: 5px;
   width: 170px;
   font-size: 12px;
   /*height: 50px;*/
 }
 
-div.sp-stats-text-div-title {
+div.sp-usage-text-div-title {
   margin: 5px;
   width: 200px;
   font-size: 14px;
   font-weight: bold;
 }
 
-div.sp-stats-text-date {
+div.sp-usage-text-date {
   float: right;
   font-size: small;
   font-style: italic;
   margin-top: 10px;
 }
 
-div.sp-stats-bar-row {
+div.sp-usage-bar-row {
   margin-top: -30px;
 }
 
-div.sp-stats-bar {
+div.sp-usage-bar {
   margin-top: 20px;
   height: 75px;
   margin-bottom: 10px;
 }
 
-div.sp-stats-updated-row {
+div.sp-usage-updated-row {
   margin-top: -45px;
 }
 
-div.sp-stats-cpu-title {
+div.sp-usage-cpu-title {
   margin-bottom: -20px;
   font-weight: bold;
   font-size: 13px;
   margin-top: 30px;
 }
 
-div.sp-stats-bar > canvas {
+div.sp-usage-bar > canvas {
   margin-top: -10px;
 }
 
-div.sp-stats-session-title {
+div.sp-usage-session-title {
   font-weight: bold;
   font-size: 13px;
   margin-top: 35px;
   margin-bottom: -20px;
 }
 
-span.sp-stats-text {
+span.sp-usage-text {
   color: blue;
   font-weight: bold;
   font-size: 12px;
 }
 
-span.sp-stats-placeholder {
+span.sp-usage-placeholder {
   height: 75px;
   margin-top: 5px;
   color: #bcbcbc;
 }
 
-span.sp-stats-title-placeholder {
+span.sp-usage-title-placeholder {
   height: 15px;
   width: 175px;
   margin-top: 5px;
@@ -242,7 +242,7 @@ div.sp-form {
   margin-top: 2px;
 }
 
-.sp-card-placeholder-stats {
+.sp-card-placeholder-usage {
   height: 200px;
 }
 
@@ -281,10 +281,6 @@ div.sp-emptylist-card {
 span.sp-title-placeholder {
   height: 150px;
 }
-
-/*.sp-title-placeholder-stats {*/
-/*  height: 50px;*/
-/*}*/
 
 /* Needed to apply the correct opacity on the Placeholder elements */
 p.sp-form-p, div.sp-form-p {
