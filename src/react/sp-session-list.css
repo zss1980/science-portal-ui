@@ -70,6 +70,78 @@ span.sp-card-button-span {
   margin-left: 15px;
 }
 
+div.sp-usage-text-div {
+  margin: 5px;
+  width: 170px;
+  font-size: 12px;
+  /*height: 50px;*/
+}
+
+div.sp-usage-text-div-title {
+  margin: 5px;
+  width: 200px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+div.sp-usage-text-date {
+  float: right;
+  font-size: small;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+div.sp-usage-bar-row {
+  margin-top: -30px;
+}
+
+div.sp-usage-bar {
+  margin-top: 20px;
+  height: 75px;
+  margin-bottom: 10px;
+}
+
+div.sp-usage-updated-row {
+  margin-top: -45px;
+}
+
+div.sp-usage-cpu-title {
+  margin-bottom: -20px;
+  font-weight: bold;
+  font-size: 13px;
+  margin-top: 30px;
+}
+
+div.sp-usage-bar > canvas {
+  margin-top: -10px;
+}
+
+div.sp-usage-session-title {
+  font-weight: bold;
+  font-size: 13px;
+  margin-top: 35px;
+  margin-bottom: -20px;
+}
+
+span.sp-usage-text {
+  color: blue;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+span.sp-usage-placeholder {
+  height: 75px;
+  margin-top: 5px;
+  color: #bcbcbc;
+}
+
+span.sp-usage-title-placeholder {
+  height: 15px;
+  width: 175px;
+  margin-top: 5px;
+  color: #bcbcbc;
+}
+
 .sp-form-button {
   margin-right: 5px;
   background-image: linear-gradient(to bottom,#337ab7 0,#265a88 100%);
@@ -170,6 +242,10 @@ div.sp-form {
   margin-top: 2px;
 }
 
+.sp-card-placeholder-usage {
+  height: 200px;
+}
+
 .sp-button-placeholder {
   height:1.75rem;
   padding-top: 0.25rem;
@@ -202,8 +278,8 @@ div.sp-emptylist-card {
   float: right;
 }
 
-.sp-title-placeholder {
-  height: 75px;
+span.sp-title-placeholder {
+  height: 150px;
 }
 
 /* Needed to apply the correct opacity on the Placeholder elements */

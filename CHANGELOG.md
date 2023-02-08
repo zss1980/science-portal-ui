@@ -1,3 +1,13 @@
+## Feb 6, 2023
+### 3.2
+Supporting Changes
+- Added calls and plumbing to Skaha for displaying platform usage
+
+User-facing changes
+- pending delete is now possible (fixing bug injected in v 3.0)
+- Platform usage information displayed in panel next to launch form
+- reset button available for platform usage panel
+
 ## Jan 17, 2023
 ### 3.1
 Supporting Changes

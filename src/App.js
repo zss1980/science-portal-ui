@@ -7,6 +7,7 @@ import SessionItem from "./react/SessionItem";
 import SciencePortalConfirm from "./react/SciencePortalConfirm"
 import SciencePortalForm from "./react/SciencePortalForm";
 import SciencePortalModal from "./react/SciencePortalModal";
+import SciencePortalPlatformLoad from "./react/SciencePortalPlatformLoad";
 
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -28,6 +29,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // This is after bootstrap so values can be overridden
 import "./react/sp-session-list.css";
 import Alert from "react-bootstrap/Alert";
+import Card from "react-bootstrap/Card";
 
 
 const MODAL_DATA = {
@@ -54,60 +56,61 @@ const HEADER_URL_DEFAULTS = {
   "baseURLCanfar": "https://www.canfar.net"
 }
 
-//function handleSubmit(e) {
-//  e.preventDefault();
-//  alert("no submission handler defined for launch form")
-//}
-//
-//function handleChangeType(e) {
-//  e.preventDefault();
-//  alert("no session type change handler defined for launch form")
-//}
-//
-//function handleDeleteSession(e) {
-//  e.preventDefault();
-//  var deleteData = e.currentTarget.dataset
-//  console.log("delete data found: " + deleteData.name + ": " + deleteData.id)
-//  alert("no session delete handler defined for launch form")
-//}
-//
-//function handleConnectRequest(e) {
-//  e.preventDefault();
-//  var sessionData = e.currentTarget.dataset
-//  console.log("session data found: "  + sessionData.id)
-//  alert("no session connect handler defined for launch form")
-//}
-//
-//function handleConfirm(e) {
-//  e.preventDefault();
-//  var deleteData = e.currentTarget.dataset
-//  console.log("delete data found: " + deleteData.name + ": " + deleteData.id)
-//  alert("no session delete handler defined for launch form")
-//}
-//
-//function handleLogin(e) {
-//  e.preventDefault();
-//  var username = e.currentTarget[0].value
-//  var pwd = e.currentTarget[1].value
-//  console.log("login data found: " + username + ": " + pwd)
-//  alert("no session login handler defined for launch form")
-//}
-
-const PAGE_STATE = {
-  "alert" : {
-    "show": false,
-    "type": "secondary",
-    "message": "test message"
+const BASE_PAGE_STATE = {
+  "spForm" : {
+    "alert" : {
+      "show": false,
+      "type": "secondary",
+      "message": "test message"
+    },
+    "progressBar" : {
+      "type": "success",
+      "animated": true
+    }
   },
-  "sessionActionAlert" : {
-    "show": false,
-    "type": "secondary",
-    "message": "test message"
+  "spSessionList" : {
+    "alert" : {
+      "show": false,
+      "type": "secondary",
+      "message": "test message"
+    },
+    "progressBar" : {
+      "type": "success",
+      "animated": true
+    }
   },
-  "progressBar" : {
-    "type": "success",
-    "animated": true
+  "spPlatformUsage" : {
+    "alert" : {
+      "show": false,
+      "type": "secondary",
+      "message": "test message"
+    },
+    "progressBar" : {
+      "type": "success",
+      "animated": true
+    }
   }
+}
+
+const PLATFORM_USAGE_TEST = {
+  "updated": "<time stamp goes here> utc",
+  "profiles" : {
+    "cpu" : {
+      "maxReqram": 192,
+      "maxReqcpu": 16,
+      "availRAM": 256,
+      "availCPU": 32,
+    },
+    "memory" : {
+      "maxReqram": 192,
+      "maxReqcpu": 16,
+      "availRAM": 256,
+      "availCPU": 32,
+    }
+  },
+  "instances" : {},
+  "cpu" : {},
+  "listType": "loading"
 }
 
 class SciencePortalApp extends React.Component {
@@ -118,16 +121,21 @@ class SciencePortalApp extends React.Component {
       sessionData: {"listType": "loading", "sessData": []},
       modalData: MODAL_DATA,
       fData: {},
+      platformUsage: PLATFORM_USAGE_TEST,
       urls: URLS,
       confirmModalData: {dynamicProps:{isOpen: false}},
-      pageState: PAGE_STATE,
+      pageState: BASE_PAGE_STATE,
       headerURLs: HEADER_URL_DEFAULTS,
       userInfo: {}
     };
   }
 
-  // Use this function via the window ref in order to
-  // inject session data into the component.
+  // Use these functions via the window ref in order to
+  // inject or grab session data from the react app
+  //
+  getPageState() {
+    return this.state.pageState
+  }
   updateSessionList(sessionDataObj) {
     this.setState({sessionData: sessionDataObj})
   }
@@ -171,6 +179,10 @@ class SciencePortalApp extends React.Component {
 
   updateLaunchForm(sFormData) {
     this.setState({fData: sFormData})
+  }
+
+  updatePlatformUsage(sPlatformUsageData) {
+    this.setState({platformUsage: sPlatformUsageData})
   }
 
   updateURLs(sURLs) {
@@ -254,13 +266,13 @@ class SciencePortalApp extends React.Component {
               {/*  attribute "animated" can be put on for when app is busy */}
               {/* height is controlled by div.progress css */}
               <Row><Col>
-                { this.state.pageState.progressBar.animated === true && <ProgressBar variant={this.state.pageState.progressBar.type} now={100}
-                             animated className="sp-progress-bar" /> }
-                { this.state.pageState.progressBar.animated === false && <ProgressBar variant={this.state.pageState.progressBar.type} now={100}
-                                                                           className="sp-progress-bar" /> }
-                {this.state.pageState.sessionActionAlert !== undefined && this.state.pageState.sessionActionAlert.show === true &&
-                <Alert key={this.state.pageState.sessionActionAlert.type} variant={this.state.pageState.sessionActionAlert.type}>
-                  {this.state.pageState.sessionActionAlert.message} </Alert> }
+                { this.state.pageState.spSessionList.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spSessionList.progressBar.type} now={100}
+                                                                                     animated className="sp-progress-bar" /> }
+                { this.state.pageState.spSessionList.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spSessionList.progressBar.type} now={100}
+                                                                                      className="sp-progress-bar" /> }
+                {this.state.pageState.spSessionList.alert !== undefined && this.state.pageState.spSessionList.alert.show === true &&
+                    <Alert key={this.state.pageState.spSessionList.alert.type} variant={this.state.pageState.spSessionList.alert.type}>
+                      {this.state.pageState.spSessionList.alert.message} </Alert> }
                </Col></Row>
 
 
@@ -293,20 +305,65 @@ class SciencePortalApp extends React.Component {
             </Container>
 
             <Container fluid className="bg-white sp-container rounded-1">
-              <Row><Col>
-                <div className="sp-title sp-panel-heading">New Session</div>
-              </Col></Row>
+              <Row>
+                <Col sm={7}>
+                  <Card>
+                     <Card.Body>
+                      <Row><Col>
+                        <div className="sp-title sp-panel-heading">
+                        New Session
+                        </div>
 
-              <Row><Col>
-                { this.state.pageState.progressBar.animated === true && <ProgressBar variant={this.state.pageState.progressBar.type} now={100}
-                                                                           animated className="sp-progress-bar" /> }
-                { this.state.pageState.progressBar.animated === false && <ProgressBar variant={this.state.pageState.progressBar.type} now={100} className="sp-progress-bar" /> }
-                {this.state.pageState.alert.show === true &&
-                <Alert key={this.state.pageState.alert.type} variant={this.state.pageState.alert.type}>
-                  {this.state.pageState.alert.message} </Alert> }
-              </Col></Row>
+                        { this.state.pageState.spForm.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100}
+                                                                                             animated className="sp-progress-bar" /> }
+                        { this.state.pageState.spForm.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100} className="sp-progress-bar" /> }
+                        {this.state.pageState.spForm.alert.show === true &&
+                            <Alert key={this.state.pageState.spForm.alert.type} variant={this.state.pageState.spForm.alert.type}>
+                              {this.state.pageState.spForm.alert.message} </Alert> }
+                      </Col></Row>
 
-              <SciencePortalForm fData={this.state.fData}/>
+                  <SciencePortalForm fData={this.state.fData}/>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col sm={5}>
+                  <Card>
+                    <Card.Body>
+                      <Row><Col>
+                        <div className="sp-title sp-panel-heading">
+                          Platform Load
+                          <span className="sp-header-button">
+                            <OverlayTrigger
+                                key="top"
+                                placement="top"
+                                className="sp-b-tooltip"
+                                overlay={
+                                  <Tooltip className="sp-b-tooltip">
+                                    refresh statistics
+                                  </Tooltip>
+                                }
+                            >
+                              <Button size="sm" variant="outline-primary" className="sp-e-usage-reload sp-session-usage"
+                              onClick={this.state.platformUsage.refreshHandler}>
+                                <FontAwesomeIcon icon={faRefresh}/>
+                              </Button>
+                            </OverlayTrigger>
+                          </span>
+                        </div>
+                        { this.state.pageState.spPlatformUsage.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100}
+                                                                                                    animated className="sp-progress-bar" /> }
+                        { this.state.pageState.spPlatformUsage.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100} className="sp-progress-bar" /> }
+                        {this.state.pageState.spPlatformUsage.alert.show === true &&
+                            <Alert key={this.state.pageState.spPlatformUsage.alert.type} variant={this.state.pageState.spPlatformUsage.alert.type}>
+                              {this.state.pageState.spPlatformUsage.alert.message} </Alert> }
+
+                      </Col></Row>
+                      <SciencePortalPlatformLoad usage={this.state.platformUsage}/>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
+
 
             </Container>
             {/* Modals, rendered as needed, set in the this.state object */}

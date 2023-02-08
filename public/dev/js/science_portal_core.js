@@ -56,9 +56,16 @@
 
     var portalLogin = new cadc.web.science.portal.login.PortalLogin(inputs)
     this.userManager = new cadc.web.UserManager(inputs)
+    var _isAuthenticated = false
 
     var _rApp = inputs.reactApp
-    var _isAuthenticated = false
+    this.pageState = _rApp.getPageState()
+    this.pageSections = {
+      "all" : "all",
+      "sessionList" : "spSessionList",
+      "form" : "spForm",
+      "usage" : "spPlatformUsage"
+    }
 
     var _sessionServiceResourceID = inputs.sessionsResourceID
 
@@ -150,65 +157,75 @@
     }
 
     function clearAjaxAlert() {
-      setPageState("success", false)
+      setPageState(_selfPortalCore.pageSections.all,"success", false)
     }
 
-    // Communicate AJAX progress and status using progress bar
-    function setPageState(barType, isAnimated, alertMsg, sessionActionAlertMsg) {
-      var pageState = {
-        "progressBar": {
-          "type": barType,
-          "animated": isAnimated
-        },
-        "isAuthenticated" : _isAuthenticated
-      }
 
-      if (typeof sessionActionAlertMsg !== "undefined") {
-        pageState.sessionActionAlert = {
+    function _mkAlertData(barType, msg, show) {
+      var alert = {}
+      if ((typeof msg !== "undefined") && (msg !== "") ) {
+        alert = {
           "type": barType,
           "show":  true,
-          "message": sessionActionAlertMsg
+          "message": msg
         }
       } else {
-        pageState.sessionActionAlertMsg = {
+        alert = {
           "show": false
         }
       }
+      return alert
+    }
 
+    function _mkProgressBarData(barType, isAnimated) {
+      var progressBar = {
+        "type": barType,
+        "animated": isAnimated
+      }
 
-      if ((typeof alertMsg !== "undefined") && (alertMsg !== "")) {
-        pageState.alert = {
-            "type": barType,
-            "show":  true,
-            "message": alertMsg
+      return progressBar
+    }
+
+    // Communicate AJAX progress and status using progress bars
+    // and alert boxes
+    function setPageState(pageSection, barType, isAnimated, msg) {
+
+      var pageState = _selfPortalCore.pageState
+
+        if (pageSection === "all") {
+          // Used to reset entire page, or to
+          // set all progress bars to red if there's a skaha service error
+          pageState.spForm.alert.show = false
+          pageState.spForm.progressBar = _mkProgressBarData(barType, isAnimated)
+          pageState.spPlatformUsage.alert.show = false
+          pageState.spPlatformUsage.progressBar = _mkProgressBarData(barType, isAnimated)
+          pageState.spSessionList.alert.show = false
+          pageState.spSessionList.progressBar = _mkProgressBarData(barType, isAnimated)
+        } else {
+          pageState[pageSection].progressBar = _mkProgressBarData(barType, isAnimated)
+          if (barType == "danger") {
+            pageState[pageSection].alert = _mkAlertData(barType, msg, true)
+          } else {
+            pageState[pageSection].alert.show = false
           }
-      } else {
-        pageState.alert = {
-          "show": false
         }
-      }
+
       _rApp.setPageStatus(pageState)
     }
 
-    function setAjaxFail(message, reactAppLink) {
+    function setAjaxFail(pageSection, message) {
       var alertMsg = message.status + ": " + getRcDisplayText(message)
-      setPageState("danger", false, alertMsg)
-      hideModal(reactAppLink)
+      setPageState(pageSection,"danger", false, alertMsg)
+      hideModal()
     }
 
-    function setSessionActionAjaxFail(requestObj) {
-      var alertMsg = requestObj.status + ": " + requestObj.responseText
-      setPageState("danger", false, "", alertMsg)
-      hideModal(_rApp)
+    function setAjaxSuccess(pageSection, message) {
+      setPageState(pageSection,"success", false, message)
     }
 
-    function setAjaxSuccess(message) {
-      setPageState("success", false, message)
-    }
-
-    function handleAjaxError(request, reactAppLink) {
-      hideModal(reactAppLink)
-      setAjaxFail(request, reactAppLink)
+    function handleAjaxError(pageSection, request) {
+      hideModal()
+      setAjaxFail(pageSection, request)
     }
 
     // ----------- Data Filtering and Display Functions -----------------
@@ -290,7 +307,7 @@
                   "context": serviceURL + "/context",
                   "images": serviceURL + "/image"
                 }
-                _selfPortalCore.hideModal(_rApp)
+                _selfPortalCore.hideModal()
                 trigger(_selfPortalCore, cadc.web.science.portal.core.events.onServiceURLOK)
               } else {
                 // Don't hide modal as the page isn't ready to be interacted with yet
@@ -456,7 +473,6 @@
       setSessionServiceURLs: setSessionServiceURLs,
       setAjaxSuccess: setAjaxSuccess,
       setAjaxFail: setAjaxFail,
-      setSessionActionAjaxFail: setSessionActionAjaxFail,
       setPageState: setPageState,
       setReactAppRef: setReactAppRef,
       clearAjaxAlert: clearAjaxAlert,

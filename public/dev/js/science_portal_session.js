@@ -12,8 +12,9 @@
                 onLoadSessionListDone: new jQuery.Event("sciPort:onLoadSessionListDone"),
                 onLoadSessionListError: new jQuery.Event("sciPort:onLoadSessionListError"),
                 onSessionActionDone: new jQuery.Event("sciPort:onSessionActionDone"),
-                //onSessionDeleteError: new jQuery.Event("sciPort:onSessionDeleteError"),
                 onSessionActionError: new jQuery.Event("sciPort:onSessionActionError"),
+                onLoadPlatformUsageDone: new jQuery.Event("sciPort:onLoadPlatformUsageDone"),
+                onLoadPlatformUsageError: new jQuery.Event("sciPort:onLoadPlatformUsageError"),
                 onPollingContinue: new jQuery.Event("sciPort:onPollingContinue"),
               }
             }
@@ -33,6 +34,19 @@
     var _isEmpty = true
     this._sessionList = []
     this._sessionTypeList = []
+    this._platformUsage = {}
+
+    this._backgroundColorPalette = [
+      "#0E4D92",
+      "#4682B4",
+      "#57A0D3",
+    ]
+
+    this._hoverBackgroundColorPalette = [
+      "#0080FF",
+      "#0F52BA",
+      "#008ECC"
+    ]
 
     function setServiceURLs(URLObject) {
       _selfPortalSess.sessionServiceURL = URLObject.session
@@ -44,8 +58,13 @@
       _selfPortalSess._filteredSessionList = {}
     }
 
+
+    function getPlatformUsage() {
+      return _selfPortalSess._platformUsage
+    }
+
     function getSessionList() {
-      if (_selfPortalSess._sessionList === {}) {
+      if (_selfPortalSess._sessionList === []) {
         initSessionLists()
       }
       return _selfPortalSess._sessionList
@@ -259,12 +278,75 @@
     }
 
     /**
-     * Run this on page load to see if there's something to start up.
+     * Run these on page load to get data for populating session list
+     * and platform usage.
     */
-    function loadSessionList() {
-      Promise.resolve(getSessionListAjax(_selfPortalSess.sessionServiceURL, {}))
-        .then(function(sessionList) {
 
+    function loadPlatformUsage(refreshHandler) {
+      var statsURL = _selfPortalSess.sessionServiceURL + "?view=stats"
+      Promise.resolve(_getAjaxData(statsURL, {}))
+          .then(function(platformUsage) {
+
+            var nowDate = new Date()
+            var month = nowDate.getUTCMonth() + 1
+            _selfPortalSess._platformUsage.updated = nowDate.getUTCFullYear() + "-"
+                + month + "-" + nowDate.getUTCDate()
+                + " " + nowDate.getUTCHours() + ":" + nowDate.getMinutes()
+
+            _selfPortalSess._platformUsage.cpu = {
+              "used" : platformUsage.cores.requestedCPUCores,
+              "free" : platformUsage.cores.cpuCoresAvailable - platformUsage.cores.requestedCPUCores,
+              "total" : platformUsage.cores.cpuCoresAvailable
+            }
+
+            // These values may change over time, so store the key name
+            // in order to use it as a label
+            _selfPortalSess._platformUsage.instances = {}
+
+            _selfPortalSess._platformUsage.instances = {
+              labels: new Array(),
+              data: new Array(),
+              backgroundColor: new Array(),
+              hoverBackgroundColor: new Array(),
+              total: platformUsage.instances.total
+            }
+
+            let entries = Object.entries(platformUsage.instances)
+            var i=0;
+            var biggestCount = 0;
+            var data = entries.map( ([key, val] = entry) => {
+              if (key !== "total") {
+                _selfPortalSess._platformUsage.instances.labels.push(key)
+                _selfPortalSess._platformUsage.instances.data.push(val)
+                _selfPortalSess._platformUsage.instances.backgroundColor.push(_selfPortalSess._backgroundColorPalette[i])
+                _selfPortalSess._platformUsage.instances.hoverBackgroundColor.push(_selfPortalSess._hoverBackgroundColorPalette[i])
+                i++
+                if (val > biggestCount) {
+                  biggestCount = val
+                }
+              }
+            });
+
+            // This will be used for the max height of the bar chart being displayed
+            // Code is here rather than in the SciencePortalPlatformUsage component
+            // because it's better to do this work once than (potentially)
+            // every time the component is rendered
+            var chartHeight = Math.ceil(biggestCount / 10) * 10
+            _selfPortalSess._platformUsage.instances.biggestCount = chartHeight
+            _selfPortalSess._platformUsage.refreshHandler = refreshHandler
+            _selfPortalSess._platformUsage.listType = "data"
+
+            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadPlatformUsageDone)
+          })
+          .catch(function(message) {
+            // get session list failed in a way that can't allow page to continue
+            trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadPlatformUsageError, message)
+          })
+    }
+
+    function loadSessionList() {
+      Promise.resolve(_getAjaxData(_selfPortalSess.sessionServiceURL, {}))
+        .then(function(sessionList) {
           setSessionList(sessionList)
           trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListDone)
 
@@ -273,31 +355,6 @@
           // get session list failed in a way that can't allow page to continue
           trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListError, message)
         })
-    }
-
-    function getSessionListAjax(serviceURL, sessionData) {
-
-      return new Promise(function (resolve, reject) {
-        var request = new XMLHttpRequest()
-
-        // "load" is the XMLHttpRequest "finished" event
-        request.addEventListener(
-          "load",
-          function () {
-            if (request.status === 200) {
-              var jsonData = JSON.parse(request.responseText)
-              resolve(jsonData)
-            } else {
-              reject(request)
-            }
-          },
-          false
-        )
-        // withCredentials enables cookies to be sent
-        request.withCredentials = true
-        request.open("GET", serviceURL)
-        request.send(null)
-      })
     }
 
     function deleteSession(sessionID) {
@@ -372,7 +429,32 @@
       })
     }
 
+    // Used for GETs: session list, session stats
+    function _getAjaxData(serviceURL) {
+      return new Promise(function (resolve, reject) {
+        var request = new XMLHttpRequest()
 
+        // 'load' is the XMLHttpRequest 'finished' event
+        request.addEventListener(
+            "load",
+            function () {
+              if (request.status === 200) {
+                var jsonData = JSON.parse(request.responseText)
+                resolve(jsonData)
+              } else {
+                reject(request)
+              }
+            },
+            false
+        )
+        // withCredentials enables cookies to be sent
+        // Note: SameSite cookie header isn't set with this method,
+        // may cause problems with Chrome and other browsers? Feb 2021
+        request.withCredentials = true
+        request.open("GET", serviceURL)
+        request.send(null)
+      })
+    }
 
     function pollSessionList(interval) {
         // TODO: consider long-running timeout so panel left in background doesn't use
@@ -380,7 +462,7 @@
         interval = interval || 200
 
         var checkCondition = function (resolve, reject) {
-          getSessionListAjax(_selfPortalSess.sessionServiceURL)
+          _getAjaxData(_selfPortalSess.sessionServiceURL)
             .then(function (sessionList) {
               _selfPortalSess.setSessionList(sessionList)
               if (_selfPortalSess.isAllSessionsStable()) {
@@ -421,10 +503,12 @@
         setServiceURLs: setServiceURLs,
         initSessionLists: initSessionLists,
         getDefaultSessionName: getDefaultSessionName,
+        getPlatformUsage: getPlatformUsage,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
         getSessionList: getSessionList,
         getFilteredSessionList: getFilteredSessionList,
+        loadPlatformUsage: loadPlatformUsage,
         loadSessionList: loadSessionList,
         setSessionList: setSessionList,
         setSessionTypeList: setSessionTypeList,

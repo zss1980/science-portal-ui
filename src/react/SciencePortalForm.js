@@ -59,7 +59,7 @@ class SciencePortalForm extends React.Component {
       selectedCores : this.state.fData.contextData.defaultCores,
       selectedRAM : this.state.fData.contextData.defaultRAM
     });
-        this.state.fData.resetHandler();
+    this.state.fData.resetHandler();
 
   }
 
@@ -117,14 +117,13 @@ class SciencePortalForm extends React.Component {
       <>
         {Object.keys(this.state.fData).length !== 0 &&
             <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
-
               <Row className="sp-form-row">
-                <Col sm={3}>
+                <Col sm={4}>
                   <Form.Label  className="sp-form-label">type
                     {this.renderPopover("Session Type","Select from the list of supported session types")}
                   </Form.Label>
                 </Col>
-                <Col md={6}>
+                <Col sm={7}>
                   <Form.Select
                     value={this.state.fData.selectedType}
                     onChange={this.state.fData.changeTypeHandler}
@@ -139,12 +138,12 @@ class SciencePortalForm extends React.Component {
                 </Col>
               </Row>
               <Row className="sp-form-row">
-                <Col sm={3}>
+                <Col sm={4}>
                   <Form.Label  className="sp-form-label">container image
                     {this.renderPopover("Container Image","The Docker image for the session.")}
                   </Form.Label>
                 </Col>
-                <Col md={6}>
+                <Col sm={7}>
                   <Form.Select
                     name="image"
                     className="sp-form-cursor"
@@ -156,12 +155,12 @@ class SciencePortalForm extends React.Component {
                 </Col>
               </Row>
               <Row className="sp-form-row">
-                <Col sm={3}>
+                <Col sm={4}>
                   <Form.Label className="sp-form-label">name
                     {this.renderPopover("Session Name","Name for the session. Alphanumeric and '-' characters only.")}
                   </Form.Label>
                 </Col>
-                <Col md={6}>
+                <Col sm={7}>
                   <Form.Control
                       type="text"
                       maxLength={15}
@@ -175,12 +174,12 @@ class SciencePortalForm extends React.Component {
               </Row>
               {showRAM === true &&
               <Row className="sp-form-row">
-                <Col sm={3}>
+                <Col sm={4}>
                   <Form.Label className="sp-form-label">memory
                     {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
                   </Form.Label>
                 </Col>
-                <Col md={6}>
+                <Col sm={7}>
                   <Form.Select
                     value={this.state.selectedRAM || this.state.fData.contextData.defaultRAM}
                     name="ram"
@@ -195,12 +194,12 @@ class SciencePortalForm extends React.Component {
               }
               {showCores === true &&
               <Row className="sp-form-row">
-                <Col sm={3}>
+                <Col sm={4}>
                   <Form.Label className="sp-form-label"># cores
                     {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
                   </Form.Label>
                 </Col>
-                <Col md={6}>
+                <Col sm={7}>
                   <Form.Select
                     name="cores"
                     className="sp-form-cursor"
@@ -214,10 +213,10 @@ class SciencePortalForm extends React.Component {
               </Row>
               }
               <Row className="sp-form-row">
-                <Col sm={3}>
+                <Col sm={4}>
                 {/* placeholder column so buttons line up with form entry elements */}
                 </Col>
-                <Col md={6}>
+                <Col sm={7}>
                   <Button variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
                   <Button variant="secondary" size="sm" onClick={this.resetForm} className="sp-reset-button">Reset</Button>
                 </Col>
