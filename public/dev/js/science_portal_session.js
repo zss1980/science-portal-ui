@@ -331,7 +331,6 @@
             // Code is here rather than in the SciencePortalPlatformUsage component
             // because it's better to do this work once than (potentially)
             // every time the component is rendered
-            // var chartHeight = ((biggestCount + 10) % 10 ) * 10
             var chartHeight = Math.ceil(biggestCount / 10) * 10
             _selfPortalSess._platformUsage.instances.biggestCount = chartHeight
             _selfPortalSess._platformUsage.refreshHandler = refreshHandler
@@ -357,32 +356,6 @@
           trigger(_selfPortalSess, cadc.web.science.portal.session.events.onLoadSessionListError, message)
         })
     }
-
-    //
-    // function getSessionListAjax(serviceURL, sessionData) {
-    //
-    //   return new Promise(function (resolve, reject) {
-    //     var request = new XMLHttpRequest()
-    //
-    //     // "load" is the XMLHttpRequest "finished" event
-    //     request.addEventListener(
-    //       "load",
-    //       function () {
-    //         if (request.status === 200) {
-    //           var jsonData = JSON.parse(request.responseText)
-    //           resolve(jsonData)
-    //         } else {
-    //           reject(request)
-    //         }
-    //       },
-    //       false
-    //     )
-    //     // withCredentials enables cookies to be sent
-    //     request.withCredentials = true
-    //     request.open("GET", serviceURL)
-    //     request.send(null)
-    //   })
-    // }
 
     function deleteSession(sessionID) {
       Promise.resolve(deleteSessionAjax(_selfPortalSess.sessionServiceURL + "/" + sessionID, sessionID))
@@ -489,7 +462,6 @@
         interval = interval || 200
 
         var checkCondition = function (resolve, reject) {
-          // getSessionListAjax(_selfPortalSess.sessionServiceURL)
           _getAjaxData(_selfPortalSess.sessionServiceURL)
             .then(function (sessionList) {
               _selfPortalSess.setSessionList(sessionList)

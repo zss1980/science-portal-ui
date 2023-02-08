@@ -12,16 +12,22 @@ react developer tools in chrome: https://chrome.google.com/webstore/detail/react
 host file entry (see Environment Files)
 
 ### Environment files
-.env file needs to be set up in the root of your local copy of the code, with contents similar to
-(note one entry one each line or npm won't recognize the values):
+A .env file is used by npm to determine what URL, port and protocol to use in launching a local server. 
+As such, it must be resolvable by npm in order to start up a local instance. Simplest is to place
+it in the root of your application directory. Other methods are possible, documentation
+can be found here: https://create-react-app.dev/docs/adding-custom-environment-variables/
+
+Contents should be similar to below. Use one entry per line or npm won't recognize the values:
 
 PORT=443
+
 HOST=dev-www.canfar.net
+
 HTTPS=true
 
-(This file should be included when the repository is cloned. Edit the host name, but keep
-in mind there are CORS issues with having a domain different than the system skaha is 
-deployed on.) 
+This file should NOT be included when the repository is cloned. When setting the HOST name
+keep  in mind there are CORS issues with having a domain different than where skaha is 
+deployed. 
 
 #### Troubleshooting .env file usage
 (*) If this file is not in place, 'npm start' will start the app up on localhost which won't

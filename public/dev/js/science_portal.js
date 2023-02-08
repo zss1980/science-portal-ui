@@ -74,7 +74,7 @@
       portalCore.setHeaderURLs()
       portalForm.setContentBase(contentBase)
       portalForm.loadSessionTypeMap()
-      portalCore.setPageState("all", "primary", true, '')
+      portalCore.setPageState("all", "primary", true, "")
     }
 
     function continueInit() {
@@ -255,7 +255,7 @@
           "listType" : "empty",
           "sessData" : []
         }
-        var currentState = _reactApp.updateSessionList(sessDataObj)
+        _reactApp.updateSessionList(sessDataObj)
       } else {
 
         // Build new list

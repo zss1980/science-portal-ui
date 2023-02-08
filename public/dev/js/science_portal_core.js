@@ -186,10 +186,9 @@
       return progressBar
     }
 
-    // Communicate AJAX progress and status using progress bar
-    // function setPageState(barType, isAnimated, formMsg, sessionActionAlertMsg) {
-
-      function setPageState(pageSection, barType, isAnimated, msg) {
+    // Communicate AJAX progress and status using progress bars
+    // and alert boxes
+    function setPageState(pageSection, barType, isAnimated, msg) {
 
       var pageState = _selfPortalCore.pageState
 
@@ -203,9 +202,6 @@
           pageState.spSessionList.alert.show = false
           pageState.spSessionList.progressBar = _mkProgressBarData(barType, isAnimated)
         } else {
-          // pageState[pageSection].alert = _mkAlertData(barType, )
-
-          // var show = true
           pageState[pageSection].progressBar = _mkProgressBarData(barType, isAnimated)
           if (barType == "danger") {
             pageState[pageSection].alert = _mkAlertData(barType, msg, true)
