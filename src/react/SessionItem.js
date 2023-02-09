@@ -7,6 +7,8 @@ import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt'
 import { faClock } from '@fortawesome/free-solid-svg-icons'
+import { faFlag } from '@fortawesome/free-solid-svg-icons'
+import { faFileLines } from '@fortawesome/free-solid-svg-icons'
 
 import './css/index.css';
 import './sp-session-list.css';
@@ -145,7 +147,41 @@ function SessionItem(props) {
                     icon={faClock}/>
                 </OverlayTrigger>
               </span>
+              <span className="sp-card-button-span">
+                <a href={props.sessData.viewEventsURL} target="_blank">
+                  <OverlayTrigger
+                      key="top"
+                      placement="top"
+                      className="sp-b-tooltip"
+                      overlay={
+                        <Tooltip className="sp-b-tooltip">
+                          view events
+                        </Tooltip>
+                      }>
+                      <FontAwesomeIcon
+                          className={buttonCSS}
+                          icon={faFlag}/>
+                  </OverlayTrigger>
+                </a>
+              </span>
 
+              <span className="sp-card-button-span">
+                <a href={props.sessData.viewLogsURL} target="_blank">
+                  <OverlayTrigger
+                    key="top"
+                    placement="top"
+                    className="sp-b-tooltip"
+                    overlay={
+                      <Tooltip className="sp-b-tooltip">
+                        view logs
+                      </Tooltip>
+                    }>
+                      <FontAwesomeIcon
+                          className={buttonCSS}
+                          icon={faFileLines}/>
+                    </OverlayTrigger>
+                  </a>
+              </span>
               </div>
           </Col></Row>
         </Card.Footer>

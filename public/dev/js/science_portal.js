@@ -191,11 +191,7 @@
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadTypeMapDone, continueInit)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadContextDataError, handleServiceError)
       portalCore.subscribe(portalForm, cadc.web.science.portal.form.events.onLoadImageDataError, handleServiceError)
-
-
     } // end attachListeners()
-
-
 
     function handleServiceError(e, request) {
 
@@ -298,7 +294,9 @@
             "type" : this.type,
             "deleteHandler": handleDeleteSession,
             "connectHandler": handleConnectRequest,
-            "renewHandler": handleRenewSession
+            "renewHandler": handleRenewSession,
+            "viewLogsURL": portalSessions.getViewLogsURL(this.id ),
+            "viewEventsURL" : portalSessions.getViewEventsURL(this.id)
           }
 
           // Add to the list

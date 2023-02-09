@@ -277,6 +277,14 @@
       return _selfPortalSess._isEmpty
     }
 
+    function getViewLogsURL(sessionID) {
+      return _selfPortalSess.sessionServiceURL + "/" + sessionID + "?view=logs"
+    }
+
+    function getViewEventsURL(sessionID) {
+      return _selfPortalSess.sessionServiceURL + "/" + sessionID + "?view=events"
+    }
+
     /**
      * Run these on page load to get data for populating session list
      * and platform usage.
@@ -503,6 +511,8 @@
         setServiceURLs: setServiceURLs,
         initSessionLists: initSessionLists,
         getDefaultSessionName: getDefaultSessionName,
+        getViewLogsURL: getViewLogsURL,
+        getViewEventsURL: getViewEventsURL,
         getPlatformUsage: getPlatformUsage,
         getSessionByID: getSessionByID,
         getSessionByNameType: getSessionByNameType,
