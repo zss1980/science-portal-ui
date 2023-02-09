@@ -25,8 +25,8 @@ function SessionItem(props) {
   var uberCSS = ""
   var cardCSS = "sp-e-session-card"
   var connectCSS = "sp-e-session-connect"
-  var buttonCSS = "sp-card-text sp-session-button"
-  var deleteCSS = "sp-card-text sp-session-button"
+  var alwaysAvailableCSS = "sp-card-text sp-session-button"
+  var hiddenPendingCSS = "sp-card-text sp-session-button"
 
   if (props.listType === "list") {
     if (props.sessData.status === "Running") {
@@ -40,7 +40,7 @@ function SessionItem(props) {
       showSpinner = true
       cardCSS = cardCSS + pendingCSS
       connectCSS = connectCSS + pendingCSS
-      buttonCSS = buttonCSS + pendingCSS
+      hiddenPendingCSS = hiddenPendingCSS + pendingCSS
       uberCSS = "sp-pending-cursor"
     } else {
       bgClass = "secondary"
@@ -126,27 +126,11 @@ function SessionItem(props) {
                       onClick={props.sessData.deleteHandler}
                       data-id={props.sessData.id}
                       data-name={props.sessData.name}
-                      className={deleteCSS}
+                      className={alwaysAvailableCSS}
                       icon={faTrashAlt}/>
                   </OverlayTrigger>
                 </span>
-              <span className="sp-card-button-span">
-                <OverlayTrigger
-                  key="top"
-                  placement="top"
-                  className="sp-b-tooltip"
-                  overlay={
-                    <Tooltip className="sp-b-tooltip">
-                      renew session
-                    </Tooltip>
-                  }>
-                  <FontAwesomeIcon
-                    onClick={props.sessData.renewHandler}
-                    data-id={props.sessData.id}
-                    className={buttonCSS}
-                    icon={faClock}/>
-                </OverlayTrigger>
-              </span>
+
               <span className="sp-card-button-span">
                 <a href={props.sessData.viewEventsURL} target="_blank">
                   <OverlayTrigger
@@ -155,11 +139,11 @@ function SessionItem(props) {
                       className="sp-b-tooltip"
                       overlay={
                         <Tooltip className="sp-b-tooltip">
-                          view events
+                          view launch info
                         </Tooltip>
                       }>
                       <FontAwesomeIcon
-                          className={buttonCSS}
+                          className={alwaysAvailableCSS}
                           icon={faFlag}/>
                   </OverlayTrigger>
                 </a>
@@ -173,14 +157,31 @@ function SessionItem(props) {
                     className="sp-b-tooltip"
                     overlay={
                       <Tooltip className="sp-b-tooltip">
-                        view logs
+                        view session logs
                       </Tooltip>
                     }>
                       <FontAwesomeIcon
-                          className={buttonCSS}
+                          className={alwaysAvailableCSS}
                           icon={faFileLines}/>
                     </OverlayTrigger>
                   </a>
+              </span>
+              <span className="sp-card-button-span">
+                <OverlayTrigger
+                    key="top"
+                    placement="top"
+                    className="sp-b-tooltip"
+                    overlay={
+                      <Tooltip className="sp-b-tooltip">
+                        renew session
+                      </Tooltip>
+                    }>
+                  <FontAwesomeIcon
+                      onClick={props.sessData.renewHandler}
+                      data-id={props.sessData.id}
+                      className={hiddenPendingCSS}
+                      icon={faClock}/>
+                </OverlayTrigger>
               </span>
               </div>
           </Col></Row>

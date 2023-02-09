@@ -305,7 +305,7 @@ div.progress {
 }
 
 .sp-pending {
-  opacity: 75%;
+  opacity: 60%;
   pointer-events: none;
 }
 
