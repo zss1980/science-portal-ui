@@ -1,3 +1,10 @@
+## Feb 9, 2023
+### 3.3
+Supporting Changes
+(none)
+User-facing changes
+- buttons available for viewing session events and logs 
+
 ## Feb 6, 2023
 ### 3.2
 Supporting Changes
