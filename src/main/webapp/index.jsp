@@ -3,9 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" session="false" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<meta name="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta name="Pragma" content="no-cache" />
-<meta name="Expires" content="0" />
+
 
 <%
   final ApplicationConfiguration configuration = new ApplicationConfiguration(Configuration.DEFAULT_CONFIG_FILE_PATH);
@@ -36,6 +34,10 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta name="Pragma" content="no-cache" />
+    <meta name="Expires" content="0" />
+
     <base href="${fn:substring(url, 0, fn:length(url) - fn:length(uri))}${req.contextPath}/" />
 
     <!-- Located in ROOT.war -->
