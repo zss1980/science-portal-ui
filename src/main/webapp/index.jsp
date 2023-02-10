@@ -3,7 +3,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" session="false" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%--<meta http-equiv="Cache-control" content="no-cache">--%>
 <meta name="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta name="Pragma" content="no-cache" />
 <meta name="Expires" content="0" />
