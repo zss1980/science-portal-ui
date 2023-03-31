@@ -27,6 +27,7 @@ function SessionItem(props) {
   var connectCSS = "sp-e-session-connect"
   var alwaysAvailableCSS = "sp-card-text sp-session-button"
   var hiddenPendingCSS = "sp-card-text sp-session-button"
+  var displayGPU = true
 
   if (props.listType === "list") {
     if (props.sessData.status === "Running") {
@@ -44,6 +45,11 @@ function SessionItem(props) {
       uberCSS = "sp-pending-cursor"
     } else {
       bgClass = "secondary"
+    }
+
+    if ((props.sessData.requestedGPUCores === "<none>") ||
+        (props.sessData.requestedGPUCores === "0") ) {
+      displayGPU = false
     }
   }
 
@@ -101,10 +107,39 @@ function SessionItem(props) {
           </Row>
           <Row className="sp-card-group-middle"><Col>
               <div className="sp-card-text">
-                <span className="sp-card-text-label">cores:</span>
+                <span className="sp-card-text-label">CPU cores:</span>
                 <span className="sp-card-text-data">{props.sessData.coresInUse} / {props.sessData.requestedCPUCores}</span>
               </div>
           </Col></Row>
+            {displayGPU === true &&
+              <>
+                <Row className="sp-card-group-top">
+                  <Col>
+                    <div className="sp-card-text">
+                      <span className="sp-card-text-label">GPU memory: </span>
+                      <span className="sp-card-text-data">{props.sessData.gpuRAMInUse}</span>
+                    </div>
+                  </Col>
+                </Row>
+                <Row className="sp-card-group-middle">
+                  <Col>
+                    <div className="sp-card-text">
+                      <span className="sp-card-text-label">GPU cores:</span>
+                      <span className="sp-card-text-data">{props.sessData.requestedGPUCores}</span>
+                    </div>
+                  </Col>
+                </Row>
+                <Row className="sp-card-group-middle">
+                  <Col>
+                    <div className="sp-card-text">
+                      <span className="sp-card-text-label">GPU utilization: </span>
+                      <span className="sp-card-text-data">{props.sessData.gpuUtilization}</span>
+                    </div>
+                  </Col>
+                </Row>
+              </>
+            }
+
           {/*  End of the connectCSS area, used for event handling */}
           </div>
         </Card.Body>
