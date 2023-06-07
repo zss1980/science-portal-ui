@@ -157,7 +157,7 @@
             var curImage = imageList[i]
             if (isTypeInList(curImage.types)) {
               // add into the imageList structure
-              _selfPortalForm._imageData[curImage.type].imageList.push(curImage)
+              curImage.types.forEach((t) => _selfPortalForm._imageData[t].imageList.push(curImage))
 
               var imageName = curImage.id
               // Filter if possible
@@ -168,7 +168,7 @@
                 "id": curImage.id,
                 "name" : imageName
               }
-              _selfPortalForm._imageData[curImage.type].imageDisplayList.push(imageData)
+              curImage.types.forEach((t) => _selfPortalForm._imageData[t].imageDisplayList.push(imageData))
             }
             // else skip is it's not a type currently supported in the UI for
             // launching sessions.
