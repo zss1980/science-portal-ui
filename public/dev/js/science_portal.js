@@ -36,7 +36,6 @@
     var _reactApp = window.SciencePortalApp
 
     inputs.reactApp = _reactApp
-    //var portalLogin = new cadc.web.login.PortalLogin(inputs)
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
     var portalForm = new cadc.web.science.portal.form.PortalForm(inputs)

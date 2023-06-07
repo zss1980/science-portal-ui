@@ -126,8 +126,8 @@
       return null
     }
 
-    function isTypeInList(imageType) {
-      var isInList = (element) => element === imageType
+    function isTypeInList(imageTypes) {
+      var isInList = (element) => imageTypes.includes(element)
       var typeIndex = _selfPortalForm._sessionTypeList.findIndex(isInList)
       if (typeIndex === -1) {
         return false
@@ -139,7 +139,7 @@
 
     // --------------- Image list functions
 
-    function getFullImageList(){
+    function getFullImageList() {
       var fullListURL = _selfPortalForm.sessionURLs.images
       Promise.resolve(_getAjaxData(fullListURL))
         .then(function (imageList) {
@@ -155,7 +155,7 @@
 
           for (var i=0; i<imageList.length; i++) {
             var curImage = imageList[i]
-            if (isTypeInList(curImage.type)) {
+            if (isTypeInList(curImage.types)) {
               // add into the imageList structure
               _selfPortalForm._imageData[curImage.type].imageList.push(curImage)
 
