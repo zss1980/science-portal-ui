@@ -3,7 +3,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'war'
-    id 'java'
     id "com.github.node-gradle.node" version "3.0.1"
 
     // IntelliJ IDEA plugin here to allow integration tests to appear properly in IDEs.
@@ -18,7 +17,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven {
-        url = 'http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/m2repo'
+        url = 'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/m2repo'
     }
 }
 
@@ -29,14 +28,13 @@ dependencies {
     implementation 'commons-net:commons-net:3.6'
     implementation 'com.opencsv:opencsv:[5.1,6.0)'
 
-    runtime 'javax.servlet.jsp.jstl:jstl-api:1.2'
-    runtime 'javax.servlet:jstl:1.2'
-    runtime 'jstl:jstl:1.+'
-    runtime 'org.apache.taglibs:taglibs-standard-impl:1.2.5'
+    runtimeOnly 'javax.servlet.jsp.jstl:jstl-api:1.2'
+    runtimeOnly 'javax.servlet:jstl:1.2'
+    runtimeOnly 'jstl:jstl:[1.0,)'
+    runtimeOnly 'org.apache.taglibs:taglibs-standard-impl:1.2.5'
 }
 
 sourceCompatibility = '1.8'
-group = 'ca.nrc.cadc'
 
 war {
     // Trying to fix static file caching on new build.
