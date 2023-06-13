@@ -68,6 +68,7 @@
     }
 
     var _sessionServiceResourceID = inputs.sessionsResourceID
+    const _sessionServiceStandardID = inputs.sessionsStandardID
 
     function init(overrideURLs) {
       setSessionServiceURLs(overrideURLs)
@@ -283,7 +284,7 @@
       return _registryClient
           .getServiceURL(
             _sessionServiceResourceID,
-              "vos://cadc.nrc.ca~vospace/CADC/std/Proc#sessions-1.0",
+            _sessionServiceStandardID,
               "vs:ParamHTTP",
               "cookie"
           )
