@@ -99,7 +99,7 @@
 
     <%-- render the react app last - App.js's render cycle will call
       window.runStartupTasks() on completion. --%>
-    <script src="${contextPath}/dist/react-app.js"></script>
+    <script src="${contextPath}/dist/react-app.js?v=${currTimestampMS}"></script>
 
   </body>
 </html>
