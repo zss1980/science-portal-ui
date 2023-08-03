@@ -298,7 +298,7 @@
             var nowDate = new Date()
             var month = nowDate.getUTCMonth() + 1
             _selfPortalSess._platformUsage.updated = nowDate.getUTCFullYear() + "-"
-                + month + "-" + nowDate.getUTCDate()
+                + ("0" + month).slice(-2) + "-" + ("0" + nowDate.getUTCDate()).slice(-2)
                 + " " + nowDate.getUTCHours() + ":" + nowDate.getMinutes()
 
             _selfPortalSess._platformUsage.cpu = {

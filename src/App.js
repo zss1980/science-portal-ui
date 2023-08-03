@@ -310,7 +310,7 @@ class SciencePortalApp extends React.Component {
                   <Card>
                      <Card.Body>
                       <Row><Col>
-                        <div className="sp-title sp-panel-heading">New Session <span class="small">(<a href="https://github.com/opencadc/science-containers/blob/main/doc/README.md">Help with Containers</a>)</span></div>
+                        <div className="sp-title sp-panel-heading">New Session <span class="sp-header-button small"><a class="small" href="https://github.com/opencadc/science-containers/blob/main/doc/README.md">Help</a></span></div>
 
                         { this.state.pageState.spForm.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100}
                                                                                              animated className="sp-progress-bar" /> }
