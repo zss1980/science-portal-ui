@@ -110,6 +110,7 @@ const PLATFORM_USAGE_TEST = {
   },
   "instances" : {},
   "cpu" : {},
+  "ram" : {},
   "listType": "loading"
 }
 

@@ -88,6 +88,24 @@ function SciencePortalPlatformLoad(props) {
         }
       ]
     }
+
+    var yAxisRAMData = {
+      labels: ["Memory usage"],
+      datasets: [
+        {
+          label: "used",
+          data: [props.usage.ram.used],
+          backgroundColor: "#F19F18",
+          hoverBackgroundColor: "#4F97A3"
+        },
+        {
+          label: "free",
+          data: [props.usage.ram.free],
+          backgroundColor: "#dedede",
+          hoverBackgroundColor: "#efefef"
+        }
+      ]
+    }
   }
 
   // Hanging on to this code in case user feedback in the first pass is to
@@ -154,6 +172,36 @@ function SciencePortalPlatformLoad(props) {
     barThickness: barThickness
   }
 
+  var horizontalStackedRAMOptions = {
+    indexAxis: "y",
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: false,
+      }
+    },
+    responsive: true,
+    scales: {
+      x: {
+        stacked: true,
+        grid: {
+          display: false,
+        },
+        max: props.usage.ram.total
+      },
+      y: {
+        beginAtZero: true,
+        stacked: true,
+        grid: {
+          display: false,
+        },
+        max: 50
+      },
+    },
+    borderRadius: 4,
+    barThickness: barThickness
+  }
+
   var horizontalStackedBarOptions = {
     indexAxis: "y",
     maintainAspectRatio: false,
@@ -169,7 +217,7 @@ function SciencePortalPlatformLoad(props) {
         grid: {
           display: false,
         },
-        max: props.usage.instances.total
+        max: Math.max(props.usage.instances.total, 10)
       },
       y: {
         beginAtZero: true,
@@ -199,6 +247,16 @@ function SciencePortalPlatformLoad(props) {
             </Col>
           </Row>
           <Row className="sp-usage-bar-row">
+            <Col sm={12}>
+              <div className="sp-usage-ram-title">
+                Available RAM:  {props.usage.ram.free}{props.usage.ram.unit} / {props.usage.ram.total}{props.usage.ram.unit}
+              </div>
+              <div className="sp-usage-bar">
+                <Bar options={horizontalStackedRAMOptions} data={yAxisRAMData} />
+              </div>
+            </Col>
+          </Row>
+          <Row className="sp-usage-bar-row">
             <Col>
               <div className="sp-usage-session-title">
                 Running Instances: {props.usage.instances.total}
@@ -220,6 +278,20 @@ function SciencePortalPlatformLoad(props) {
 
       {props.usage.listType === "loading" &&
         <>
+          <Row className="sp-usage-title-placeholder">
+          <Col>
+            <Placeholder className="sp-form-p sp-usage-title-placeholder"  animation="glow">
+              <Placeholder className="sp-form-placeholder sp-usage-title-placeholder" xs={12} />
+            </Placeholder>
+          </Col>
+          </Row>
+          <Row className="sp-usage-placeholder">
+            <Col>
+              <Placeholder className="sp-form-p sp-usage-placeholder"  animation="glow">
+                <Placeholder className="sp-form-placeholder sp-usage-placeholder" xs={12} />
+              </Placeholder>
+            </Col>
+          </Row>
           <Row className="sp-usage-title-placeholder">
           <Col>
             <Placeholder className="sp-form-p sp-usage-title-placeholder"  animation="glow">

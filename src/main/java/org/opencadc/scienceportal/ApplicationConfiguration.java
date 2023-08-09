@@ -3,7 +3,7 @@ package org.opencadc.scienceportal;
 
 import ca.nrc.cadc.util.StringUtil;
 
-import java.net.URI;
+import java.util.Date;
 
 import org.apache.commons.configuration2.CombinedConfiguration;
 import org.apache.commons.configuration2.Configuration;
@@ -17,6 +17,9 @@ import org.apache.log4j.Logger;
 
 
 public class ApplicationConfiguration {
+
+    public static final long BUILD_TIME_MS = new Date().getTime();
+
     private static final Logger LOGGER = Logger.getLogger(ApplicationConfiguration.class);
 
     public static final String DEFAULT_CONFIG_FILE_PATH = System.getProperty("user.home")
