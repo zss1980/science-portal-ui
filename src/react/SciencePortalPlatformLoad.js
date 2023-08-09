@@ -96,7 +96,7 @@ function SciencePortalPlatformLoad(props) {
           label: "used",
           data: [props.usage.ram.used],
           backgroundColor: "#F19F18",
-          hoverBackgroundColor: "#4F97A3"
+          hoverBackgroundColor: "#D28B15"
         },
         {
           label: "free",
