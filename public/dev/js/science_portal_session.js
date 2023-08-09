@@ -17,7 +17,8 @@
                 onLoadPlatformUsageError: new jQuery.Event("sciPort:onLoadPlatformUsageError"),
                 onPollingContinue: new jQuery.Event("sciPort:onPollingContinue"),
               }
-            }
+            },
+            parseRegex: new RegExp(/([0-9]+(?:\.[0-9]+)?)\s*([kmgtp]?)/ig)
           }
         }
       }
@@ -290,6 +291,19 @@
      * and platform usage.
     */
 
+    /**
+     * Given a quantified file size string (e.g. 34.2G), return the numeric value in the
+     * same unit (e.g. 34.2).
+     * @param {string} fileSize Input quantified file size
+     * @returns {float}
+     */
+    function parseFileSize(fileSize) {
+      const matches = [...fileSize.matchAll(cadc.web.science.portal.parseRegex)]
+
+      // Two decimal places
+      return parseFloat(matches.map(m => m[1])[0]).toFixed(2)
+    }
+
     function loadPlatformUsage(refreshHandler) {
       var statsURL = _selfPortalSess.sessionServiceURL + "?view=stats"
       Promise.resolve(_getAjaxData(statsURL, {}))
@@ -307,10 +321,18 @@
               "total" : platformUsage.cores.cpuCoresAvailable
             }
 
+            // {requestedRAM: "0G", ramAvailable: "0G", maxRAM: {ram: "0G", withCPUCores: 0}} 
+            const requestedRAMGB = parseFileSize(platformUsage.ram.requestedRAM)
+            const availableRAMGB = parseFileSize(platformUsage.ram.ramAvailable)
+            _selfPortalSess._platformUsage.ram = {
+              "unit" : "G",
+              "used" : requestedRAMGB,
+              "free" : availableRAMGB - requestedRAMGB,
+              "total" : availableRAMGB
+            }
+
             // These values may change over time, so store the key name
             // in order to use it as a label
-            _selfPortalSess._platformUsage.instances = {}
-
             _selfPortalSess._platformUsage.instances = {
               labels: new Array(),
               data: new Array(),
@@ -320,18 +342,16 @@
             }
 
             let entries = Object.entries(platformUsage.instances)
-            var i=0;
-            var biggestCount = 0;
-            var data = entries.map( ([key, val] = entry) => {
+            let i = 0;
+            let biggestCount = 0;
+            entries.forEach( ([key, val] = entry) => {
               if (key !== "total") {
                 _selfPortalSess._platformUsage.instances.labels.push(key)
                 _selfPortalSess._platformUsage.instances.data.push(val)
                 _selfPortalSess._platformUsage.instances.backgroundColor.push(_selfPortalSess._backgroundColorPalette[i])
                 _selfPortalSess._platformUsage.instances.hoverBackgroundColor.push(_selfPortalSess._hoverBackgroundColorPalette[i])
                 i++
-                if (val > biggestCount) {
-                  biggestCount = val
-                }
+                biggestCount = Math.max(val, biggestCount)
               }
             });
 
@@ -339,7 +359,7 @@
             // Code is here rather than in the SciencePortalPlatformUsage component
             // because it's better to do this work once than (potentially)
             // every time the component is rendered
-            var chartHeight = Math.ceil(biggestCount / 10) * 10
+            const chartHeight = Math.ceil(biggestCount / 10) * 10
             _selfPortalSess._platformUsage.instances.biggestCount = chartHeight
             _selfPortalSess._platformUsage.refreshHandler = refreshHandler
             _selfPortalSess._platformUsage.listType = "data"

@@ -19,7 +19,7 @@
 <%-- Used to prevent JavaScript caching. --%>
 <jsp:useBean id="current" class="java.util.Date" />
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
-<c:set var="currTimestampMS" value="${current.time}" />
+<c:set var="buildVersion" value="<%= ApplicationConfiguration.BUILD_TIME_MS %>" scope="application" />
 
 <!DOCTYPE html>
 <html lang="en">
@@ -75,12 +75,12 @@
     </div>
 
     <%--local files ot pick up--%>
-    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_login.js?v=${currTimestampMS}"></script>
-    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_core.js?v=${currTimestampMS}"></script>
-    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_session.js?v=${currTimestampMS}"></script>
-    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_form.js?v=${currTimestampMS}"></script>
-    <script type="application/javascript" src="${contextPath}/dist/js/science_portal.js?v=${currTimestampMS}"></script>
-    <script type="application/javascript" src="${contextPath}/dist_config/sp_dist_config.js?v=${currTimestampMS}"></script>
+    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_login.js?v=${buildVersion}"></script>
+    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_core.js?v=${buildVersion}"></script>
+    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_session.js?v=${buildVersion}"></script>
+    <script type="application/javascript" src="${contextPath}/dist/js/science_portal_form.js?v=${buildVersion}"></script>
+    <script type="application/javascript" src="${contextPath}/dist/js/science_portal.js?v=${buildVersion}"></script>
+    <script type="application/javascript" src="${contextPath}/dist_config/sp_dist_config.js?v=${buildVersion}"></script>
 
     <script type="application/javascript">
       window.runStartupTasks = () => {
@@ -99,7 +99,7 @@
 
     <%-- render the react app last - App.js's render cycle will call
       window.runStartupTasks() on completion. --%>
-    <script src="${contextPath}/dist/react-app.js?v=${currTimestampMS}"></script>
+    <script src="${contextPath}/dist/react-app.js?v=${buildVersion}"></script>
 
   </body>
 </html>
