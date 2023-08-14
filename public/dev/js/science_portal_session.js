@@ -327,7 +327,7 @@
             _selfPortalSess._platformUsage.ram = {
               "unit" : "G",
               "used" : requestedRAMGB,
-              "free" : availableRAMGB - requestedRAMGB,
+              "free" : (parseFloat(availableRAMGB) - parseFloat(requestedRAMGB)).toFixed(2),
               "total" : availableRAMGB
             }
 
