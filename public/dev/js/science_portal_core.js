@@ -16,7 +16,11 @@
               headerURI: {
                 search: "ivo://cadc.nrc.ca/search",
                 gmui: "ivo://cadc.nrc.ca/groups"
-              }
+              },
+              userInfoEndpoint: '/science-portal/oidc-userinfo',
+              sessionEndpoint: '/science-portal/session',
+              imageEndpoint: '/science-portal/image',
+              contextEndpoint: '/science-portal/context'
             }
           }
         }
@@ -35,7 +39,7 @@
   function PortalCore(inputs) {
 
     var _selfPortalCore = this
-    var baseURL =
+    const baseURL =
             inputs && inputs.hasOwnProperty("baseURL")
                 ? inputs.baseURL
                 : "https://www.canfar.net"
@@ -55,8 +59,7 @@
     }
 
     var portalLogin = new cadc.web.science.portal.login.PortalLogin(inputs)
-    this.userManager = new cadc.web.UserManager(inputs)
-    var _isAuthenticated = false
+    this.userInfo = {}
 
     var _rApp = inputs.reactApp
     this.pageState = _rApp.getPageState()
@@ -70,8 +73,8 @@
     var _sessionServiceResourceID = inputs.sessionsResourceID
     const _sessionServiceStandardID = inputs.sessionsStandardID
 
-    function init(overrideURLs) {
-      setSessionServiceURLs(overrideURLs)
+    function init(overrideURLs, accessToken) {
+      setSessionServiceURLs(overrideURLs, accessToken)
     }
 
     // Primarily used for testing
@@ -81,7 +84,7 @@
 
     // ------------ Page state management functions ------------
 
-    function setModal(modalLink, title, msg, showSpinner, showReload, showHome) {
+    function setModal(_modalLink, title, msg, showSpinner, showReload, showHome) {
       var modaldata = {
         "msg": msg,
         "title": title,
@@ -105,7 +108,7 @@
       _rApp.updateModal(modaldata)
     }
 
-    function setConfirmModal(modalLink, confirmFn, confirmData) {
+    function setConfirmModal(_modalLink, confirmFn, confirmData) {
       var deleteMsg = "Session name " + confirmData.name + ", id " + confirmData.id
 
       var modaldata = {
@@ -154,7 +157,7 @@
     }
 
     function hideLoginModal() {
-      _rApp.openLoginodal(false)
+      _rApp.openLoginModal(false)
     }
 
     function clearAjaxAlert() {
@@ -298,27 +301,15 @@
         trigger(_selfPortalCore, cadc.web.science.portal.core.events.onServiceURLOK)
       } else {
         setModal(_rApp, "Loading Page Resources", "Locating session web service.", true, false, false)
-        Promise.resolve(getSessionServiceEndpoint())
-          .then(function (serviceURL) {
-              if (typeof serviceURL != "undefined") {
+        _selfPortalCore.sessionServiceURLs = {
+          "base": baseURL,
+          "session": `${baseURL}${cadc.web.science.portal.core.sessionEndpoint}`,
+          "context": `${baseURL}${cadc.web.science.portal.core.contextEndpoint}`,
+          "images": `${baseURL}${cadc.web.science.portal.core.imageEndpoint}`
+        }
 
-                _selfPortalCore.sessionServiceURLs = {
-                  "base": serviceURL,
-                  "session": serviceURL + "/session",
-                  "context": serviceURL + "/context",
-                  "images": serviceURL + "/image"
-                }
-                _selfPortalCore.hideModal()
-                trigger(_selfPortalCore, cadc.web.science.portal.core.events.onServiceURLOK)
-              } else {
-                // Don't hide modal as the page isn't ready to be interacted with yet
-                trigger(_selfPortalCore, cadc.web.science.portal.core.events.onServiceURLFail)
-              }
-            }
-          )
-          .catch(function (message) {
-            trigger(_selfPortalCore, cadc.web.science.portal.core.events.onServiceURLFail)
-          })
+        _selfPortalCore.hideModal()
+        trigger(_selfPortalCore, cadc.web.science.portal.core.events.onServiceURLOK)
       }
     }
 
@@ -410,59 +401,79 @@
 
     function checkAuthentication(isDev) {
       // From cadc.user.js. Listens for when user logs in
-      _selfPortalCore.userManager.subscribe(cadc.web.events.onUserLoad,
-          function (event, data) {
-            // Check to see if user is logged in or not
-            if (typeof(data.error) !== "undefined") {
-              hideModal()
-              var userState = {
-                loginHandler : portalLogin.handleLoginRequest
-              }
-              _rApp.setNotAuthenticated(userState)
-            } else {
-              // Don't directly access react app from here so this
-              // function can be connected to the portalLogin
-              // cadc.web.science.portal.login.events.onAuthenticateOK event as well.
-              // That event is fired after the login form is submitted.
-              setAuthenticated()
-            }
-          })
-
-      if (isDev === true) {
-        _selfPortalCore.userManager.user = {fullname: "dev user"}
+      // _selfPortalCore.userManager.subscribe(cadc.web.events.onUserLoad,
+      //     function (_event, data) {
+      //       // Check to see if user is logged in or not
+      //       if (typeof(data.error) !== "undefined") {
+      fetch(baseURL + cadc.web.science.portal.core.userInfoEndpoint)
+      .then((response) => {
+        if (response.status === 401) {
+          hideModal()
+          var userState = {
+            loginHandler : portalLogin.handleLoginRequest
+          }
+          _rApp.setNotAuthenticated(userState)
+        } else if (!response.ok) {
+          return Promise.reject(response)
+        } else {
+          return response.json()
+        }
+      }).then((responseJSON) => {
+        this.userInfo = responseJSON
         setAuthenticated()
-      } else {
-        // Call the whoami endpoint to get the user details
-        // if they are not logged in, same event is thrown, return payload
-        // needs to be checked
-        _selfPortalCore.userManager.loadCurrent()
-      }
-    }
+      }).catch((error) => {
+        console.warn(error)
+      })
+              // hideModal()
+              // var userState = {
+              //   loginHandler : portalLogin.handleLoginRequest
+              // }
+              // _rApp.setNotAuthenticated(userState)
+          //   } else {
+          //     // Don't directly access react app from here so this
+          //     // function can be connected to the portalLogin
+          //     // cadc.web.science.portal.login.events.onAuthenticateOK event as well.
+          //     // That event is fired after the login form is submitted.
+          //     setAuthenticated()
+          //   }
+          // })
 
-    function afterAuthActions() {
-      // Call the whoami endpoint again
-      _selfPortalCore.userManager.loadCurrent()
-    }
-
-    function setAuthenticatedError() {
-      var userState = {
-        "username": "Login",
-        "submitHandler": portalLogin.handleLoginRequest,
-        "errMsg": "unable to log in (invalid username or password, or system error)"
-      }
-      _rApp.setAuthenticatedError(userState)
+      // if (isDev === true) {
+      //   _selfPortalCore.userManager.user = {name: "dev user"}
+      //   setAuthenticated()
+      // } else {
+      //   // Call the whoami endpoint to get the user details
+      //   // if they are not logged in, same event is thrown, return payload
+      //   // needs to be checked
+      //   _selfPortalCore.userManager.loadCurrent()
+      // }
     }
 
     function setAuthenticated() {
-      var userFullname = "Username"
-      if (_selfPortalCore.userManager.user.getFullName !== undefined) {
-        userFullname = _selfPortalCore.userManager.user.getFullName()
-      } else if (_selfPortalCore.userManager.user.fullname !== undefined) {
-        userFullname = _selfPortalCore.userManager.user.ffullname
+      const userState = {}
+      if (Object.keys(_selfPortalCore.userInfo).length === 0) {
+        userState.username = "Unknown"
+        userState.name = "Unknown"
+      } else {
+        const userInfo = _selfPortalCore.userInfo
+        if (userInfo.hasOwnProperty('preferred_username')) {
+          userState.username = userInfo.preferred_username
+        } else if (userInfo.hasOwnProperty('name')) {
+          userState.username = userInfo.name
+        } else {
+          userState.username = "Unknown"
+        }
+
+        // Prefer name property when displaying actual name.
+        if (userInfo.hasOwnProperty('name')) {
+          userState.name = userInfo.name
+        } else if (userInfo.hasOwnProperty('preferred_username')) {
+          userState.name = userInfo.preferred_username
+        } else {
+          userState.name = "Unknown"
+        }
       }
-      var userState = {
-        "username": userFullname
-      }
+
       _rApp.setAuthenticated(userState)
       trigger(_selfPortalCore, cadc.web.science.portal.core.events.onAuthenticated, {"userState": userState})
     }

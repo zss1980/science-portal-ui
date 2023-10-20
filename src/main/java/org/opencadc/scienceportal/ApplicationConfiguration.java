@@ -18,28 +18,29 @@ import org.apache.log4j.Logger;
 
 public class ApplicationConfiguration {
 
+    // Included in the JSP
     public static final long BUILD_TIME_MS = new Date().getTime();
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationConfiguration.class);
 
     public static final String DEFAULT_CONFIG_FILE_PATH = System.getProperty("user.home")
                                                           + "/config/org.opencadc.science-portal.properties";
-    public static final String PROPERTY_NAME_PREFIX = "org.opencadc.science-portal.sessions";
+    public static final String PROPERTY_NAME_PREFIX = "org.opencadc.science-portal";
     public static final String RESOURCE_ID_PROPERTY_KEY =
-            String.format("%s.resourceID", ApplicationConfiguration.PROPERTY_NAME_PREFIX);
+            String.format("%s.sessions.resourceID", ApplicationConfiguration.PROPERTY_NAME_PREFIX);
     public static final String STANDARD_ID_PROPERTY_KEY =
-            String.format("%s.standard", ApplicationConfiguration.PROPERTY_NAME_PREFIX);
+            String.format("%s.sessions.standard", ApplicationConfiguration.PROPERTY_NAME_PREFIX);
+    public static final String LOGO_URL_PROPERTY_KEY =
+            String.format("%s.logoURL", ApplicationConfiguration.PROPERTY_NAME_PREFIX);
     public static final String BANNER_MESSAGE_PROPERTY_KEY =
-            String.format("%s.bannerText", ApplicationConfiguration.PROPERTY_NAME_PREFIX);
-
+            String.format("%s.sessions.bannerText", ApplicationConfiguration.PROPERTY_NAME_PREFIX);
 
     private final Configuration configuration;
     private final String filePath;
 
-    public ApplicationConfiguration(final String filePath) {
-        if (!StringUtil.hasText(filePath)) {
-            throw new IllegalArgumentException("No configuration path specified.");
-        }
+
+    public ApplicationConfiguration() {
+        this.filePath = ApplicationConfiguration.DEFAULT_CONFIG_FILE_PATH;
 
         final CombinedConfiguration combinedConfiguration = new CombinedConfiguration(new MergeCombiner());
 
@@ -57,7 +58,6 @@ public class ApplicationConfiguration {
             LOGGER.warn(String.format("No configuration found at %s.\nUsing defaults.", filePath));
         }
 
-        this.filePath = filePath;
         this.configuration = combinedConfiguration;
     }
 
@@ -71,6 +71,10 @@ public class ApplicationConfiguration {
 
     public String getBannerMessage() {
         return getStringValue(ApplicationConfiguration.BANNER_MESSAGE_PROPERTY_KEY, false);
+    }
+
+    public String getLogoURL() {
+        return getStringValue(ApplicationConfiguration.LOGO_URL_PROPERTY_KEY, true);
     }
 
     protected String getStringValue(final String key, final boolean required) {
