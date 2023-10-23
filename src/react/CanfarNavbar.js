@@ -20,7 +20,8 @@ class CanfarNavbar extends React.Component {
       this.state = {
         isAuthenticated: props.isAuthenticated,
         authenticatedUser: props.authenticatedUser,
-        headerURLs: props.headerURLs
+        headerURLs: props.headerURLs,
+        logoURL: props.logoURL
       }
     }
 
@@ -55,7 +56,7 @@ class CanfarNavbar extends React.Component {
         <div className="canfar-header">
         <Navbar expand="md">
           <Container fluid>
-            <Navbar.Brand href={baseURLCanfar}><img src={baseURLCanfar + "/css/images/logo.png"}></img></Navbar.Brand>
+            <Navbar.Brand href={baseURLCanfar}><img src={this.state.logoURL}></img></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse className="justify-content-end">
               <Nav className="justify-content-end flex-grow-1 pe-3">

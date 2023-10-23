@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import CanfarLoginModal from "./react/CanfarLoginModal";
 import CanfarNavbar from "./react/CanfarNavbar";
+import OIDCNavbar from "./react/OIDCNavbar";
 import SessionItem from "./react/SessionItem";
 import SciencePortalConfirm from "./react/SciencePortalConfirm"
 import SciencePortalForm from "./react/SciencePortalForm";
@@ -127,7 +128,9 @@ class SciencePortalApp extends React.Component {
       confirmModalData: {dynamicProps:{isOpen: false}},
       pageState: BASE_PAGE_STATE,
       headerURLs: HEADER_URL_DEFAULTS,
-      userInfo: {}
+      logoURL: "",
+      userInfo: {},
+      oidc: {}
     };
   }
 
@@ -196,6 +199,22 @@ class SciencePortalApp extends React.Component {
     this.setState(curState)
   }
 
+  setOIDC(oidc) {
+    const currState = this.state
+    currState.oidc = oidc
+    this.setState(currState)
+  }
+
+  setLogoURL(logoURL) {
+    const currState = this.state
+    currState.logoURL = logoURL
+    this.setState(currState)
+  }
+
+  getAccessToken() {
+    return this.state.accessToken;
+  }
+
   setPageStatus(pageState) {
     this.setState( {pageState: pageState})
   }
@@ -207,36 +226,39 @@ class SciencePortalApp extends React.Component {
 
 
   render() {
-    var isAuthenticated = true
+    let isAuthenticated = true
     if (typeof this.state.userInfo.isAuth !== "undefined") {
       isAuthenticated = this.state.userInfo.isAuth
     }
 
-    var username = "Login"
-    if (typeof this.state.userInfo.username !== "undefined") {
-      username = this.state.userInfo.username
-    }
+    const name = (typeof this.state.userInfo.name !== "undefined") ? this.state.userInfo.name : "Login"
 
-    var authModal = ""
+    let authModal = ""
+    let navbar = <CanfarNavbar headerURLs={this.state.headerURLs}
+                               isAuthenticated={isAuthenticated}
+                               authenticatedUser={name}
+                               bannerText={this.state.bannerText}
+                               logoURL={this.state.logoURL}></CanfarNavbar>
     if (typeof this.state.userInfo.isAuth !== "undefined") {
       if (this.state.userInfo.isAuth === false) {
         authModal = <CanfarLoginModal isOpen={true}
                                       modalURLs={this.state.headerURLs}
                                       submitHandler={this.state.userInfo.loginHandler}
-                                      errMsg={this.state.userInfo.errMsg}/>
+                                      errMsg={this.state.userInfo.errMsg}
+                                      oidc={this.state.oidc}/>
       }
     }
 
+    if (Object.keys(this.state.oidc).length !== 0) {
+      navbar = <OIDCNavbar isAuthenticated={isAuthenticated}
+                           authenticatedUser={name}
+                           bannerText={this.state.bannerText}
+                           logoURL={this.state.logoURL} />
+    }
 
     return (
       <Container fluid className="bg-white">
-          <CanfarNavbar
-            headerURLs={this.state.headerURLs}
-            isAuthenticated={isAuthenticated}
-            authenticatedUser={username}
-            bannerText={this.state.bannerText}
-          ></CanfarNavbar>
-
+          {navbar}
           <Container fluid className="sp-body">
             <Row><Col>
               <h3 className="sp-page-header">Science Portal</h3>
@@ -311,7 +333,7 @@ class SciencePortalApp extends React.Component {
                   <Card>
                      <Card.Body>
                       <Row><Col>
-                        <div className="sp-title sp-panel-heading">New Session <span class="sp-header-button small"><a class="small" href="https://github.com/opencadc/science-containers/blob/main/doc/README.md">Help</a></span></div>
+                        <div className="sp-title sp-panel-heading">New Session <span class="sp-header-button small"><a class="small" href="https://github.com/opencadc/science-containers/blob/main/docs/README.md">Help</a></span></div>
 
                         { this.state.pageState.spForm.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100}
                                                                                              animated className="sp-progress-bar" /> }

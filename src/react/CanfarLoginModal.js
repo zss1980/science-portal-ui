@@ -12,6 +12,7 @@ class CanfarLoginModal extends React.Component {
     this.state = {
       isOpen: props.isOpen,
       modalURLs: props.modalURLs,
+      oidc: props.oidc
     }
   }
 
@@ -26,14 +27,21 @@ class CanfarLoginModal extends React.Component {
   closeModal = () => this.setState({ isOpen: false });
 
   render() {
-    var show = false
+    let show = false
     if (this.state.isOpen === true) {
       show = true
     }
 
-    var errMsg = ""
+    let errMsg = ""
     if (this.state.errMsg !== undefined) {
       errMsg = <div class="sp-error-msg"> {this.state.errMsg} </div>
+    }
+
+    let openIDButtonHTML = ""
+    let hideFormClass = ""
+    if (Object.keys(this.state.oidc).length !== 0) {
+      openIDButtonHTML = <a class="btn btn-primary" href={this.state.oidc.authorizationEndpoint.trim() + '?client_id=' + this.state.oidc.clientID.trim() + '&redirect_uri=' + encodeURIComponent(this.state.oidc.redirectURI.trim()) + '&state=' + this.state.oidc.state.trim() + '&scope=' + encodeURIComponent('openid profile offline_access') + '&response_type=code'}>Sign In to OpenID Connect</a>
+      hideFormClass = "visually-hidden"
     }
 
     return (
@@ -48,8 +56,9 @@ class CanfarLoginModal extends React.Component {
             <Modal.Title className="sp-modal-header">Authentication required</Modal.Title>
           </Modal.Header>
           <Modal.Body className="sp-auth-form-body">
-            <form className="access-control" id="modalloginForm" role="form" onSubmit={this.props.submitHandler}
-                  action={this.state.modalURLs.baseURLCanfar +"/access/login"}>
+            {openIDButtonHTML}
+            <form className={"access-control " + hideFormClass} id="modalloginForm" role="form" onSubmit={this.props.submitHandler} action={this.state.modalURLs.baseURLCanfar + "/access/login"}>
+              <input type="hidden" name="target" value={this.state.modalURLs.baseURLCanfar + "/science-portal"} />
               <div className="modal-body">
                 <span id="modal_login_fail" className="text-danger help-block pull-left"></span>
                 <div className="form-group">

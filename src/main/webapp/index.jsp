@@ -1,16 +1,17 @@
 <%@ page import="org.opencadc.scienceportal.ApplicationConfiguration" %>
+<%@ page import="org.opencadc.scienceportal.OIDCConfiguration" %>
+<%@ page import="java.net.URL" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" session="false" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 
 <%
-  final ApplicationConfiguration configuration =
-                    new ApplicationConfiguration(ApplicationConfiguration.DEFAULT_CONFIG_FILE_PATH);
+  final ApplicationConfiguration configuration = new ApplicationConfiguration(); 
   final String sessionsResourceID = configuration.getResourceID();
   final String sessionsStandardID = configuration.getStandardID();
   String bannerText = configuration.getBannerMessage();
-
+  
   if (bannerText == null) {
       bannerText = "";
   }
@@ -83,14 +84,38 @@
     <script type="application/javascript" src="${contextPath}/dist_config/sp_dist_config.js?v=${buildVersion}"></script>
 
     <script type="application/javascript">
+      function generateState() {
+        const length = 16
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        let result = '';
+        for (var i = length; i > 0; --i) {
+          result += chars[Math.floor(Math.random() * chars.length)]
+        }
+        return result;
+      }
+
       window.runStartupTasks = () => {
         // Set up controller for Science Portal Session Launch page
         const launch_js = new cadc.web.science.portal.PortalApp({
           baseURL: window.location.origin,
           sessionsResourceID: '<%= sessionsResourceID %>',
           sessionsStandardID: '<%= sessionsStandardID %>',
+<% 
+if (OIDCConfiguration.isConfigured()) { 
+  final OIDCConfiguration oidcConfiguration = new OIDCConfiguration(configuration);
+%>
+          oidc: {
+            clientID: '<%= oidcConfiguration.getClientID() %>',
+            redirectURI: '<%= oidcConfiguration.getRedirectURI() %> ',
+            authorizationEndpoint: '<%= OIDCConfiguration.getAuthorizationEndpoint().toExternalForm() %>',
+            state: generateState()
+          },
+<% } else { %>
+          oidc: {},
+<% } %>
           bannerText: '<%= bannerText %>',
-          contentBase: "${contextPath}/dist"
+          contentBase: "${contextPath}/dist",
+          logoURL: '<%= configuration.getLogoURL() %>'
         })
 
         launch_js.init()
