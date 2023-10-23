@@ -45,7 +45,7 @@ war {
         }
     }
 
-    archiveName = 'science-portal.war'
+    archiveName 'science-portal.war'
 }
 
 task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
