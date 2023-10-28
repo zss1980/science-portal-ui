@@ -218,9 +218,17 @@
     }
 
     function setAjaxFail(pageSection, message) {
-      var alertMsg = message.status + ": " + getRcDisplayText(message)
-      setPageState(pageSection,"danger", false, alertMsg)
-      hideModal()
+      if (message.status === 401) {
+        hideModal()
+        var userState = {
+          loginHandler : portalLogin.handleLoginRequest
+        }
+        _rApp.setNotAuthenticated(userState)
+      } else {
+        var alertMsg = message.status + ": " + getRcDisplayText(message)
+        setPageState(pageSection,"danger", false, alertMsg)
+        hideModal()
+      }
     }
 
     function setAjaxSuccess(pageSection, message) {

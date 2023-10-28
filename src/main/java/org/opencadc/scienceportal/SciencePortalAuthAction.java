@@ -72,6 +72,7 @@ import ca.nrc.cadc.auth.AuthMethod;
 import ca.nrc.cadc.auth.AuthenticationUtil;
 import ca.nrc.cadc.auth.AuthorizationToken;
 import ca.nrc.cadc.auth.AuthorizationTokenPrincipal;
+import ca.nrc.cadc.auth.SSOCookieManager;
 import ca.nrc.cadc.rest.InlineContentHandler;
 import ca.nrc.cadc.rest.RestAction;
 import ca.nrc.cadc.util.StringUtil;
@@ -79,6 +80,7 @@ import ca.nrc.cadc.util.StringUtil;
 import javax.security.auth.Subject;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Base class to support storing the OIDC Access Token in a cookie.
@@ -97,17 +99,25 @@ public abstract class SciencePortalAuthAction extends RestAction {
         final Subject subject = AuthenticationUtil.getCurrentSubject();
 
         if (StringUtil.hasText(rawCookieHeader)) {
-            final String[] firstPartyCookies = Arrays.stream(rawCookieHeader.split(";"))
-                                                     .filter(cookieString -> cookieString.startsWith(
-                                                             SciencePortalAuthAction.FIRST_PARTY_COOKIE_NAME))
-                                                     .toArray(String[]::new);
+            final String[] firstPartyCookies =
+                    Arrays.stream(rawCookieHeader.split(";"))
+                          .filter(cookieString -> cookieString.startsWith(
+                                  SciencePortalAuthAction.FIRST_PARTY_COOKIE_NAME) ||
+                                                  cookieString.startsWith(SSOCookieManager.DEFAULT_SSO_COOKIE_NAME))
+                          .toArray(String[]::new);
 
             if (firstPartyCookies.length > 0) {
                 Arrays.stream(firstPartyCookies).forEach(cookie -> {
-                    final String cookieValue = cookie.split("=")[1];
+                    // Only split on the first "=" symbol, and trim any wrapping double quotes
+                    final String cookieValue = cookie.split("=", 2)[1].replaceAll("\"", "");
+
                     subject.getPrincipals().add(new AuthorizationTokenPrincipal(AuthenticationUtil.AUTHORIZATION_HEADER,
                                                                                 AuthenticationUtil.CHALLENGE_TYPE_BEARER
                                                                                 + " " + cookieValue));
+                    subject.getPublicCredentials().add(
+                            new AuthorizationToken(AuthenticationUtil.CHALLENGE_TYPE_BEARER, cookieValue,
+                                                   Collections.singletonList(
+                                                           URI.create(syncInput.getRequestURI()).getHost())));
                 });
 
                 if (!subject.getPrincipals(AuthorizationTokenPrincipal.class).isEmpty()) {
@@ -115,13 +125,6 @@ public abstract class SciencePortalAuthAction extends RestAction {
                     subject.getPublicCredentials(AuthMethod.class)
                            .forEach(authMethod -> subject.getPublicCredentials().remove(authMethod));
                     subject.getPublicCredentials().add(AuthMethod.TOKEN);
-
-                    final Subject tokenizedSubject = AuthenticationUtil.getIdentityManager().validate(subject);
-
-                    // A bit of a hack to ensure the local domains are trusted.
-                    tokenizedSubject.getPublicCredentials(AuthorizationToken.class).forEach(token -> {
-                        token.getDomains().add(URI.create(syncInput.getRequestURI()).getHost());
-                    });
                 }
             }
         }

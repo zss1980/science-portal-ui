@@ -119,9 +119,4 @@ public class PostAction extends SciencePortalAuthAction {
         final RegistryClient registryClient = new RegistryClient();
         return registryClient.getServiceURL(apiServiceURI, Standards.PROC_SESSIONS_10, AuthMethod.TOKEN);
     }
-
-    @Override
-    protected InlineContentHandler getInlineContentHandler() {
-        return null;
-    }
 }
