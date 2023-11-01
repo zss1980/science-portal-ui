@@ -1,8 +1,12 @@
 package org.opencadc.scienceportal;
 
 
+import ca.nrc.cadc.reg.client.RegistryClient;
 import ca.nrc.cadc.util.StringUtil;
 
+import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.configuration2.CombinedConfiguration;
@@ -14,6 +18,7 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.MergeCombiner;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 
 public class ApplicationConfiguration {
@@ -77,6 +82,27 @@ public class ApplicationConfiguration {
         return getStringValue(ApplicationConfiguration.LOGO_URL_PROPERTY_KEY, true);
     }
 
+    /**
+     * Pull the /applications header URLs.
+     * @return  JSONObject of header URIs to URLs.
+     */
+    public JSONObject getHeaderURLs() {
+        final RegistryClient registryClient = new RegistryClient();
+        final JSONObject jsonObject = new JSONObject();
+
+        Arrays.stream(ApplicationStandards.values()).forEach(applicationStandard -> {
+            try {
+                jsonObject.put(applicationStandard.standardID.toString(),
+                               registryClient.getAccessURL(RegistryClient.Query.APPLICATIONS,
+                                                           applicationStandard.standardID));
+            } catch (Exception e) {
+                LOGGER.warn("Unable to get Applications URL for " + applicationStandard.standardID, e);
+            }
+        });
+
+        return jsonObject;
+    }
+
     protected String getStringValue(final String key, final boolean required) {
         final String val = this.configuration.getString(key);
 
@@ -85,6 +111,23 @@ public class ApplicationConfiguration {
                                             + this.filePath);
         } else {
             return val;
+        }
+    }
+
+    /**
+     */
+    private enum ApplicationStandards {
+        PASSWORD_CHANGE(URI.create("ivo://cadc.nrc.ca/passchg")),
+        PASSWORD_RESET(URI.create("ivo://cadc.nrc.ca/passreset")),
+        ACCOUNT_REQUEST(URI.create("ivo://cadc.nrc.ca/acctrequest")),
+        ACCOUNT_UPDATE(URI.create("ivo://cadc.nrc.ca/acctupdate")),
+        GMUI(URI.create("ivo://cadc.nrc.ca/groups")),
+        SEARCH(URI.create("ivo://cadc.nrc.ca/search"));
+
+        final URI standardID;
+
+        ApplicationStandards(URI standardID) {
+            this.standardID = standardID;
         }
     }
 }

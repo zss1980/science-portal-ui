@@ -38,6 +38,7 @@
     inputs.reactApp = _reactApp
     _reactApp.setOIDC(inputs.oidc)
     _reactApp.setLogoURL(inputs.logoURL)
+    _reactApp.setHeaderURLs(inputs.headerURLs)
 
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
@@ -70,11 +71,11 @@
 
     function init() {
       attachListeners()
+      portalForm.setContentBase(contentBase)
+
       // loads from session_type_map_en.json.
       // Timing issues can occur on very fast systems, so this issues it's own
       // event when finished to control when the next stage of portal initialization occurs
-      portalCore.setHeaderURLs()
-      portalForm.setContentBase(contentBase)
       portalForm.loadSessionTypeMap()
       portalCore.setPageState("all", "primary", true, "")
     }

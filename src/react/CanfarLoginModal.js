@@ -40,7 +40,7 @@ class CanfarLoginModal extends React.Component {
     let openIDButtonHTML = ""
     let hideFormClass = ""
     if (Object.keys(this.state.oidc).length !== 0) {
-      openIDButtonHTML = <a class="btn btn-primary" href={this.state.oidc.authorizationEndpoint.trim() + '?client_id=' + this.state.oidc.clientID.trim() + '&redirect_uri=' + encodeURIComponent(this.state.oidc.redirectURI.trim()) + '&state=' + this.state.oidc.state.trim() + '&scope=' + encodeURIComponent('openid profile offline_access') + '&response_type=code'}>Sign In to OpenID Connect</a>
+      openIDButtonHTML = <a class="btn btn-primary" href={this.state.oidc.authorizationEndpoint.trim() + '?client_id=' + this.state.oidc.clientID.trim() + '&redirect_uri=' + encodeURIComponent(this.state.oidc.redirectURI.trim()) + '&state=' + this.state.oidc.state.trim() + '&scope=' + encodeURIComponent(this.state.oidc.scope.trim()) + '&response_type=code'}>Sign In to OpenID Connect</a>
       hideFormClass = "visually-hidden"
     }
 
