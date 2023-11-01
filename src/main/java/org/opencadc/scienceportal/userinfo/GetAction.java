@@ -92,7 +92,21 @@ public class GetAction extends SciencePortalAuthAction {
     public void doAction() throws Exception {
         final Subject subjectFromCookie = getCurrentSubject();
         Subject.doAs(subjectFromCookie, (PrivilegedExceptionAction<?>) () -> {
-            final HttpGet sessionAccessCheck = new HttpGet(getSessionsURL(), true);
+            final URL sessionsURL;
+
+            try {
+                sessionsURL = getSessionsURL();
+            } catch (RuntimeException runtimeException) {
+                // The Skaha API throws a RuntimeException when looking up the capabilities with an old Token.
+                if ((runtimeException.getCause() instanceof IOException)
+                    && (runtimeException.getCause().getCause() instanceof NotAuthenticatedException)) {
+                    syncOutput.setCode(HttpServletResponse.SC_UNAUTHORIZED);
+                    return null;
+                }
+                throw runtimeException;
+            }
+
+            final HttpGet sessionAccessCheck = new HttpGet(sessionsURL, true);
             sessionAccessCheck.run();
 
             final Throwable getError = sessionAccessCheck.getThrowable();
@@ -101,7 +115,8 @@ public class GetAction extends SciencePortalAuthAction {
             } else {
                 this.syncOutput.setHeader("content-type", "application/json");
                 final JSONObject jsonObject = new JSONObject();
-                jsonObject.put("name", AuthenticationUtil.getIdentityManager().toDisplayString(subjectFromCookie));
+                final Subject validatedSubject = AuthenticationUtil.validateSubject(subjectFromCookie);
+                jsonObject.put("name", AuthenticationUtil.getIdentityManager().toDisplayString(validatedSubject));
                 this.syncOutput.getOutputStream().write(jsonObject.toString().getBytes(StandardCharsets.UTF_8));
                 this.syncOutput.getOutputStream().flush();
             }

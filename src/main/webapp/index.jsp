@@ -1,6 +1,5 @@
 <%@ page import="org.opencadc.scienceportal.ApplicationConfiguration" %>
 <%@ page import="org.opencadc.scienceportal.OIDCConfiguration" %>
-<%@ page import="java.net.URL" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" session="false" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -11,6 +10,7 @@
   final String sessionsResourceID = configuration.getResourceID();
   final String sessionsStandardID = configuration.getStandardID();
   String bannerText = configuration.getBannerMessage();
+  String headerURLJSON = configuration.getHeaderURLs().toString();
   
   if (bannerText == null) {
       bannerText = "";
@@ -106,16 +106,18 @@ if (OIDCConfiguration.isConfigured()) {
 %>
           oidc: {
             clientID: '<%= oidcConfiguration.getClientID() %>',
-            redirectURI: '<%= oidcConfiguration.getRedirectURI() %> ',
+            redirectURI: '<%= oidcConfiguration.getRedirectURI() %>',
             authorizationEndpoint: '<%= OIDCConfiguration.getAuthorizationEndpoint().toExternalForm() %>',
-            state: generateState()
+            state: generateState(),
+            scope: '<%= oidcConfiguration.getScope() %>'
           },
 <% } else { %>
           oidc: {},
 <% } %>
           bannerText: '<%= bannerText %>',
           contentBase: "${contextPath}/dist",
-          logoURL: '<%= configuration.getLogoURL() %>'
+          logoURL: '<%= configuration.getLogoURL() %>',
+          headerURLs: JSON.parse('<%= headerURLJSON %>')
         })
 
         launch_js.init()

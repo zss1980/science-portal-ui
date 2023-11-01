@@ -44,20 +44,6 @@
                 ? inputs.baseURL
                 : "https://www.canfar.net"
 
-    var _registryClient
-    var _headerURLCallCount = 0
-
-    if (typeof inputs.registryLocation !== "undefined") {
-      _registryClient= new Registry({
-        baseURL: inputs.registryLocation
-      })
-      inputs.registryClient = _registryClient
-    } else {
-      _registryClient = new Registry({
-        baseURL: baseURL
-      })
-    }
-
     var portalLogin = new cadc.web.science.portal.login.PortalLogin(inputs)
     this.userInfo = {}
 
@@ -69,9 +55,6 @@
       "form" : "spForm",
       "usage" : "spPlatformUsage"
     }
-
-    var _sessionServiceResourceID = inputs.sessionsResourceID
-    const _sessionServiceStandardID = inputs.sessionsStandardID
 
     function init(overrideURLs, accessToken) {
       setSessionServiceURLs(overrideURLs, accessToken)
@@ -218,9 +201,17 @@
     }
 
     function setAjaxFail(pageSection, message) {
-      var alertMsg = message.status + ": " + getRcDisplayText(message)
-      setPageState(pageSection,"danger", false, alertMsg)
-      hideModal()
+      if (message.status === 401) {
+        hideModal()
+        var userState = {
+          loginHandler : portalLogin.handleLoginRequest
+        }
+        _rApp.setNotAuthenticated(userState)
+      } else {
+        var alertMsg = message.status + ": " + getRcDisplayText(message)
+        setPageState(pageSection,"danger", false, alertMsg)
+        hideModal()
+      }
     }
 
     function setAjaxSuccess(pageSection, message) {
@@ -283,16 +274,6 @@
 
     // ------------ HTTP/Ajax functions ------------
 
-    function getSessionServiceEndpoint() {
-      return _registryClient
-          .getServiceURL(
-            _sessionServiceResourceID,
-            _sessionServiceStandardID,
-              "vs:ParamHTTP",
-              "cookie"
-          )
-    }
-
     // ------ Set up web service URLs ------
 
     function setSessionServiceURLs(URLs) {
@@ -311,41 +292,6 @@
         _selfPortalCore.hideModal()
         trigger(_selfPortalCore, cadc.web.science.portal.core.events.onServiceURLOK)
       }
-    }
-
-    function setHeaderURLs() {
-        // TODO: this modal likely to go away
-        setModal(_rApp, "Loading Header Resources", "Locating session web service.", true, false, false)
-
-        const headerURIs = [
-          ca.nrc.cadc.accountURI.passchg,
-          ca.nrc.cadc.accountURI.passreset,
-          ca.nrc.cadc.accountURI.acctrequest,
-          ca.nrc.cadc.accountURI.acctupdate,
-          cadc.web.science.portal.core.headerURI.gmui,
-          cadc.web.science.portal.core.headerURI.search
-        ]
-        _selfPortalCore.headerURLs = new Object()
-        _selfPortalCore.headerURLs.baseURLCanfar = baseURL
-        _headerURLCallCount = headerURIs.length
-
-      // Get entire applications registry to process
-      _registryClient.getApplicationsEndpoints()
-        .then(function (urlRequest) {
-          for (var i = 0; i < headerURIs.length; i++) {
-            var uri = headerURIs[i]
-            let url = _registryClient.extractURL(urlRequest, uri)
-            var uriKey = uri.substring(uri.lastIndexOf("\/") + 1, uri.length)
-            console.log("uriKey: " + uriKey)
-            _selfPortalCore.headerURLs[uriKey] = url
-            console.log("finished loop step " + i)
-          }
-          _rApp.setHeaderURLs(_selfPortalCore.headerURLs)
-        })
-        .catch(function (err) {
-          alert("Error obtaining registry applications list msg: " + err)
-        })
-
     }
 
 // ------------ Service Status parsing & display functions ------------
@@ -480,8 +426,6 @@
 
     $.extend(this, {
       init: init,
-      getSessionServiceEndpoint: getSessionServiceEndpoint,
-      setHeaderURLs: setHeaderURLs,
       setSessionServiceURLs: setSessionServiceURLs,
       setAjaxSuccess: setAjaxSuccess,
       setAjaxFail: setAjaxFail,
