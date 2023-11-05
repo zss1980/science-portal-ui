@@ -314,6 +314,9 @@
             displayText = "Limit of number of sessions of selected type reached"
             break
           }
+        case 501:
+          displayText = 'The Skaha web service is not configured in the Registry.'
+          break;
         default:
           displayText = request.responseText
           break
@@ -353,13 +356,17 @@
       //       if (typeof(data.error) !== "undefined") {
       fetch(baseURL + cadc.web.science.portal.core.userInfoEndpoint)
       .then((response) => {
-        if (response.status === 401) {
-          hideModal()
-          var userState = {
-            loginHandler : portalLogin.handleLoginRequest
+        if (!response.ok) {
+          if (response.status === 401) {
+            const userState = {
+              loginHandler : portalLogin.handleLoginRequest
+            }
+            _rApp.setNotAuthenticated(userState)
+          } else {
+            const alertMsg = getRcDisplayText(response)
+            setPageState(_selfPortalCore.pageSections.sessionList, "danger", false, alertMsg)
           }
-          _rApp.setNotAuthenticated(userState)
-        } else if (!response.ok) {
+          hideModal()
           return Promise.reject(response)
         } else {
           return response.json()

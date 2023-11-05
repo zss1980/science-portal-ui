@@ -96,6 +96,20 @@ public class GetAction extends SciencePortalAuthAction {
 
             try {
                 sessionsURL = getSessionsURL();
+                final HttpGet sessionAccessCheck = new HttpGet(sessionsURL, true);
+                sessionAccessCheck.run();
+
+                final Throwable getError = sessionAccessCheck.getThrowable();
+                if (getError instanceof NotAuthenticatedException) {
+                    syncOutput.setCode(HttpServletResponse.SC_UNAUTHORIZED);
+                } else {
+                    syncOutput.setHeader("content-type", "application/json");
+                    final JSONObject jsonObject = new JSONObject();
+                    final Subject validatedSubject = AuthenticationUtil.validateSubject(subjectFromCookie);
+                    jsonObject.put("name", AuthenticationUtil.getIdentityManager().toDisplayString(validatedSubject));
+                    syncOutput.getOutputStream().write(jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+                    syncOutput.getOutputStream().flush();
+                }
             } catch (RuntimeException runtimeException) {
                 // The Skaha API throws a RuntimeException when looking up the capabilities with an old Token.
                 if ((runtimeException.getCause() instanceof IOException)
@@ -104,22 +118,13 @@ public class GetAction extends SciencePortalAuthAction {
                     return null;
                 }
                 throw runtimeException;
+            } catch (IOException exception) {
+                // Bad service configuration
+                syncOutput.setCode(HttpServletResponse.SC_NOT_IMPLEMENTED);
+                syncOutput.getOutputStream().write(exception.getMessage().getBytes(StandardCharsets.UTF_8));
+                syncOutput.getOutputStream().flush();
             }
 
-            final HttpGet sessionAccessCheck = new HttpGet(sessionsURL, true);
-            sessionAccessCheck.run();
-
-            final Throwable getError = sessionAccessCheck.getThrowable();
-            if (getError instanceof NotAuthenticatedException) {
-                syncOutput.setCode(HttpServletResponse.SC_UNAUTHORIZED);
-            } else {
-                this.syncOutput.setHeader("content-type", "application/json");
-                final JSONObject jsonObject = new JSONObject();
-                final Subject validatedSubject = AuthenticationUtil.validateSubject(subjectFromCookie);
-                jsonObject.put("name", AuthenticationUtil.getIdentityManager().toDisplayString(validatedSubject));
-                this.syncOutput.getOutputStream().write(jsonObject.toString().getBytes(StandardCharsets.UTF_8));
-                this.syncOutput.getOutputStream().flush();
-            }
             return null;
         });
     }
@@ -128,7 +133,13 @@ public class GetAction extends SciencePortalAuthAction {
         final ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
         final URI apiServiceURI = URI.create(applicationConfiguration.getResourceID());
         final RegistryClient registryClient = new RegistryClient();
-        return new URL(registryClient.getServiceURL(apiServiceURI, Standards.PROC_SESSIONS_10,
-                                                    AuthMethod.TOKEN).toExternalForm() + "/session");
+        final URL registryServiceBaseURL = registryClient.getServiceURL(apiServiceURI, Standards.PROC_SESSIONS_10,
+                                                                        AuthMethod.TOKEN);
+        if (registryServiceBaseURL == null) {
+            throw new IOException("The Skaha web service is not configured in the Registry.  Please ensure that "
+                                  + apiServiceURI + " exists.");
+        }
+
+        return new URL(registryServiceBaseURL.toExternalForm() + "/session");
     }
 }
