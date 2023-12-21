@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 
-import CanfarLoginModal from "./react/CanfarLoginModal";
-import CanfarNavbar from "./react/CanfarNavbar";
-import OIDCNavbar from "./react/OIDCNavbar";
+import CanfarLoginModal from "./react/canfar/CanfarLoginModal";
+import SRCLoginModal from "./react/src/SRCLoginModal";
+import CanfarNavbar from "./react/canfar/CanfarNavbar";
+import SRCNavbar from "./react/src/SRCNavbar";
 import SessionItem from "./react/SessionItem";
 import SciencePortalConfirm from "./react/SciencePortalConfirm"
 import SciencePortalForm from "./react/SciencePortalForm";
@@ -128,9 +129,8 @@ class SciencePortalApp extends React.Component {
       confirmModalData: {dynamicProps:{isOpen: false}},
       pageState: BASE_PAGE_STATE,
       headerURLs: HEADER_URL_DEFAULTS,
-      logoURL: "",
       userInfo: {},
-      oidc: {}
+      themeName: "canfar"
     };
   }
 
@@ -199,15 +199,9 @@ class SciencePortalApp extends React.Component {
     this.setState(curState)
   }
 
-  setOIDC(oidc) {
+  setThemeName(themeName) {
     const currState = this.state
-    currState.oidc = oidc
-    this.setState(currState)
-  }
-
-  setLogoURL(logoURL) {
-    const currState = this.state
-    currState.logoURL = logoURL
+    currState.themeName = themeName
     this.setState(currState)
   }
 
@@ -233,28 +227,29 @@ class SciencePortalApp extends React.Component {
 
     const name = (typeof this.state.userInfo.name !== "undefined") ? this.state.userInfo.name : "Login"
 
-    let authModal = ""
-    let navbar = <CanfarNavbar headerURLs={this.state.headerURLs}
-                               isAuthenticated={isAuthenticated}
-                               authenticatedUser={name}
-                               bannerText={this.state.bannerText}
-                               logoURL={this.state.logoURL}></CanfarNavbar>
-    if (typeof this.state.userInfo.isAuth !== "undefined") {
-      if (this.state.userInfo.isAuth === false) {
-        authModal = <CanfarLoginModal isOpen={true}
-                                      modalURLs={this.state.headerURLs}
-                                      submitHandler={this.state.userInfo.loginHandler}
-                                      errMsg={this.state.userInfo.errMsg}
-                                      oidc={this.state.oidc}/>
-      }
-    }
+    let navbar
+    let authModalImplementation
+    if (this.state.themeName === "src") {
+      navbar = <SRCNavbar isAuthenticated={isAuthenticated}
+                          authenticatedUser={name}
+                          bannerText={this.state.bannerText} />
 
-    if (Object.keys(this.state.oidc).length !== 0) {
-      navbar = <OIDCNavbar isAuthenticated={isAuthenticated}
-                           authenticatedUser={name}
-                           bannerText={this.state.bannerText}
-                           logoURL={this.state.logoURL} />
+      authModalImplementation = <SRCLoginModal isOpen={true}
+                                               submitHandler={this.state.userInfo.loginHandler}
+                                               errMsg={this.state.userInfo.errMsg}/>
+    } else {
+      navbar = <CanfarNavbar headerURLs={this.state.headerURLs}
+                             isAuthenticated={isAuthenticated}
+                             authenticatedUser={name}
+                             bannerText={this.state.bannerText} />
+
+      authModalImplementation = <CanfarLoginModal isOpen={true}
+                                                  modalURLs={this.state.headerURLs}
+                                                  submitHandler={this.state.userInfo.loginHandler}
+                                                  errMsg={this.state.userInfo.errMsg}/>
     }
+                          
+    const authModal = isAuthenticated ? "" : authModalImplementation
 
     return (
       <Container fluid className="bg-white">

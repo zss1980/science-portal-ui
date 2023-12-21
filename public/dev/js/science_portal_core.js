@@ -17,7 +17,7 @@
                 search: "ivo://cadc.nrc.ca/search",
                 gmui: "ivo://cadc.nrc.ca/groups"
               },
-              userInfoEndpoint: '/science-portal/oidc-userinfo',
+              userInfoEndpoint: '/science-portal/userinfo',
               sessionEndpoint: '/science-portal/session',
               imageEndpoint: '/science-portal/image',
               contextEndpoint: '/science-portal/context'

@@ -45,11 +45,20 @@
   </servlet>
 
   <servlet>
-    <servlet-name>CallbackServlet</servlet-name>
+    <servlet-name>OIDCCallbackServlet</servlet-name>
     <servlet-class>ca.nrc.cadc.rest.RestServlet</servlet-class>
     <init-param>
       <param-name>get</param-name>
       <param-value>org.opencadc.scienceportal.oidc.callback.GetAction</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet>
+    <servlet-name>OIDCLoginServlet</servlet-name>
+    <servlet-class>ca.nrc.cadc.rest.RestServlet</servlet-class>
+    <init-param>
+      <param-name>get</param-name>
+      <param-value>org.opencadc.scienceportal.oidc.login.GetAction</param-value>
     </init-param>
   </servlet>
 
@@ -104,13 +113,18 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>CallbackServlet</servlet-name>
+    <servlet-name>OIDCCallbackServlet</servlet-name>
     <url-pattern>/oidc-callback</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
+    <servlet-name>OIDCLoginServlet</servlet-name>
+    <url-pattern>/oidc-login</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
     <servlet-name>UserInfoServlet</servlet-name>
-    <url-pattern>/oidc-userinfo</url-pattern>
+    <url-pattern>/userinfo</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

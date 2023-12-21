@@ -1,5 +1,4 @@
 <%@ page import="org.opencadc.scienceportal.ApplicationConfiguration" %>
-<%@ page import="org.opencadc.scienceportal.OIDCConfiguration" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" session="false" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -58,7 +57,7 @@
     <title>Science Portal</title>
   </head>
 
-  <body>
+  <body class="theme-<%= configuration.getThemeName() %>">
     <div class="container-fluid fill">
       <div class="row fill">
         <div role="main" class="col-sm-12 col-md-12 main fill">
@@ -100,23 +99,10 @@
           baseURL: window.location.origin,
           sessionsResourceID: '<%= sessionsResourceID %>',
           sessionsStandardID: '<%= sessionsStandardID %>',
-<% 
-if (OIDCConfiguration.isConfigured()) { 
-  final OIDCConfiguration oidcConfiguration = new OIDCConfiguration(configuration);
-%>
-          oidc: {
-            clientID: '<%= oidcConfiguration.getClientID() %>',
-            redirectURI: '<%= oidcConfiguration.getRedirectURI() %>',
-            authorizationEndpoint: '<%= OIDCConfiguration.getAuthorizationEndpoint().toExternalForm() %>',
-            state: generateState(),
-            scope: '<%= oidcConfiguration.getScope() %>'
-          },
-<% } else { %>
-          oidc: {},
-<% } %>
+          themeName: '<%= configuration.getThemeName() %>',
           bannerText: '<%= bannerText %>',
           contentBase: "${contextPath}/dist",
-          logoURL: '<%= configuration.getLogoURL() %>',
+          themeName: '<%= configuration.getThemeName() %>',
           headerURLs: JSON.parse('<%= headerURLJSON %>')
         })
 

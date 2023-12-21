@@ -35,18 +35,19 @@
   function PortalApp(inputs) {
     const _reactApp = window.SciencePortalApp
 
+    const _selfPortalApp = this
+
+    this.baseURL = inputs.baseURL
+
+    inputs.headerURLs.baseURLCanfar = inputs.baseURL
+
     inputs.reactApp = _reactApp
-    _reactApp.setOIDC(inputs.oidc)
-    _reactApp.setLogoURL(inputs.logoURL)
+    _reactApp.setThemeName(inputs.themeName)
     _reactApp.setHeaderURLs(inputs.headerURLs)
 
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
     var portalForm = new cadc.web.science.portal.form.PortalForm(inputs)
-
-    var _selfPortalApp = this
-
-    this.baseURL = inputs.baseURL
 
     // This folder is the location of config json and other assets
     // Variable to support the dev and dist environments
