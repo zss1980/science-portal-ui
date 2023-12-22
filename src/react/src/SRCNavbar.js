@@ -1,18 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Navbar from "react-bootstrap/Navbar";
 
 
-class OIDCNavbar extends React.Component {
+class SRCNavbar extends React.Component {
 
     constructor(props) {
       super(props)
       this.state = {
         isAuthenticated: props.isAuthenticated,
-        authenticatedUser: props.authenticatedUser,
-        logoURL: props.logoURL
+        authenticatedUser: props.authenticatedUser
       }
     }
 
@@ -33,10 +32,10 @@ class OIDCNavbar extends React.Component {
         <div className="canfar-header">
         <Navbar expand="md">
           <Container fluid>
-            <Navbar.Brand><img src={this.state.logoURL} style={{maxWidth: 256 + 'px'}}></img></Navbar.Brand>
+            <Navbar.Brand><img src="/science-portal/images/SRCNetLogo.png" style={{maxWidth: 256 + 'px'}}></img></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
               {this.state.isAuthenticated === true &&
-                <span align="end">{this.state.authenticatedUser}</span>
+                <span class="display-name" align="end">{this.state.authenticatedUser}</span>
               }
           </Container>
         </Navbar>
@@ -53,7 +52,7 @@ class OIDCNavbar extends React.Component {
     }
 }
 
-export default OIDCNavbar;
+export default SRCNavbar;
 
 
 

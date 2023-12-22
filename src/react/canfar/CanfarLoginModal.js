@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,8 +11,7 @@ class CanfarLoginModal extends React.Component {
     super(props)
     this.state = {
       isOpen: props.isOpen,
-      modalURLs: props.modalURLs,
-      oidc: props.oidc
+      modalURLs: props.modalURLs
     }
   }
 
@@ -37,12 +36,7 @@ class CanfarLoginModal extends React.Component {
       errMsg = <div class="sp-error-msg"> {this.state.errMsg} </div>
     }
 
-    let openIDButtonHTML = ""
     let hideFormClass = ""
-    if (Object.keys(this.state.oidc).length !== 0) {
-      openIDButtonHTML = <a class="btn btn-primary" href={this.state.oidc.authorizationEndpoint.trim() + '?client_id=' + this.state.oidc.clientID.trim() + '&redirect_uri=' + encodeURIComponent(this.state.oidc.redirectURI.trim()) + '&state=' + this.state.oidc.state.trim() + '&scope=' + encodeURIComponent(this.state.oidc.scope.trim()) + '&response_type=code'}>Sign In to OpenID Connect</a>
-      hideFormClass = "visually-hidden"
-    }
 
     return (
       <>
@@ -56,7 +50,6 @@ class CanfarLoginModal extends React.Component {
             <Modal.Title className="sp-modal-header">Authentication required</Modal.Title>
           </Modal.Header>
           <Modal.Body className="sp-auth-form-body">
-            {openIDButtonHTML}
             <form className={"access-control " + hideFormClass} id="modalloginForm" role="form" onSubmit={this.props.submitHandler} action={this.state.modalURLs.baseURLCanfar + "/access/login"}>
               <input type="hidden" name="target" value={this.state.modalURLs.baseURLCanfar + "/science-portal"} />
               <div className="modal-body">

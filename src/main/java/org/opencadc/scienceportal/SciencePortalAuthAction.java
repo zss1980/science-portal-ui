@@ -72,12 +72,13 @@ import ca.nrc.cadc.auth.AuthMethod;
 import ca.nrc.cadc.auth.AuthenticationUtil;
 import ca.nrc.cadc.auth.AuthorizationToken;
 import ca.nrc.cadc.auth.AuthorizationTokenPrincipal;
-import ca.nrc.cadc.auth.SSOCookieManager;
 import ca.nrc.cadc.rest.InlineContentHandler;
 import ca.nrc.cadc.rest.RestAction;
 import ca.nrc.cadc.util.StringUtil;
+import org.opencadc.token.Client;
 
 import javax.security.auth.Subject;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,9 +93,13 @@ import java.util.Collections;
  * TODO: jenkinsd 2023.10.20
  */
 public abstract class SciencePortalAuthAction extends RestAction {
-    public static final String FIRST_PARTY_COOKIE_NAME = "oidc_access_token";
+    protected final ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
 
-    protected Subject getCurrentSubject() {
+    protected Client getOIDCClient() throws IOException {
+        return this.applicationConfiguration.getOIDCClient();
+    }
+
+    protected Subject getCurrentSubject() throws Exception {
         final String rawCookieHeader = this.syncInput.getHeader("cookie");
         final Subject subject = AuthenticationUtil.getCurrentSubject();
 
@@ -102,23 +107,24 @@ public abstract class SciencePortalAuthAction extends RestAction {
             final String[] firstPartyCookies =
                     Arrays.stream(rawCookieHeader.split(";"))
                           .filter(cookieString -> cookieString.startsWith(
-                                  SciencePortalAuthAction.FIRST_PARTY_COOKIE_NAME) ||
-                                                  cookieString.startsWith(SSOCookieManager.DEFAULT_SSO_COOKIE_NAME))
+                                  ApplicationConfiguration.FIRST_PARTY_COOKIE_NAME))
                           .toArray(String[]::new);
 
-            if (firstPartyCookies.length > 0) {
-                Arrays.stream(firstPartyCookies).forEach(cookie -> {
+            if (firstPartyCookies.length > 0 && applicationConfiguration.isOIDCConfigured()) {
+                for (final String cookie : firstPartyCookies) {
                     // Only split on the first "=" symbol, and trim any wrapping double quotes
-                    final String cookieValue = cookie.split("=", 2)[1].replaceAll("\"", "");
+                    final String encryptedCookieValue =
+                            cookie.split("=", 2)[1].replaceAll("\"", "");
+                    final String accessToken = getOIDCClient().getAccessToken(encryptedCookieValue);
 
                     subject.getPrincipals().add(new AuthorizationTokenPrincipal(AuthenticationUtil.AUTHORIZATION_HEADER,
                                                                                 AuthenticationUtil.CHALLENGE_TYPE_BEARER
-                                                                                + " " + cookieValue));
+                                                                                + " " + accessToken));
                     subject.getPublicCredentials().add(
-                            new AuthorizationToken(AuthenticationUtil.CHALLENGE_TYPE_BEARER, cookieValue,
+                            new AuthorizationToken(AuthenticationUtil.CHALLENGE_TYPE_BEARER, accessToken,
                                                    Collections.singletonList(
                                                            URI.create(syncInput.getRequestURI()).getHost())));
-                });
+                }
 
                 if (!subject.getPrincipals(AuthorizationTokenPrincipal.class).isEmpty()) {
                     // Ensure it's clean first.

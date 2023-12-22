@@ -68,79 +68,49 @@
 
 package org.opencadc.scienceportal.oidc.callback;
 
-import ca.nrc.cadc.auth.SSOCookieManager;
-import ca.nrc.cadc.net.HttpPost;
-import ca.nrc.cadc.rest.InlineContentHandler;
-import ca.nrc.cadc.rest.RestAction;
-import org.json.JSONObject;
+import ca.nrc.cadc.util.StringUtil;
+import org.opencadc.token.Client;
 import org.opencadc.scienceportal.ApplicationConfiguration;
-import org.opencadc.scienceportal.OIDCConfiguration;
 import org.opencadc.scienceportal.SciencePortalAuthAction;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-public class GetAction extends RestAction {
-    private static final String COOKIE_FORMAT = SciencePortalAuthAction.FIRST_PARTY_COOKIE_NAME
-                                                + "=%s; Domain=%s; SameSite=Strict; Secure; HttpOnly";
 
-    @Override
-    protected InlineContentHandler getInlineContentHandler() {
-        return null;
-    }
+public class GetAction extends SciencePortalAuthAction {
+    private static final String COOKIE_FORMAT = ApplicationConfiguration.FIRST_PARTY_COOKIE_NAME
+                                                + "=%s; Path=/; Secure; HttpOnly";
 
     @Override
     public void doAction() throws Exception {
-        final OIDCConfiguration oidcConfiguration = new OIDCConfiguration(new ApplicationConfiguration());
-        final String code = syncInput.getParameter("code");
-        final String state = syncInput.getParameter("state");
-        final URL authorizationURL = OIDCConfiguration.getTokenEndpoint();
+        final Client oidcClient = getOIDCClient();
+        final byte[] encryptedAssetsKey = oidcClient.setAccessToken(getRequestURI());
 
-        final String basicAuthHeader = String.format("%s:%s", oidcConfiguration.getClientID(),
-                                                     oidcConfiguration.getClientSecret());
-        final String encodedBasicAuthHeader = "basic " + new String(Base64.getEncoder().encode(
-                basicAuthHeader.getBytes(StandardCharsets.UTF_8)));
-
-        final Map<String, Object> payload = GetAction.tokenPayload(code, state, oidcConfiguration);
-
-        final HttpPost postAuthorizationCode = new HttpPost(authorizationURL, payload, false);
-        postAuthorizationCode.setRequestProperty("authorization", encodedBasicAuthHeader);
-        postAuthorizationCode.prepare();
-
-        try (final BufferedReader bufferedReader =
-                     new BufferedReader(new InputStreamReader(postAuthorizationCode.getInputStream()))) {
-            String line;
-            final StringBuilder tokenBuilder = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                tokenBuilder.append(line.trim());
-            }
-
-            final JSONObject tokenSetJSON = new JSONObject(tokenBuilder.toString());
-            syncOutput.setHeader("set-cookie", String.format(GetAction.COOKIE_FORMAT,
-                                                             tokenSetJSON.getString("access_token"),
-                                                             new URL(syncInput.getRequestURI()).getHost()));
-
-            syncOutput.setCode(HttpServletResponse.SC_FOUND);
-            syncOutput.setHeader("location", oidcConfiguration.getCallbackURI());
-        }
+        setCookie(encryptedAssetsKey);
+        redirectToCallback(oidcClient);
     }
 
-    private static Map<String, Object> tokenPayload(final String code, final String state,
-                                                    final OIDCConfiguration oidcConfiguration) {
-        final Map<String, Object> payload = new HashMap<>();
-        payload.put("code", code);
-        payload.put("state", state);
-        payload.put("scope", oidcConfiguration.getScope());
-        payload.put("redirect_uri", oidcConfiguration.getRedirectURI());
-        payload.put("grant_type", "authorization_code");
-        payload.put("client_id", oidcConfiguration.getClientID());
-        payload.put("client_secret", oidcConfiguration.getClientSecret());
-        return payload;
+    void setCookie(final byte[] encryptedAssetsKey) {
+        syncOutput.setHeader("set-cookie", String.format(GetAction.COOKIE_FORMAT,
+                                                         new String(encryptedAssetsKey,
+                                                                    StandardCharsets.ISO_8859_1)));
+    }
+
+    URI getRequestURI() {
+        final String requestSchemeHostPath = this.syncInput.getRequestURI();
+        final String requestQueryString =
+                this.syncInput.getParameterNames().stream()
+                              .map(parameterName -> String.format("%s=%s", parameterName,
+                                                                  this.syncInput.getParameter(parameterName)))
+                              .collect(Collectors.joining("&"));
+        return URI.create(requestSchemeHostPath + (StringUtil.hasText(requestQueryString)
+                                                   ? "?" + requestQueryString : ""));
+    }
+
+    void redirectToCallback(final Client oidcClient) {
+        syncOutput.setCode(HttpServletResponse.SC_FOUND);
+        syncOutput.setHeader("location", oidcClient.getCallbackURL().toExternalForm());
     }
 }

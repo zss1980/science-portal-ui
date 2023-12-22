@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
@@ -20,8 +20,7 @@ class CanfarNavbar extends React.Component {
       this.state = {
         isAuthenticated: props.isAuthenticated,
         authenticatedUser: props.authenticatedUser,
-        headerURLs: props.headerURLs,
-        logoURL: props.logoURL
+        headerURLs: props.headerURLs
       }
     }
 
@@ -56,7 +55,7 @@ class CanfarNavbar extends React.Component {
         <div className="canfar-header">
         <Navbar expand="md">
           <Container fluid>
-            <Navbar.Brand href={baseURLCanfar}><img src={this.state.logoURL}></img></Navbar.Brand>
+            <Navbar.Brand href={baseURLCanfar}><img src="https://www.canfar.net/css/images/logo.png"></img></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse className="justify-content-end">
               <Nav className="justify-content-end flex-grow-1 pe-3">
@@ -145,6 +144,4 @@ class CanfarNavbar extends React.Component {
 }
 
 export default CanfarNavbar;
-
-
 
