@@ -106,6 +106,7 @@ public abstract class SciencePortalAuthAction extends RestAction {
         if (StringUtil.hasText(rawCookieHeader)) {
             final String[] firstPartyCookies =
                     Arrays.stream(rawCookieHeader.split(";"))
+                          .map(String::trim)
                           .filter(cookieString -> cookieString.startsWith(
                                   ApplicationConfiguration.FIRST_PARTY_COOKIE_NAME))
                           .toArray(String[]::new);
