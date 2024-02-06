@@ -69,7 +69,7 @@ class CanfarLoginModal extends React.Component {
                 {errMsg}
                 <a href={this.state.modalURLs.passreset}
                    className="account_access_info"
-                   tabIndex="5" className="account_access_info" title="Forgot Password">
+                   tabIndex="5" title="Forgot Password">
                   Forgot your Account information?</a>
                 <br/>
                 <a href={this.state.modalURLs.acctrequest}

@@ -44,7 +44,7 @@ class SRCLoginModal extends React.Component {
             <Modal.Title className="sp-modal-header">Authentication required</Modal.Title>
           </Modal.Header>
           <Modal.Body className="sp-auth-form-body">
-            <a class="btn btn-primary" href="/science-portal/oidc-login">Sign In to OpenID Connect</a>
+            <a className="btn btn-primary" href="/science-portal/oidc-login">Sign In to OpenID Connect</a>
           </Modal.Body>
         </Modal>
       </>
