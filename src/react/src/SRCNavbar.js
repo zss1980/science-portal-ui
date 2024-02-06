@@ -35,7 +35,7 @@ class SRCNavbar extends React.Component {
             <Navbar.Brand><img src="/science-portal/images/SRCNetLogo.png" style={{maxWidth: 256 + 'px'}}></img></Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
               {this.state.isAuthenticated === true &&
-                <span class="display-name" align="end">{this.state.authenticatedUser}</span>
+                <span className="display-name" align="end">{this.state.authenticatedUser}</span>
               }
           </Container>
         </Navbar>

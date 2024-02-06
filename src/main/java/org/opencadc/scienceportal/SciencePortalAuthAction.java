@@ -75,6 +75,8 @@ import ca.nrc.cadc.auth.AuthorizationTokenPrincipal;
 import ca.nrc.cadc.rest.InlineContentHandler;
 import ca.nrc.cadc.rest.RestAction;
 import ca.nrc.cadc.util.StringUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opencadc.token.Client;
 
 import javax.security.auth.Subject;
@@ -82,6 +84,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 /**
  * Base class to support storing the OIDC Access Token in a cookie.
@@ -93,6 +96,8 @@ import java.util.Collections;
  * TODO: jenkinsd 2023.10.20
  */
 public abstract class SciencePortalAuthAction extends RestAction {
+    private static final Logger LOGGER = LogManager.getLogger(SciencePortalAuthAction.class);
+
     protected final ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
 
     protected Client getOIDCClient() throws IOException {
@@ -116,15 +121,20 @@ public abstract class SciencePortalAuthAction extends RestAction {
                     // Only split on the first "=" symbol, and trim any wrapping double quotes
                     final String encryptedCookieValue =
                             cookie.split("=", 2)[1].replaceAll("\"", "");
-                    final String accessToken = getOIDCClient().getAccessToken(encryptedCookieValue);
 
-                    subject.getPrincipals().add(new AuthorizationTokenPrincipal(AuthenticationUtil.AUTHORIZATION_HEADER,
-                                                                                AuthenticationUtil.CHALLENGE_TYPE_BEARER
-                                                                                + " " + accessToken));
-                    subject.getPublicCredentials().add(
-                            new AuthorizationToken(AuthenticationUtil.CHALLENGE_TYPE_BEARER, accessToken,
-                                                   Collections.singletonList(
-                                                           URI.create(syncInput.getRequestURI()).getHost())));
+                    try {
+                        final String accessToken = getOIDCClient().getAccessToken(encryptedCookieValue);
+
+                        subject.getPrincipals().add(new AuthorizationTokenPrincipal(AuthenticationUtil.AUTHORIZATION_HEADER,
+                                                                                    AuthenticationUtil.CHALLENGE_TYPE_BEARER
+                                                                                    + " " + accessToken));
+                        subject.getPublicCredentials().add(
+                                new AuthorizationToken(AuthenticationUtil.CHALLENGE_TYPE_BEARER, accessToken,
+                                                       Collections.singletonList(
+                                                               URI.create(syncInput.getRequestURI()).getHost())));
+                    } catch (NoSuchElementException noTokenForKeyInCacheException) {
+                        LOGGER.warn("Cookie found and decrypted but no value in cache.  Ignoring cookie...");
+                    }
                 }
 
                 if (!subject.getPrincipals(AuthorizationTokenPrincipal.class).isEmpty()) {
