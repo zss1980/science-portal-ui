@@ -36,7 +36,7 @@ dependencies {
     runtimeOnly 'org.apache.taglibs:taglibs-standard-impl:1.2.5'
 }
 
-sourceCompatibility = '11'
+sourceCompatibility = '1.8'
 
 war {
     // Trying to fix static file caching on new build.
