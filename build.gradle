@@ -22,7 +22,7 @@ repositories {
 dependencies {
     implementation 'com.opencsv:opencsv:[5.1,6.0)'
     implementation 'commons-net:commons-net:3.9.0'
-    implementation 'org.apache.commons:commons-configuration2:2.7'
+    implementation 'org.apache.commons:commons-configuration2:2.8.0'
     implementation 'org.opencadc:cadc-access-control-identity:[1.1.0,)'
     implementation 'org.opencadc:cadc-gms:[1.0.12,2.0)'
     implementation 'org.opencadc:cadc-log:[1.1.5,)'
@@ -36,7 +36,7 @@ dependencies {
     runtimeOnly 'org.apache.taglibs:taglibs-standard-impl:1.2.5'
 }
 
-sourceCompatibility = '11'
+sourceCompatibility = '1.8'
 
 war {
     // Trying to fix static file caching on new build.
