@@ -348,12 +348,7 @@
 
     // ------------ Authentication functions ------------
 
-    function checkAuthentication(isDev) {
-      // From cadc.user.js. Listens for when user logs in
-      // _selfPortalCore.userManager.subscribe(cadc.web.events.onUserLoad,
-      //     function (_event, data) {
-      //       // Check to see if user is logged in or not
-      //       if (typeof(data.error) !== "undefined") {
+    function checkAuthentication() {
       fetch(baseURL + cadc.web.science.portal.core.userInfoEndpoint)
       .then((response) => {
         if (!response.ok) {
@@ -377,29 +372,6 @@
       }).catch((error) => {
         console.warn(error)
       })
-              // hideModal()
-              // var userState = {
-              //   loginHandler : portalLogin.handleLoginRequest
-              // }
-              // _rApp.setNotAuthenticated(userState)
-          //   } else {
-          //     // Don't directly access react app from here so this
-          //     // function can be connected to the portalLogin
-          //     // cadc.web.science.portal.login.events.onAuthenticateOK event as well.
-          //     // That event is fired after the login form is submitted.
-          //     setAuthenticated()
-          //   }
-          // })
-
-      // if (isDev === true) {
-      //   _selfPortalCore.userManager.user = {name: "dev user"}
-      //   setAuthenticated()
-      // } else {
-      //   // Call the whoami endpoint to get the user details
-      //   // if they are not logged in, same event is thrown, return payload
-      //   // needs to be checked
-      //   _selfPortalCore.userManager.loadCurrent()
-      // }
     }
 
     function setAuthenticated() {
