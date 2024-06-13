@@ -71,6 +71,7 @@ package org.opencadc.scienceportal.session;
 import ca.nrc.cadc.auth.AuthMethod;
 import ca.nrc.cadc.reg.Standards;
 import ca.nrc.cadc.reg.client.RegistryClient;
+import ca.nrc.cadc.util.StringUtil;
 import org.opencadc.scienceportal.ApplicationConfiguration;
 import org.opencadc.scienceportal.SciencePortalAuthGetAction;
 
@@ -82,7 +83,13 @@ public class GetAction extends SciencePortalAuthGetAction {
 
     @Override
     protected String getEndpoint() {
-        return GetAction.SESSION_ENDPOINT;
+        final String path = this.syncInput.getPath();
+        if (StringUtil.hasText(path)) {
+            final String trimPath = path.trim();
+            return GetAction.SESSION_ENDPOINT + (trimPath.startsWith("/") ? path : "/" + path);
+        } else {
+            return GetAction.SESSION_ENDPOINT;
+        }
     }
 
     @Override
