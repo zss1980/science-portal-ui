@@ -96,7 +96,7 @@
       // Nothing happens if user is not authenticated, so no other page
       // load information is done until this call comes back (see onAuthenticated event below)
       // onAuthenticated event triggered if everything is OK.
-      portalCore.checkAuthentication(_selfPortalApp.isDev)
+      portalCore.checkAuthentication()
     }
 
     function attachListeners() {
@@ -224,7 +224,7 @@
       portalSessions.loadPlatformUsage(_selfPortalApp.handlePlatformUsage)
     }
 
-    function handleSessionActionError(e, request) {
+    function handleSessionActionError(_e, request) {
       portalCore.setAjaxFail(portalCore.pageSections.sessionList, request)
     }
 
@@ -247,11 +247,9 @@
     }
 
     function populateSessionList(sessionData) {
-      var $sessionListDiv = $("#sp_session_list")
-
       if (JSON.stringify(sessionData) === "[]") {
         // Pass list to the react app portion for rendering
-        var sessDataObj = {
+        const sessDataObj = {
           "listType" : "empty",
           "sessData" : []
         }
@@ -260,13 +258,13 @@
 
         // Build new list
         // Assuming a list of sessions is provided, with connect url, name, type
-        var newSessionList = new Array()
+        const newSessionList = []
         $(sessionData).each(function () {
 
           var mapEntry = portalForm.getMapEntry(this.type)
           // Check to see if there are any items in the sessionType_map that
           // may override the defaults
-          var iconSrc= _selfPortalApp.baseURL + "/science-portal/images/"
+          var iconSrc = _selfPortalApp.baseURL + "/science-portal/images/"
           if (mapEntry != null) {
             if (typeof mapEntry.portal_icon != "undefined") {
               iconSrc += mapEntry.portal_icon
@@ -281,7 +279,7 @@
             }
           }
 
-          var nextSessionItem = {
+          const nextSessionItem = {
             "id" : this.id,
             "name" : this.name,
             "status": this.status,
@@ -308,11 +306,10 @@
 
           // Add to the list
           newSessionList.push(nextSessionItem)
-
         })
 
         // Pass list to the react app portion for rendering
-        var sessDataObj = {
+        const sessDataObj = {
           "listType" : "list",
           "sessData" : newSessionList
         }
