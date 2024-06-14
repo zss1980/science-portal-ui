@@ -84,12 +84,19 @@ public class GetAction extends SciencePortalAuthGetAction {
     @Override
     protected String getEndpoint() {
         final String path = this.syncInput.getPath();
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(GetAction.SESSION_ENDPOINT);
+
         if (StringUtil.hasText(path)) {
             final String trimPath = path.trim();
-            return GetAction.SESSION_ENDPOINT + (trimPath.startsWith("/") ? path : "/" + path);
-        } else {
-            return GetAction.SESSION_ENDPOINT;
+            if (!trimPath.startsWith("/")) {
+                stringBuilder.append("/");
+            }
+
+            stringBuilder.append(trimPath);
         }
+
+        return stringBuilder.toString();
     }
 
     @Override
