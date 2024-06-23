@@ -75,6 +75,7 @@ import ca.nrc.cadc.auth.AuthorizationTokenPrincipal;
 import ca.nrc.cadc.rest.InlineContentHandler;
 import ca.nrc.cadc.rest.RestAction;
 import ca.nrc.cadc.util.StringUtil;
+import java.net.URL;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opencadc.token.Client;
@@ -104,23 +105,23 @@ public abstract class SciencePortalAuthAction extends RestAction {
         return this.applicationConfiguration.getOIDCClient();
     }
 
-    protected Subject getCurrentSubject() throws Exception {
+    protected Subject getCurrentSubject(final URL targetURL) throws Exception {
         final String rawCookieHeader = this.syncInput.getHeader("cookie");
         final Subject subject = AuthenticationUtil.getCurrentSubject();
 
         if (StringUtil.hasText(rawCookieHeader)) {
             final String[] firstPartyCookies =
-                    Arrays.stream(rawCookieHeader.split(";"))
-                          .map(String::trim)
-                          .filter(cookieString -> cookieString.startsWith(
-                                  ApplicationConfiguration.FIRST_PARTY_COOKIE_NAME))
-                          .toArray(String[]::new);
+                Arrays.stream(rawCookieHeader.split(";"))
+                      .map(String::trim)
+                      .filter(cookieString -> cookieString.startsWith(
+                          ApplicationConfiguration.FIRST_PARTY_COOKIE_NAME))
+                      .toArray(String[]::new);
 
             if (firstPartyCookies.length > 0 && applicationConfiguration.isOIDCConfigured()) {
                 for (final String cookie : firstPartyCookies) {
                     // Only split on the first "=" symbol, and trim any wrapping double quotes
                     final String encryptedCookieValue =
-                            cookie.split("=", 2)[1].replaceAll("\"", "");
+                        cookie.split("=", 2)[1].replaceAll("\"", "");
 
                     try {
                         final String accessToken = getOIDCClient().getAccessToken(encryptedCookieValue);
@@ -128,10 +129,8 @@ public abstract class SciencePortalAuthAction extends RestAction {
                         subject.getPrincipals().add(new AuthorizationTokenPrincipal(AuthenticationUtil.AUTHORIZATION_HEADER,
                                                                                     AuthenticationUtil.CHALLENGE_TYPE_BEARER
                                                                                     + " " + accessToken));
-                        subject.getPublicCredentials().add(
-                                new AuthorizationToken(AuthenticationUtil.CHALLENGE_TYPE_BEARER, accessToken,
-                                                       Collections.singletonList(
-                                                               URI.create(syncInput.getRequestURI()).getHost())));
+                        subject.getPublicCredentials().add(new AuthorizationToken(AuthenticationUtil.CHALLENGE_TYPE_BEARER, accessToken,
+                                                                                  Collections.singletonList(targetURL.getHost())));
                     } catch (NoSuchElementException noTokenForKeyInCacheException) {
                         LOGGER.warn("Cookie found and decrypted but no value in cache.  Ignoring cookie...");
                     }

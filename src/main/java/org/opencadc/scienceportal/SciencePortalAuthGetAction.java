@@ -91,7 +91,7 @@ public abstract class SciencePortalAuthGetAction extends SciencePortalAuthAction
     @Override
     public void doAction() throws Exception {
         final URL apiURL = getAPIURL();
-        final Subject subject = getCurrentSubject();
+        final Subject subject = getCurrentSubject(apiURL);
         final String apiEndpoint = String.format("%s%s", apiURL.toExternalForm(), getEndpoint());
         final URL apiEndpointURL = new URL(apiEndpoint);
         final String query;
