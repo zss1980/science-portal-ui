@@ -93,8 +93,7 @@ public class PostAction extends SciencePortalAuthAction {
     @Override
     public void doAction() throws Exception {
         final URL apiURL = new URL(getAPIURL().toExternalForm() + PostAction.SESSION_ENDPOINT);
-
-        final Subject authenticatedUser = getCurrentSubject();
+        final Subject authenticatedUser = getCurrentSubject(apiURL);
         final Map<String, Object> payload = new HashMap<>();
         payload.putAll(syncInput.getParameterNames().stream().collect(
                 Collectors.toMap(key -> key, key -> syncInput.getParameter(key))));

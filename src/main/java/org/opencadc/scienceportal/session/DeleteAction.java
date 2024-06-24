@@ -87,7 +87,7 @@ public class DeleteAction extends SciencePortalAuthAction {
         final URL apiURL = new URL(getAPIURL().toExternalForm()
                                    + syncInput.getRequestPath().substring(syncInput.getContextPath().length()));
 
-        final Subject authenticatedUser = getCurrentSubject();
+        final Subject authenticatedUser = getCurrentSubject(apiURL);
 
         Subject.doAs(authenticatedUser, (PrivilegedExceptionAction<?>) () -> {
             final HttpDelete httpDelete = new HttpDelete(apiURL, true);

@@ -90,12 +90,10 @@ import java.security.PrivilegedExceptionAction;
 public class GetAction extends SciencePortalAuthAction {
     @Override
     public void doAction() throws Exception {
-        final Subject subjectFromCookie = getCurrentSubject();
+        final URL sessionsURL = getSessionsURL();
+        final Subject subjectFromCookie = getCurrentSubject(sessionsURL);
         Subject.doAs(subjectFromCookie, (PrivilegedExceptionAction<?>) () -> {
-            final URL sessionsURL;
-
             try {
-                sessionsURL = getSessionsURL();
                 final HttpGet sessionAccessCheck = new HttpGet(sessionsURL, true);
                 sessionAccessCheck.run();
 
