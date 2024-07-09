@@ -50,7 +50,7 @@ class SciencePortalConfirm extends React.Component {
           {modalMsg}
         </Modal.Body>
         <Modal.Footer>
-          <Button bsStyle="default" onClick={this.onClose}>
+          <Button variant="secondary" onClick={this.onClose}>
             Cancel
           </Button>
 
