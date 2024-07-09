@@ -321,7 +321,7 @@
 
             _selfPortalSess._platformUsage.cpu = {
               "used" : platformUsage.cores.requestedCPUCores,
-              "free" : platformUsage.cores.cpuCoresAvailable - platformUsage.cores.requestedCPUCores,
+              "free" : (parseFloat(platformUsage.cores.cpuCoresAvailable) - parseFloat(platformUsage.cores.requestedCPUCores)).toFixed(1),
               "total" : platformUsage.cores.cpuCoresAvailable
             }
 
