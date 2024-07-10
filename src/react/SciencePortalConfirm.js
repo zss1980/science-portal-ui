@@ -12,8 +12,16 @@ class SciencePortalConfirm extends React.Component {
     this.onConfirm = this.onConfirm.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState(nextProps)
+  static getDerivedStateFromProps(nextProps, _prevState) {
+    return nextProps;
+  }
+
+  componentDidUpdate(nextProps) {
+    if (this.props !== nextProps) {
+      this.setState({
+        nextProps
+      });
+    }
   }
 
   onClose(event) {

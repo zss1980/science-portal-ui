@@ -15,8 +15,16 @@ class SRCLoginModal extends React.Component {
     this.setState({ isOpen: false });
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState(nextProps);
+  static getDerivedStateFromProps(nextProps, _prevState) {
+    return nextProps;
+  }
+
+  componentDidUpdate(nextProps) {
+    if (this.props !== nextProps) {
+      this.setState({
+        nextProps
+      });
+    }
   }
 
   closeModal = () => this.setState({ isOpen: false });

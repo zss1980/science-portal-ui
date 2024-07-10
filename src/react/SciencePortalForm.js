@@ -60,13 +60,19 @@ class SciencePortalForm extends React.Component {
       selectedRAM : this.state.fData.contextData.defaultRAM
     });
     this.state.fData.resetHandler();
-
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ fData: nextProps.fData });
+  static getDerivedStateFromProps(nextProps, _prevState) {
+    return { fData: nextProps.fData };
   }
 
+  componentDidUpdate(nextProps) {
+    if (this.props.fData !== nextProps.fData) {
+      this.setState({
+        fData: nextProps.fData
+      });
+    }
+  }
 
   renderPopover(headerText, bodyText) {
     return <OverlayTrigger
