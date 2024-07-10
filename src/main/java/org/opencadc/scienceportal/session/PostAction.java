@@ -73,6 +73,7 @@ import ca.nrc.cadc.net.HttpPost;
 import ca.nrc.cadc.reg.Standards;
 import ca.nrc.cadc.reg.client.RegistryClient;
 import ca.nrc.cadc.rest.InlineContentHandler;
+import ca.nrc.cadc.util.StringUtil;
 import org.opencadc.scienceportal.ApplicationConfiguration;
 import org.opencadc.scienceportal.SciencePortalAuthAction;
 
@@ -92,12 +93,23 @@ public class PostAction extends SciencePortalAuthAction {
 
     @Override
     public void doAction() throws Exception {
-        final URL apiURL = new URL(getAPIURL().toExternalForm() + PostAction.SESSION_ENDPOINT);
+        final StringBuilder apiURLBuilder = new StringBuilder(getAPIURL().toExternalForm() + PostAction.SESSION_ENDPOINT);
+
+        // Preserve path items.
+        final String path = this.syncInput.getPath();
+        if (StringUtil.hasText(path)) {
+            if (!path.trim().startsWith("/")) {
+                apiURLBuilder.append("/");
+            }
+
+            apiURLBuilder.append(path);
+        }
+
+        final URL apiURL = new URL(apiURLBuilder.toString());
         final Subject authenticatedUser = getCurrentSubject(apiURL);
         final Map<String, Object> payload = new HashMap<>();
         payload.putAll(syncInput.getParameterNames().stream().collect(
                 Collectors.toMap(key -> key, key -> syncInput.getParameter(key))));
-
         Subject.doAs(authenticatedUser, (PrivilegedExceptionAction<?>) () -> {
             final HttpPost httpPost = new HttpPost(apiURL, payload, false);
             httpPost.prepare();
