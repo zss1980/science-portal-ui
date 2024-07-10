@@ -239,7 +239,7 @@ function SciencePortalPlatformLoad(props) {
           <Row className="sp-usage-bar-row">
             <Col sm={12}>
               <div className="sp-usage-cpu-title">
-                Available CPUs:  {props.usage.cpu.free} / {props.usage.cpu.total}
+                Available CPUs:  {props.usage.cpu.display.free} / {props.usage.cpu.display.total}
               </div>
               <div className="sp-usage-bar">
                 <Bar options={horizontalStackedCPUOptions} data={yAxisCPUData} />
@@ -249,7 +249,7 @@ function SciencePortalPlatformLoad(props) {
           <Row className="sp-usage-bar-row">
             <Col sm={12}>
               <div className="sp-usage-ram-title">
-                Available RAM:  {props.usage.ram.free}{props.usage.ram.unit} / {props.usage.ram.total}{props.usage.ram.unit}
+                Available RAM:  {props.usage.ram.display.free}{props.usage.ram.unit} / {props.usage.ram.display.total}{props.usage.ram.unit}
               </div>
               <div className="sp-usage-bar">
                 <Bar options={horizontalStackedRAMOptions} data={yAxisRAMData} />

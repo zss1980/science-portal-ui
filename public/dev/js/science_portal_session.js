@@ -319,20 +319,29 @@
                 + zeroPrefix(month) + "-" + zeroPrefix(nowDate.getUTCDate())
                 + " " + zeroPrefix(nowDate.getUTCHours()) + ":" + zeroPrefix(nowDate.getMinutes())
 
+            // The free and totals are displayed, and so are parsed and fixed.  The used field is data fed to the progress bar.
             _selfPortalSess._platformUsage.cpu = {
               "used" : platformUsage.cores.requestedCPUCores,
               "free" : platformUsage.cores.cpuCoresAvailable - platformUsage.cores.requestedCPUCores,
-              "total" : platformUsage.cores.cpuCoresAvailable
+              "total" : platformUsage.cores.cpuCoresAvailable,
+              "display": {
+                "free": (parseFloat(platformUsage.cores.cpuCoresAvailable) - parseFloat(platformUsage.cores.requestedCPUCores)).toFixed(1),
+                "total": parseFloat(platformUsage.cores.cpuCoresAvailable).toFixed(1)
+              }
             }
 
             // {requestedRAM: "0G", ramAvailable: "0G", maxRAM: {ram: "0G", withCPUCores: 0}} 
             const requestedRAMGB = parseFileSize(platformUsage.ram.requestedRAM)
             const availableRAMGB = parseFileSize(platformUsage.ram.ramAvailable)
             _selfPortalSess._platformUsage.ram = {
-              "unit" : "G",
+              "unit" : "GB",
               "used" : requestedRAMGB,
-              "free" : (parseFloat(availableRAMGB) - parseFloat(requestedRAMGB)).toFixed(2),
-              "total" : availableRAMGB
+              "free" : availableRAMGB - requestedRAMGB,
+              "total" : availableRAMGB,
+              "display": {
+                "free" : (parseFloat(availableRAMGB) - parseFloat(requestedRAMGB)).toFixed(2),
+                "total" : parseFloat(availableRAMGB).toFixed(2)
+              }
             }
 
             // These values may change over time, so store the key name

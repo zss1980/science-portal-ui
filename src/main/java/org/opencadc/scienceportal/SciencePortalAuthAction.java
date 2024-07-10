@@ -72,10 +72,12 @@ import ca.nrc.cadc.auth.AuthMethod;
 import ca.nrc.cadc.auth.AuthenticationUtil;
 import ca.nrc.cadc.auth.AuthorizationToken;
 import ca.nrc.cadc.auth.AuthorizationTokenPrincipal;
+import ca.nrc.cadc.auth.SSOCookieCredential;
 import ca.nrc.cadc.rest.InlineContentHandler;
 import ca.nrc.cadc.rest.RestAction;
 import ca.nrc.cadc.util.StringUtil;
 import java.net.URL;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opencadc.token.Client;
@@ -141,6 +143,13 @@ public abstract class SciencePortalAuthAction extends RestAction {
                     subject.getPublicCredentials(AuthMethod.class)
                            .forEach(authMethod -> subject.getPublicCredentials().remove(authMethod));
                     subject.getPublicCredentials().add(AuthMethod.TOKEN);
+                }
+            } else if (AuthenticationUtil.getAuthMethod(subject) == AuthMethod.COOKIE) {
+                final Set<SSOCookieCredential> publicCookieCredentials = subject.getPublicCredentials(SSOCookieCredential.class);
+                if (!publicCookieCredentials.isEmpty()) {
+                    final SSOCookieCredential publicCookieCredential = publicCookieCredentials.toArray(new SSOCookieCredential[0])[0];
+                    subject.getPublicCredentials().add(new SSOCookieCredential(publicCookieCredential.getSsoCookieValue(), targetURL.getHost(),
+                                                                               publicCookieCredential.getExpiryDate()));
                 }
             }
         }
