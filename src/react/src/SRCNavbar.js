@@ -17,8 +17,16 @@ class SRCNavbar extends React.Component {
 
     // This function allows data to move through and re-render
     // children using this data
-    componentWillReceiveProps(nextProps) {
-      this.setState(nextProps);
+    static getDerivedStateFromProps(nextProps, _prevState) {
+      return nextProps;
+    }
+  
+    componentDidUpdate(nextProps) {
+      if (this.props !== nextProps) {
+        this.setState({
+          nextProps
+        });
+      }
     }
 
     render() {

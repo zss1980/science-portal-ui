@@ -16,8 +16,16 @@ class SciencePortalModal extends React.Component {
     this.setState({isOpen: false});
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({modalData: nextProps.modalData});
+  static getDerivedStateFromProps(nextProps, _prevState) {
+    return { modalData: nextProps.modalData };
+  }
+
+  componentDidUpdate(nextProps) {
+    if (this.props.modalData !== nextProps.modalData) {
+      this.setState({
+        modalData: nextProps.modalData
+      });
+    }
   }
 
   handleReload = () => {
