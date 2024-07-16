@@ -49,12 +49,12 @@ const URLS = {
 }
 
 const HEADER_URL_DEFAULTS = {
-  "acctrequest": "",
-  "acctupdate": "",
-  "passreset": "",
-  "passchg": "",
-  "gmui": "",
-  "search": "",
+  "ivo://cadc.nrc.ca/acctrequest": "",
+  "ivo://cadc.nrc.ca/acctupdate": "",
+  "ivo://cadc.nrc.ca/passreset": "",
+  "ivo://cadc.nrc.ca/passchg": "",
+  "ivo://cadc.nrc.ca/groups": "",
+  "ivo://cadc.nrc.ca/search": "",
   "baseURLCanfar": "https://www.canfar.net"
 }
 
