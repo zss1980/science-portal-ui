@@ -49,12 +49,12 @@ const URLS = {
 }
 
 const HEADER_URL_DEFAULTS = {
-  "acctrequest": "",
-  "acctupdate": "",
-  "passreset": "",
-  "passchg": "",
-  "gmui": "",
-  "search": "",
+  "ivo://cadc.nrc.ca/acctrequest": "",
+  "ivo://cadc.nrc.ca/acctupdate": "",
+  "ivo://cadc.nrc.ca/passreset": "",
+  "ivo://cadc.nrc.ca/passchg": "",
+  "ivo://cadc.nrc.ca/groups": "",
+  "ivo://cadc.nrc.ca/search": "",
   "baseURLCanfar": "https://www.canfar.net"
 }
 
@@ -194,15 +194,11 @@ class SciencePortalApp extends React.Component {
   }
 
   setHeaderURLs(hURLs) {
-    var curState = this.state
-    curState.headerURLs = hURLs
-    this.setState(curState)
+    this.setState({headerURLs: hURLs})
   }
 
   setThemeName(themeName) {
-    const currState = this.state
-    currState.themeName = themeName
-    this.setState(currState)
+    this.setState({themeName: themeName})
   }
 
   getAccessToken() {

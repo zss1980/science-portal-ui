@@ -4,6 +4,8 @@ import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
+const PASS_RESET_URI = "ivo://cadc.nrc.ca/passreset"
+const ACCOUNT_REQUEST_URI = "ivo://cadc.nrc.ca/acctrequest"
 
 class CanfarLoginModal extends React.Component {
 
@@ -75,12 +77,12 @@ class CanfarLoginModal extends React.Component {
                          placeholder="Password"/>
                 </div>
                 {errMsg}
-                <a href={this.state.modalURLs.passreset}
+                <a href={this.state.modalURLs[PASS_RESET_URI]}
                    className="account_access_info"
                    tabIndex="5" title="Forgot Password">
                   Forgot your Account information?</a>
                 <br/>
-                <a href={this.state.modalURLs.acctrequest}
+                <a href={this.state.modalURLs[ACCOUNT_REQUEST_URI]}
                    className="account_access_info"
                    tabIndex="6" title="Register" >
                   Request a CADC Account</a>

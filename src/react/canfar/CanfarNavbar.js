@@ -12,6 +12,10 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faRightFromBracket} from "@fortawesome/free-solid-svg-icons";
 import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
 
+const GROUP_MANAGEMENT_URI = "ivo://cadc.nrc.ca/groups"
+const ADVANCED_SEARCH_URI = "ivo://cadc.nrc.ca/search"
+const ACCOUNT_UPDATE_URI = "ivo://cadc.nrc.ca/acctupdate"
+const PASSWORD_CHANGE_URI = "ivo://cadc.nrc.ca/passchg"
 
 class CanfarNavbar extends React.Component {
 
@@ -37,6 +41,7 @@ class CanfarNavbar extends React.Component {
         });
       }
     }
+
     renderButton() {
       return (
         <Button size="sm" variant="outline-primary">{this.state.authenticatedUser}<span className="sp-buffer-span-left"><FontAwesomeIcon icon={faCaretDown} /></span></Button>
@@ -69,10 +74,10 @@ class CanfarNavbar extends React.Component {
               <Nav.Link href={baseURLCanfar + "/en/docs/quick_start/"}>Documentation</Nav.Link>
               <NavDropdown title="Services">
                 <NavDropdown.Item href={baseURLCanfar + "/storage/list"}  target="_blank">Storage Management</NavDropdown.Item>
-                <NavDropdown.Item href={this.state.headerURLs.groups} target="_blank">Group Management</NavDropdown.Item>
+                <NavDropdown.Item href={this.state.headerURLs[GROUP_MANAGEMENT_URI]} target="_blank">Group Management</NavDropdown.Item>
                 <NavDropdown.Item href={baseURLCanfar + "/citation"}  target="_blank">Data Publication</NavDropdown.Item>
                 <NavDropdown.Item href={baseURLCanfar + "/science-portal"}  target="_blank">Science Portal</NavDropdown.Item>
-                <NavDropdown.Item href={this.state.headerURLs.search} target="_blank">CADC Search</NavDropdown.Item>
+                <NavDropdown.Item href={this.state.headerURLs[ADVANCED_SEARCH_URI]} target="_blank">CADC Search</NavDropdown.Item>
                 <NavDropdown.Item href="https://arbutus-canfar.cloud.computecanada.ca" target="_blank">OpenStack Cloud</NavDropdown.Item>
               </NavDropdown>
               <Nav.Link href={baseURLCanfar + "/en/about/organization/"}>About</Nav.Link>
@@ -122,8 +127,8 @@ class CanfarNavbar extends React.Component {
               }
               {this.state.isAuthenticated === true &&
                 <NavDropdown align="end" title={this.renderButton()} id="authenticated_nav_dropdown" className="sp-auth-dropdown">
-                  <NavDropdown.Item href={this.state.headerURLs.acctupdate}  target="_blank">Update Profile</NavDropdown.Item>
-                  <NavDropdown.Item href={this.state.headerURLs.passchg} target="_blank">Reset Password</NavDropdown.Item>
+                  <NavDropdown.Item href={this.state.headerURLs[ACCOUNT_UPDATE_URI]}  target="_blank">Update Profile</NavDropdown.Item>
+                  <NavDropdown.Item href={this.state.headerURLs[PASSWORD_CHANGE_URI]} target="_blank">Reset Password</NavDropdown.Item>
                   <NavDropdown.Item href="https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/cred/priv?daysValid=30">Obtain Certificate</NavDropdown.Item>
                   <NavDropdown.Item href={baseURLCanfar + "/access/logout?target=" + baseURLCanfar + "/science-portal/"}>
                     <span className="sp-buffer-span-right"><FontAwesomeIcon  icon={faRightFromBracket} /></span>Logout
