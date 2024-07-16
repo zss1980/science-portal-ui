@@ -194,15 +194,11 @@ class SciencePortalApp extends React.Component {
   }
 
   setHeaderURLs(hURLs) {
-    var curState = this.state
-    curState.headerURLs = hURLs
-    this.setState(curState)
+    this.setState({headerURLs: hURLs})
   }
 
   setThemeName(themeName) {
-    const currState = this.state
-    currState.themeName = themeName
-    this.setState(currState)
+    this.setState({themeName: themeName})
   }
 
   getAccessToken() {
