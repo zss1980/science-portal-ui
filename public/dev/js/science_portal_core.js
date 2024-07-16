@@ -208,8 +208,9 @@
         }
         _rApp.setNotAuthenticated(userState)
       } else {
-        var alertMsg = message.status + ": " + getRcDisplayText(message)
-        setPageState(pageSection,"danger", false, alertMsg)
+        const errorMessage = getRcDisplayText(message)
+        console.error(`${message.status}: ${errorMessage}`)
+        setPageState(pageSection, "danger", false, errorMessage)
         hideModal()
       }
     }
@@ -308,17 +309,11 @@
           displayText = "You are not authorised to use Skaha resources. Contact CANFAR admin" +
           " for information on how to get set up with a resource allocation and permission to access the service."
           break
-        case 400:
-          // Do as good a test for max number of sessions reached message from Skaha as possible:
-          if (request.responseText.includes("session already running")) {
-            displayText = "Limit of number of sessions of selected type reached"
-            break
-          }
         case 501:
           displayText = 'The Skaha web service is not configured in the Registry.'
           break;
         default:
-          displayText = request.responseText
+          displayText = request.responseText ? request.responseText.trim() : "Unknown error"
           break
       }
 
