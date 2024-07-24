@@ -62,15 +62,26 @@ class SciencePortalForm extends React.Component {
     this.state.fData.resetHandler();
   }
 
-  static getDerivedStateFromProps(nextProps, _prevState) {
-    return { fData: nextProps.fData };
+  static getDerivedStateFromProps(props, state) {
+    console.log(`getDerivedStateFromProps()`)
+    if (props.fData !== state.fData) {
+      console.log(`getDerivedStateFromProps(): OK`)
+      return {fData: props.fData}
+    } else {
+      console.log(`getDerivedStateFromProps(): IGNORING`)
+      return null
+    }
   }
 
   componentDidUpdate(nextProps) {
+    console.log('componentDidUpdate()')
     if (this.props.fData !== nextProps.fData) {
+      console.log(`componentDidUpdate(): OK`)
       this.setState({
         fData: nextProps.fData
       });
+    } else {
+      console.log(`componentDidUpdate(): IGNORING`)
     }
   }
 
@@ -107,13 +118,14 @@ class SciencePortalForm extends React.Component {
     // For now, these are the only fields conditionally displayed
     // per session type, so they'll be handled simply
     // They are parsed out of the session json data in science_portal_form.js
-    var showRAM = false
-    var showCores = false
+    let showRAM = false
+    let showCores = false
     if (this.state.fData.formFields !== undefined) {
       if (this.state.fData.formFields.showRAM !== undefined) {
         showRAM = this.state.fData.formFields.showRAM
       }
-      var showCores = false
+      
+      showCores = false
       if (this.state.fData.formFields.showCores !== undefined) {
         showCores = this.state.fData.formFields.showCores
       }
@@ -121,117 +133,117 @@ class SciencePortalForm extends React.Component {
 
     return (
       <>
-        {Object.keys(this.state.fData).length !== 0 &&
-            <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
-              <Row className="sp-form-row">
-                <Col sm={4}>
-                  <Form.Label  className="sp-form-label">type
-                    {this.renderPopover("Session Type","Select from the list of supported session types")}
-                  </Form.Label>
-                </Col>
-                <Col sm={7}>
-                  <Form.Select
-                    value={this.state.fData.selectedType}
-                    onChange={this.state.fData.changeTypeHandler}
-                    name="type"
-                    size="sm"
-                    className="sp-form-cursor"
+        {Object.keys(this.state.fData).length !== 0 && 
+         this.state.fData.imageList && 
+          <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
+            <Row className="sp-form-row">
+              <Col sm={4}>
+                <Form.Label className="sp-form-label">type
+                  {this.renderPopover("Session Type","Select from the list of supported session types")}
+                </Form.Label>
+              </Col>
+              <Col sm={7}>
+                <Form.Select
+                  value={this.state.fData.selectedType}
+                  onChange={this.state.fData.changeTypeHandler}
+                  name="type"
+                  size="sm"
+                  className="sp-form-cursor"
+                >
+                  {this.state.fData.types.map(mapObj => (
+                    <option className="sp-form" key={mapObj} name={mapObj} value={mapObj}>{mapObj}</option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+            <Row className="sp-form-row">
+              <Col sm={4}>
+                <Form.Label className="sp-form-label">container image
+                  {this.renderPopover("Container Image","The Docker image for the session.")}
+                </Form.Label>
+              </Col>
+              <Col sm={7}>
+                <Form.Select
+                  name="image"
+                  className="sp-form-cursor"
                   >
-                    {this.state.fData.types.map(mapObj => (
-                      <option className="sp-form" key={mapObj} name={mapObj} value={mapObj}>{mapObj}</option>
-                    ))}
-                  </Form.Select>
-                </Col>
-              </Row>
-              <Row className="sp-form-row">
-                <Col sm={4}>
-                  <Form.Label  className="sp-form-label">container image
-                    {this.renderPopover("Container Image","The Docker image for the session.")}
-                  </Form.Label>
-                </Col>
-                <Col sm={7}>
-                  <Form.Select
-                    name="image"
-                    className="sp-form-cursor"
-                    >
-                    {this.state.fData.imageList.map(mapObj => (
-                      <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
-                    ))}
-                  </Form.Select>
-                </Col>
-              </Row>
-              <Row className="sp-form-row">
-                <Col sm={4}>
-                  <Form.Label className="sp-form-label">name
-                    {this.renderPopover("Session Name","Name for the session. Alphanumeric and '-' characters only.")}
-                  </Form.Label>
-                </Col>
-                <Col sm={7}>
-                  <Form.Control
-                      type="text"
-                      maxLength={15}
-                      placeholder="Enter session name"
-                      value={this.state.fData.sessionName}
-                      onChange={this.handleChange}
-                      name="name"
-                      className="sp-form-input"
-                  />
-                </Col>
-              </Row>
-              {showRAM === true &&
-              <Row className="sp-form-row">
-                <Col sm={4}>
-                  <Form.Label className="sp-form-label">memory
-                    {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
-                  </Form.Label>
-                </Col>
-                <Col sm={7}>
-                  <Form.Select
-                    value={this.state.selectedRAM || this.state.fData.contextData.defaultRAM}
-                    name="ram"
-                    className="sp-form-cursor"
-                    onChange={this.handleRAMChange.bind(this)}>
-                    {this.state.fData.contextData.availableRAM.map(mapObj => (
-                      <option key={mapObj} value={mapObj}>{mapObj}</option>
-                    ))}
-                  </Form.Select>
-                </Col>
-              </Row>
-              }
-              {showCores === true &&
-              <Row className="sp-form-row">
-                <Col sm={4}>
-                  <Form.Label className="sp-form-label"># cores
-                    {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
-                  </Form.Label>
-                </Col>
-                <Col sm={7}>
-                  <Form.Select
-                    name="cores"
-                    className="sp-form-cursor"
-                    value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
-                    onChange={this.handleCoresChange.bind(this)}>
-                    {this.state.fData.contextData.availableCores.map(mapObj => (
-                      <option key={mapObj} value={mapObj}>{mapObj}</option>
-                    ))}
-                  </Form.Select>
-                </Col>
-              </Row>
-              }
-              <Row className="sp-form-row">
-                <Col sm={4}>
-                {/* placeholder column so buttons line up with form entry elements */}
-                </Col>
-                <Col sm={7}>
-                  <Button variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
-                  <Button variant="secondary" size="sm" onClick={this.resetForm} className="sp-reset-button">Reset</Button>
-                </Col>
-              </Row>
-            </Form>
+                  {this.state.fData.imageList.map(mapObj => (
+                    <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+            <Row className="sp-form-row">
+              <Col sm={4}>
+                <Form.Label className="sp-form-label">name
+                  {this.renderPopover("Session Name","Name for the session. Alphanumeric and '-' characters only.")}
+                </Form.Label>
+              </Col>
+              <Col sm={7}>
+                <Form.Control
+                    type="text"
+                    maxLength={15}
+                    placeholder="Enter session name"
+                    value={this.state.fData.sessionName}
+                    onChange={this.handleChange}
+                    name="name"
+                    className="sp-form-input"
+                />
+              </Col>
+            </Row>
+            {showRAM === true &&
+            <Row className="sp-form-row">
+              <Col sm={4}>
+                <Form.Label className="sp-form-label">memory
+                  {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
+                </Form.Label>
+              </Col>
+              <Col sm={7}>
+                <Form.Select
+                  value={this.state.selectedRAM || this.state.fData.contextData.defaultRAM}
+                  name="ram"
+                  className="sp-form-cursor"
+                  onChange={this.handleRAMChange.bind(this)}>
+                  {this.state.fData.contextData.availableRAM.map(mapObj => (
+                    <option key={mapObj} value={mapObj}>{mapObj}</option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+            }
+            {showCores === true &&
+            <Row className="sp-form-row">
+              <Col sm={4}>
+                <Form.Label className="sp-form-label"># cores
+                  {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
+                </Form.Label>
+              </Col>
+              <Col sm={7}>
+                <Form.Select
+                  name="cores"
+                  className="sp-form-cursor"
+                  value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
+                  onChange={this.handleCoresChange.bind(this)}>
+                  {this.state.fData.contextData.availableCores.map(mapObj => (
+                    <option key={mapObj} value={mapObj}>{mapObj}</option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+            }
+            <Row className="sp-form-row">
+              <Col sm={4}>
+              {/* placeholder column so buttons line up with form entry elements */}
+              </Col>
+              <Col sm={7}>
+                <Button variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
+                <Button variant="secondary" size="sm" onClick={this.resetForm} className="sp-reset-button">Reset</Button>
+              </Col>
+            </Row>
+          </Form>
+        }
 
-          }
-
-        {Object.keys(this.state.fData).length === 0 &&
+        {(Object.keys(this.state.fData).length === 0 || !this.state.fData.imageList) && 
           <Form className="sp-form">
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
