@@ -29,7 +29,6 @@ import SciencePortalModal from "./components/SciencePortalModal";
 import SciencePortalPlatformLoad from "./components/SciencePortalPlatformLoad";*/
 
 // Styles
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // hooks
