@@ -23,7 +23,10 @@ import { Session } from '../auth/types';
 import {
   BASE_HOST_URL,
   NOTEBOOK,
+  PROP_EXPIRY_TIME,
+  PROP_IMAGE,
   PROP_LOGO,
+  PROP_START_TIME,
   SP_IMAGE_URL,
 } from '../auth/constants';
 
@@ -36,11 +39,35 @@ export const getSessionTypeData = (session: Session) => {
   return SESSION_TYPES[sessionType];
 };
 
+export const getStrippedTime = (time: string) => {
+  return time
+    .slice(0, time.length - 1)
+    .split('T')
+    .join(' ');
+};
+
+export const getSessionImageName = (session: Session) => {
+  return session?.[PROP_IMAGE]?.split('/').reduce(
+    (acc, str: string, ind: number) => {
+      if (ind !== 0) {
+        acc = acc + str + (ind !== 2 ? '/' : '');
+      }
+      return acc;
+    },
+    '',
+  );
+};
+
 export const getTransformedSessions = (sessions: Session[]) => {
   return sessions.map((session) => {
     const sessionLogo = getSessionTypeData(session)?.portal_icon;
+    const stripedStartTime = getStrippedTime(session[PROP_START_TIME]);
+    const stripedExpiryTime = getStrippedTime(session[PROP_EXPIRY_TIME]);
     return {
       ...session,
+      [PROP_START_TIME]: stripedStartTime,
+      [PROP_EXPIRY_TIME]: stripedExpiryTime,
+      [PROP_IMAGE]: getSessionImageName(session),
       [PROP_LOGO]: `${BASE_HOST_URL}${SP_IMAGE_URL}${sessionLogo}`,
     };
   });
