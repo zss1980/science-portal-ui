@@ -1,0 +1,12 @@
+# Common ignores
+node_modules/
+.env
+*.log
+.DS_Store
+
+# Ignore client build output
+/client/build/
+/client/dist/
+
+# Ignore server build output
+/server/dist/
