@@ -10,4 +10,5 @@ export const initialState: AuthState = {
   loading: false,
   images: {},
   sessions: [],
+  context: null,
 };

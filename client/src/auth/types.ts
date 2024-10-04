@@ -31,6 +31,25 @@ import {
   PROP_GPU_UTILIZATION,
   DESKTOP,
   CONTRIBUTED,
+  SET_CONTEXT,
+  PROP_DEFAULT_REQUEST_CORES,
+  PROP_DEFAULT_LIMIT_CORES,
+  PROP_DEFAULT_CORES,
+  PROP_DEFAULT_CORES_HEADLESS,
+  PROP_AVAILABLE_CORES,
+  PROP_DEFAULT_REQUEST_RAM,
+  PROP_DEFAULT_LIMIT_RAM,
+  PROP_DEFAULT_RAM,
+  PROP_DEFAULT_RAM_HEADLESS,
+  PROP_AVAILABLE_RAM,
+  PROP_AVAILABLE_GPUS,
+  VAL_PROJECT,
+  VAL_TYPE,
+  VAL_IMAGE,
+  VAL_INSTANCE_NAME,
+  VAL_MEMORY,
+  VAL_CORES,
+  VAL_GPU,
 } from './constants';
 
 // State interface
@@ -43,6 +62,17 @@ export interface AuthState {
   loading: boolean;
   images: { [key: string]: { [key: string]: Image[] } };
   sessions: Session[];
+  context: Context | null;
+}
+
+export interface FormValues {
+  [VAL_PROJECT]: string;
+  [VAL_TYPE]: string;
+  [VAL_IMAGE]: string;
+  [VAL_INSTANCE_NAME]: string;
+  [VAL_MEMORY]: number;
+  [VAL_CORES]: number;
+  [VAL_GPU]: number;
 }
 
 export type ImageType =
@@ -82,12 +112,27 @@ export interface Session {
   [PROP_GPU_UTILIZATION]: string;
 }
 
+export interface Context {
+  [PROP_DEFAULT_REQUEST_CORES]: number;
+  [PROP_DEFAULT_LIMIT_CORES]: number;
+  [PROP_DEFAULT_CORES]: number;
+  [PROP_DEFAULT_CORES_HEADLESS]: number;
+  [PROP_AVAILABLE_CORES]: number[];
+  [PROP_DEFAULT_REQUEST_RAM]: number;
+  [PROP_DEFAULT_LIMIT_RAM]: number;
+  [PROP_DEFAULT_RAM]: number;
+  [PROP_DEFAULT_RAM_HEADLESS]: number;
+  [PROP_AVAILABLE_RAM]: number[];
+  [PROP_AVAILABLE_GPUS]: number[];
+}
+
 // Action types
 export type AuthAction =
   | { type: typeof LOGIN; payload: { username: string } }
   | { type: typeof LOGOUT }
   | { type: typeof SET_COOKIE; payload: string }
   | { type: typeof SET_LOADING; payload: boolean }
+  | { type: typeof SET_CONTEXT; payload: Context }
   | { type: typeof SET_SESSIONS; payload: { sessions: Session[] } }
   | {
       type: typeof SET_IMAGES;

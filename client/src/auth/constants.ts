@@ -1,4 +1,6 @@
 // APP constants
+import { FormValues } from './types';
+
 export const BASE_HOST_URL = 'https://www.canfar.net';
 // API
 export const BASE_URL = '/api';
@@ -15,6 +17,7 @@ const prefix = '@AUTH';
 export const LOGIN = `${prefix}/LOGIN`;
 export const SET_IMAGES = `${prefix}/SET_IMAGES`;
 export const SET_SESSIONS = `${prefix}/SET_SESSIONS`;
+export const SET_CONTEXT = `${prefix}/SET_CONTEXT`;
 export const LOGOUT = `${prefix}/LOGOUT`;
 export const SET_COOKIE = `${prefix}/SET_COOKIE`;
 export const SET_LOADING = `${prefix}/SET_LOADING`;
@@ -49,7 +52,40 @@ export const PROP_GPU_RAM_IN_USE = 'gpuRAMInUse';
 export const PROP_CPU_CORES_IN_USE = 'cpuCoresInUse';
 export const PROP_GPU_UTILIZATION = 'gpuUtilization';
 
+// Context PROPS
+export const PROP_DEFAULT_REQUEST_CORES = 'defaultRequestCores';
+export const PROP_DEFAULT_LIMIT_CORES = 'defaultLimitCores';
+export const PROP_DEFAULT_CORES = 'defaultCores';
+export const PROP_DEFAULT_CORES_HEADLESS = 'defaultCoresHeadless';
+export const PROP_AVAILABLE_CORES = 'availableCores';
+export const PROP_DEFAULT_REQUEST_RAM = 'defaultRequestRAM';
+export const PROP_DEFAULT_LIMIT_RAM = 'defaultLimitRAM';
+export const PROP_DEFAULT_RAM = 'defaultRAM';
+export const PROP_DEFAULT_RAM_HEADLESS = 'defaultRAMHeadless';
+export const PROP_AVAILABLE_RAM = 'availableRAM';
+export const PROP_AVAILABLE_GPUS = 'availableGPUs';
+
 // UI constants
 export const PROP_LOGO = 'logo';
 export const SP_IMAGE_URL = '/science-portal/images/';
 export const DEFAULT_LOGO = 'fas_cube.png';
+
+// Form
+// Constants
+export const VAL_PROJECT = 'project';
+export const VAL_TYPE = 'type';
+export const VAL_IMAGE = 'image';
+export const VAL_INSTANCE_NAME = 'instanceName';
+export const VAL_MEMORY = 'memory';
+export const VAL_CORES = 'cores';
+export const VAL_GPU = 'gpu';
+
+export const NEW_SESSION_INITIAL_VALUES: FormValues = {
+  [VAL_PROJECT]: '',
+  [VAL_TYPE]: '',
+  [VAL_IMAGE]: '',
+  [VAL_INSTANCE_NAME]: '',
+  [VAL_MEMORY]: 2,
+  [VAL_CORES]: 2,
+  [VAL_GPU]: 0,
+};

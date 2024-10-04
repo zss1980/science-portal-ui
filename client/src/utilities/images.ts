@@ -24,3 +24,9 @@ export const getImagesByProject = (images: Image[]) => {
 export const getImageProject = (image: Image): string => {
   return image.id.split('/')?.[1];
 };
+export const getImagesNamesSorted = (images: Image[]): string[] => {
+  return images
+    .map((image) => image.id.split('/')?.[2] || '')
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+};

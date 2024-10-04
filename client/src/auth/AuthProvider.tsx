@@ -16,6 +16,8 @@ import {
   SET_IMAGES,
   SET_SESSIONS,
   SESSION_URL,
+  CONTEXT_URL,
+  SET_CONTEXT,
 } from './constants';
 import { AuthContext } from './authContext';
 import { getImagesByProject } from '../utilities/images';
@@ -41,6 +43,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
       const userData = await responseUser.json();
       dispatch({ type: LOGIN, payload: { username: userData.data.name } });
+      const responseContext = await fetchWithAuth(`${BASE_URL}${CONTEXT_URL}`, {
+        method: 'POST',
+        body: JSON.stringify({ cookie: data.cookie }),
+      });
+      const contextData = await responseContext.json();
+      dispatch({ type: SET_CONTEXT, payload: contextData.data });
       const responseSessions = await fetchWithAuth(
         `${BASE_URL}${SESSION_URL}`,
         {

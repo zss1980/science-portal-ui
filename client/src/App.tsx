@@ -12,7 +12,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Row from 'react-bootstrap/Row';
 import Tooltip from 'react-bootstrap/Tooltip';
 //import Alert from "react-bootstrap/Alert";
-//import Card from "react-bootstrap/Card";
+import Card from 'react-bootstrap/Card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons/faRefresh';
 
@@ -23,8 +23,8 @@ import CanfarNavbar from './components/canfar/CanfarNavbar';
 /* import SRCLoginModal from "./components/SRCLoginModal";
 import SRCNavbar from "./components/SRCNavbar"; */
 import SessionItem from './components/SessionItem'; /*
-import SciencePortalConfirm from "./components/SciencePortalConfirm"
-import SciencePortalForm from "./components/SciencePortalForm";
+import SciencePortalConfirm from "./components/SciencePortalConfirm"*/
+import SciencePortalForm from './components/SciencePortalForm'; /*
 import SciencePortalModal from "./components/SciencePortalModal";
 import SciencePortalPlatformLoad from "./components/SciencePortalPlatformLoad";*/
 
@@ -147,24 +147,38 @@ const App = () => {
         <Container fluid className="bg-white sp-container rounded-1">
           <Row>
             {' '}
-            {/*
-                <Col sm={7}>
-                  <Card>
-                     <Card.Body>
-                      <Row><Col>
-                        <div className="sp-title sp-panel-heading">New Session <span className="sp-header-button small"><a className="small" href="https://www.opencadc.org/science-containers/">Help</a></span></div>
-                        { this.state.pageState.spForm.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100}
+            <Col sm={7}>
+              <Card>
+                <Card.Body>
+                  <Row>
+                    <Col>
+                      <div className="sp-title sp-panel-heading">
+                        New Session{' '}
+                        <span className="sp-header-button small">
+                          <a
+                            className="small"
+                            href="https://www.opencadc.org/science-containers/"
+                          >
+                            Help
+                          </a>
+                        </span>
+                      </div>
+                      {/*
+              { this.state.pageState.spForm.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100}
                                                                                              animated className="sp-progress-bar" /> }
                         { this.state.pageState.spForm.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100} className="sp-progress-bar" /> }
                         {this.state.pageState.spForm.alert.show === true &&
                             <Alert key={this.state.pageState.spForm.alert.type} variant={this.state.pageState.spForm.alert.type}>
                               {this.state.pageState.spForm.alert.message} </Alert> }
-                      </Col></Row>
+                      */}
+                    </Col>
+                  </Row>
 
-                  <SciencePortalForm fData={this.state.fData}/>
-                    </Card.Body>
-                  </Card>
-                </Col>
+                  <SciencePortalForm />
+                </Card.Body>
+              </Card>
+            </Col>
+            {/*
                 <Col sm={5}>
                   <Card>
                     <Card.Body>
@@ -204,7 +218,7 @@ const App = () => {
               </Row>
 
 
-            </Container>
+            </Container>{/*
             { Modals, rendered as needed, set in the this.state object }
             {this.state.modalData.msg !== undefined &&
               <SciencePortalModal modalData={this.state.modalData} baseURLCanfar={this.state.urls.baseURLcanfar}/> }

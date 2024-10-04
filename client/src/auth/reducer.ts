@@ -1,6 +1,7 @@
 import {
   LOGIN,
   LOGOUT,
+  SET_CONTEXT,
   SET_COOKIE,
   SET_IMAGES,
   SET_LOADING,
@@ -46,6 +47,11 @@ export const authReducer = (
       return {
         ...state,
         sessions: action.payload.sessions,
+      };
+    case SET_CONTEXT:
+      return {
+        ...state,
+        context: action.payload,
       };
     case SET_LOADING:
       return {
