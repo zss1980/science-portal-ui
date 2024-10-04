@@ -32,7 +32,7 @@ import {
 
 export const getSessionTypeData = (session: Session) => {
   const availableSessions = Object.keys(SESSION_TYPES);
-  let sessionType = availableSessions.includes(session.type)
+  const sessionType = availableSessions.includes(session.type)
     ? (session.type as keyof typeof SESSION_TYPES)
     : NOTEBOOK;
 

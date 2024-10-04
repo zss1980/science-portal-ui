@@ -17,6 +17,7 @@ const prefix = '@AUTH';
 export const LOGIN = `${prefix}/LOGIN`;
 export const SET_IMAGES = `${prefix}/SET_IMAGES`;
 export const SET_SESSIONS = `${prefix}/SET_SESSIONS`;
+export const SET_SESSIONS_STATS = `${prefix}/SET_SESSIONS_STATS`;
 export const SET_CONTEXT = `${prefix}/SET_CONTEXT`;
 export const LOGOUT = `${prefix}/LOGOUT`;
 export const SET_COOKIE = `${prefix}/SET_COOKIE`;
@@ -89,3 +90,26 @@ export const NEW_SESSION_INITIAL_VALUES: FormValues = {
   [VAL_CORES]: 2,
   [VAL_GPU]: 0,
 };
+
+// Stats props
+// Instance properties
+export const PROP_STATS_INSTANCES = 'instances';
+export const PROP_STATS_SESSION = 'session';
+export const PROP_STATS_DESKTOP_APP = 'desktopApp';
+export const PROP_STATS_HEADLESS = 'headless';
+export const PROP_STATS_TOTAL = 'total';
+
+// Core properties
+export const PROP_STATS_REQUESTED_CPU_CORES = 'requestedCPUCores';
+export const PROP_STATS_CPU_CORES_AVAILABLE = 'cpuCoresAvailable';
+export const PROP_STATS_MAX_CPU_CORES = 'maxCPUCores';
+export const PROP_STATS_CPU_CORES = 'cpuCores';
+export const PROP_STATS_CORES = 'cores';
+export const PROP_STATS_WITH_RAM = 'withRam';
+
+// RAM properties
+export const PROP_STATS_REQUESTED_RAM = 'requestedRAM';
+export const PROP_STATS_RAM_AVAILABLE = 'ramAvailable';
+export const PROP_STATS_MAX_RAM = 'maxRAM';
+export const PROP_STATS_RAM = 'ram';
+export const PROP_STATS_WITH_CPU_CORES = 'withCPUCores';

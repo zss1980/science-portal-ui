@@ -50,6 +50,23 @@ import {
   VAL_MEMORY,
   VAL_CORES,
   VAL_GPU,
+  PROP_STATS_SESSION,
+  PROP_STATS_DESKTOP_APP,
+  PROP_STATS_HEADLESS,
+  PROP_STATS_TOTAL,
+  PROP_STATS_REQUESTED_CPU_CORES,
+  PROP_STATS_CPU_CORES_AVAILABLE,
+  PROP_STATS_MAX_CPU_CORES,
+  PROP_STATS_CPU_CORES,
+  PROP_STATS_WITH_RAM,
+  PROP_STATS_REQUESTED_RAM,
+  PROP_STATS_RAM_AVAILABLE,
+  PROP_STATS_MAX_RAM,
+  PROP_STATS_RAM,
+  PROP_STATS_WITH_CPU_CORES,
+  PROP_STATS_CORES,
+  PROP_STATS_INSTANCES,
+  SET_SESSIONS_STATS,
 } from './constants';
 
 // State interface
@@ -63,6 +80,7 @@ export interface AuthState {
   images: { [key: string]: { [key: string]: Image[] } };
   sessions: Session[];
   context: Context | null;
+  usage: StatsData | null;
 }
 
 export interface FormValues {
@@ -126,6 +144,31 @@ export interface Context {
   [PROP_AVAILABLE_GPUS]: number[];
 }
 
+export interface StatsData {
+  [PROP_STATS_INSTANCES]: {
+    [PROP_STATS_SESSION]: number;
+    [PROP_STATS_DESKTOP_APP]: number;
+    [PROP_STATS_HEADLESS]: number;
+    [PROP_STATS_TOTAL]: number;
+  };
+  [PROP_STATS_CORES]: {
+    [PROP_STATS_REQUESTED_CPU_CORES]: number;
+    [PROP_STATS_CPU_CORES_AVAILABLE]: number;
+    [PROP_STATS_MAX_CPU_CORES]: {
+      [PROP_STATS_CPU_CORES]: number;
+      [PROP_STATS_WITH_RAM]: string;
+    };
+  };
+  [PROP_STATS_RAM]: {
+    [PROP_STATS_REQUESTED_RAM]: string;
+    [PROP_STATS_RAM_AVAILABLE]: string;
+    [PROP_STATS_MAX_RAM]: {
+      [PROP_STATS_RAM]: string;
+      [PROP_STATS_WITH_CPU_CORES]: number;
+    };
+  };
+}
+
 // Action types
 export type AuthAction =
   | { type: typeof LOGIN; payload: { username: string } }
@@ -133,6 +176,7 @@ export type AuthAction =
   | { type: typeof SET_COOKIE; payload: string }
   | { type: typeof SET_LOADING; payload: boolean }
   | { type: typeof SET_CONTEXT; payload: Context }
+  | { type: typeof SET_SESSIONS_STATS; payload: StatsData }
   | { type: typeof SET_SESSIONS; payload: { sessions: Session[] } }
   | {
       type: typeof SET_IMAGES;

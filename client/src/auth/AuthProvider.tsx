@@ -18,10 +18,13 @@ import {
   SESSION_URL,
   CONTEXT_URL,
   SET_CONTEXT,
+  SESSION_VIEW_URL,
+  SET_SESSIONS_STATS,
 } from './constants';
 import { AuthContext } from './authContext';
 import { getImagesByProject } from '../utilities/images';
 import { getTransformedSessions } from '../utilities/sessions';
+import processPlatformUsage from '../utilities/usage';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -49,6 +52,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
       const contextData = await responseContext.json();
       dispatch({ type: SET_CONTEXT, payload: contextData.data });
+      const responseStats = await fetchWithAuth(
+        `${BASE_URL}${SESSION_VIEW_URL}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ cookie: data.cookie }),
+        },
+      );
+      const statsData = await responseStats.json();
+      const reprocessedStatsData = processPlatformUsage(
+        statsData.data,
+        () => null,
+      );
+      dispatch({ type: SET_SESSIONS_STATS, payload: reprocessedStatsData });
       const responseSessions = await fetchWithAuth(
         `${BASE_URL}${SESSION_URL}`,
         {

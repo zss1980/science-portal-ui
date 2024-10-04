@@ -25,8 +25,8 @@ import SRCNavbar from "./components/SRCNavbar"; */
 import SessionItem from './components/SessionItem'; /*
 import SciencePortalConfirm from "./components/SciencePortalConfirm"*/
 import SciencePortalForm from './components/SciencePortalForm'; /*
-import SciencePortalModal from "./components/SciencePortalModal";
-import SciencePortalPlatformLoad from "./components/SciencePortalPlatformLoad";*/
+import SciencePortalModal from "./components/SciencePortalModal";*/
+import SciencePortalPlatformLoad from './components/SciencePortalPlatformLoad';
 
 // Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -178,47 +178,50 @@ const App = () => {
                 </Card.Body>
               </Card>
             </Col>
-            {/*
-                <Col sm={5}>
-                  <Card>
-                    <Card.Body>
-                      <Row><Col>
-                        <div className="sp-title sp-panel-heading">
-                          Platform Load
-                          <span className="sp-header-button">
-                            <OverlayTrigger
-                                key="top"
-                                placement="top"
-                                className="sp-b-tooltip"
-                                overlay={
-                                  <Tooltip className="sp-b-tooltip">
-                                    refresh statistics
-                                  </Tooltip>
-                                }
+            <Col sm={5}>
+              <Card>
+                <Card.Body>
+                  <Row>
+                    <Col>
+                      <div className="sp-title sp-panel-heading">
+                        Platform Load
+                        <span className="sp-header-button">
+                          <OverlayTrigger
+                            key="top"
+                            placement="top"
+                            className="sp-b-tooltip"
+                            overlay={
+                              <Tooltip className="sp-b-tooltip">
+                                refresh statistics
+                              </Tooltip>
+                            }
+                          >
+                            <Button
+                              size="sm"
+                              variant="outline-primary"
+                              className="sp-e-usage-reload sp-session-usage"
+                              onClick={state.platformUsage?.refreshHandler}
                             >
-                              <Button size="sm" variant="outline-primary" className="sp-e-usage-reload sp-session-usage"
-                              onClick={this.state.platformUsage.refreshHandler}>
-                                <FontAwesomeIcon icon={faRefresh}/>
-                              </Button>
-                            </OverlayTrigger>
-                          </span>
-                        </div>
-                        { this.state.pageState.spPlatformUsage.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100}
+                              <FontAwesomeIcon icon={faRefresh} />
+                            </Button>
+                          </OverlayTrigger>
+                        </span>
+                      </div>
+                      {/* this.state.pageState.spPlatformUsage.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100}
                                                                                                     animated className="sp-progress-bar" /> }
                         { this.state.pageState.spPlatformUsage.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100} className="sp-progress-bar" /> }
                         {this.state.pageState.spPlatformUsage.alert.show === true &&
                             <Alert key={this.state.pageState.spPlatformUsage.alert.type} variant={this.state.pageState.spPlatformUsage.alert.type}>
-                              {this.state.pageState.spPlatformUsage.alert.message} </Alert> }
-
-                      </Col></Row>
-                      <SciencePortalPlatformLoad usage={this.state.platformUsage}/>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-
-
-            </Container>{/*
+                              {this.state.pageState.spPlatformUsage.alert.message} </Alert> */}
+                    </Col>
+                  </Row>
+                  <SciencePortalPlatformLoad usage={state.platformUsage} />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+        {/*
             { Modals, rendered as needed, set in the this.state object }
             {this.state.modalData.msg !== undefined &&
               <SciencePortalModal modalData={this.state.modalData} baseURLCanfar={this.state.urls.baseURLcanfar}/> }
@@ -226,9 +229,7 @@ const App = () => {
             {this.state.confirmModalData.dynamicProps.isOpen === true &&
               <SciencePortalConfirm modalData={this.state.confirmModalData.dynamicProps} handlers={this.state.confirmModalData.handlers}/>
             */}
-          </Row>
-          {!state.isAuthenticated && <CanfarLoginModal />}
-        </Container>
+        {!state.isAuthenticated && <CanfarLoginModal />}
       </Container>
     </Container>
   );

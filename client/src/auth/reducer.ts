@@ -6,6 +6,7 @@ import {
   SET_IMAGES,
   SET_LOADING,
   SET_SESSIONS,
+  SET_SESSIONS_STATS,
 } from './constants';
 import { AuthState, AuthAction } from './types';
 
@@ -52,6 +53,11 @@ export const authReducer = (
       return {
         ...state,
         context: action.payload,
+      };
+    case SET_SESSIONS_STATS:
+      return {
+        ...state,
+        usage: action.payload,
       };
     case SET_LOADING:
       return {
