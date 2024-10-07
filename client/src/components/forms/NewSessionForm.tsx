@@ -38,7 +38,7 @@ interface FormValues {
 const NewSessionForm: React.FC = () => {
   const { state } = useAuth();
   const hasImages = state.images && Object.keys(state.images).length > 0;
-  const availableProjects = Object.keys(state.images);
+  const availableTypes = Object.keys(state.images);
   const createSessionName = getDefaultSessionName(state.sessions.length + 1);
 
   const onSubmit = async (values: FormValues) => {
@@ -66,37 +66,6 @@ const NewSessionForm: React.FC = () => {
       render={({ handleSubmit, form, submitting, pristine, values }) => {
         return (
           <BootstrapForm onSubmit={handleSubmit}>
-            <Field name={VAL_PROJECT}>
-              {({ input, meta }) => (
-                <BootstrapForm.Group className="mb-3">
-                  <BootstrapForm.Label>
-                    Project
-                    <FormPopover
-                      headerText={'Project'}
-                      bodyText={'The project within which an image created'}
-                    />
-                  </BootstrapForm.Label>
-                  {hasImages ? (
-                    <BootstrapForm.Select
-                      {...input}
-                      isInvalid={meta.touched && meta.error}
-                    >
-                      <option value="">Select a project</option>
-                      {availableProjects.map((prj) => (
-                        <option key={prj} value={prj}>
-                          {prj}
-                        </option>
-                      ))}
-                    </BootstrapForm.Select>
-                  ) : (
-                    <FieldPlaceholder />
-                  )}
-                  <BootstrapForm.Control.Feedback type="invalid">
-                    {meta.error}
-                  </BootstrapForm.Control.Feedback>
-                </BootstrapForm.Group>
-              )}
-            </Field>
             <Field name={VAL_TYPE}>
               {({ input, meta }) => (
                 <BootstrapForm.Group className="mb-3">
@@ -115,10 +84,41 @@ const NewSessionForm: React.FC = () => {
                       isInvalid={meta.touched && meta.error}
                     >
                       <option value="">Select a type</option>
-                      {Object.keys(state.images?.[values.project] ?? {}).map(
-                        (type) => (
-                          <option key={type} value={type}>
-                            {type}
+                      {availableTypes.map((pType) => (
+                        <option key={pType} value={pType}>
+                          {pType}
+                        </option>
+                      ))}
+                    </BootstrapForm.Select>
+                  ) : (
+                    <FieldPlaceholder />
+                  )}
+                  <BootstrapForm.Control.Feedback type="invalid">
+                    {meta.error}
+                  </BootstrapForm.Control.Feedback>
+                </BootstrapForm.Group>
+              )}
+            </Field>
+            <Field name={VAL_PROJECT}>
+              {({ input, meta }) => (
+                <BootstrapForm.Group className="mb-3">
+                  <BootstrapForm.Label>
+                    Project
+                    <FormPopover
+                      headerText={'Project'}
+                      bodyText={'The project within which an image created'}
+                    />
+                  </BootstrapForm.Label>
+                  {hasImages ? (
+                    <BootstrapForm.Select
+                      {...input}
+                      isInvalid={meta.touched && meta.error}
+                    >
+                      <option value="">Select a project</option>
+                      {Object.keys(state.images?.[values[VAL_TYPE]] ?? {}).map(
+                        (prj) => (
+                          <option key={prj} value={prj}>
+                            {prj}
                           </option>
                         ),
                       )}
@@ -150,7 +150,9 @@ const NewSessionForm: React.FC = () => {
                       <option value="">Select an image</option>
                       {getImagesNamesSorted(
                         Object.values(
-                          state.images?.[values.project]?.[values.type] ?? {},
+                          state.images?.[values[VAL_TYPE]]?.[
+                            values[VAL_PROJECT]
+                          ] ?? {},
                         ),
                       ).map((imageName: string) => (
                         <option key={imageName} value={imageName}>

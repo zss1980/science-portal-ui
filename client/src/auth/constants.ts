@@ -22,6 +22,15 @@ export const SET_CONTEXT = `${prefix}/SET_CONTEXT`;
 export const LOGOUT = `${prefix}/LOGOUT`;
 export const SET_COOKIE = `${prefix}/SET_COOKIE`;
 export const SET_LOADING = `${prefix}/SET_LOADING`;
+export const FETCH_FAILED = `${prefix}/FETCH_FAILED`;
+
+// State
+export const SESSION_STATS = 'session_stats';
+export const AVAILABLE_IMAGES = 'available_images';
+export const RUNNING_SESSION = 'running_sessions';
+export const OPERATIONAL = 'operational';
+export const OUTAGE = 'outage';
+export const ACTIVE = 'active';
 
 // Images
 export const HEADLESS = 'headless';

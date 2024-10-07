@@ -67,6 +67,13 @@ import {
   PROP_STATS_CORES,
   PROP_STATS_INSTANCES,
   SET_SESSIONS_STATS,
+  SESSION_STATS,
+  AVAILABLE_IMAGES,
+  RUNNING_SESSION,
+  OPERATIONAL,
+  OUTAGE,
+  ACTIVE,
+  FETCH_FAILED,
 } from './constants';
 
 // State interface
@@ -76,11 +83,29 @@ export interface AuthState {
     username: string;
   };
   cookie: string;
-  loading: boolean;
   images: { [key: string]: { [key: string]: Image[] } };
   sessions: Session[];
   context: Context | null;
-  usage: StatsData | null;
+  usage: PlatformUsage | null;
+  loading: {
+    [SESSION_STATS]: boolean;
+    [AVAILABLE_IMAGES]: boolean;
+    [RUNNING_SESSION]: boolean;
+  };
+  services_statuses: ServiceStatus;
+}
+
+export type SStatuse = typeof OPERATIONAL | typeof OUTAGE | typeof ACTIVE;
+
+export interface Status {
+  status: SStatuse;
+  message: string;
+}
+
+export interface ServiceStatus {
+  [SESSION_STATS]: Status;
+  [AVAILABLE_IMAGES]: Status;
+  [RUNNING_SESSION]: Status;
 }
 
 export interface FormValues {
@@ -169,14 +194,58 @@ export interface StatsData {
   };
 }
 
+export interface PlatformUsage {
+  updated: string;
+  cpu: {
+    used: number;
+    free: number;
+    total: number;
+    display: {
+      free: string;
+      total: string;
+    };
+  };
+  ram: {
+    unit: string;
+    used: number;
+    free: number;
+    total: number;
+    display: {
+      free: string;
+      total: string;
+    };
+  };
+  instances: {
+    labels: string[];
+    data: number[];
+    backgroundColor: string[];
+    hoverBackgroundColor: string[];
+    total: number;
+    biggestCount: number;
+  };
+  listType: string;
+}
+
+export type UiLoading =
+  | typeof SESSION_STATS
+  | typeof RUNNING_SESSION
+  | typeof AVAILABLE_IMAGES;
+
 // Action types
 export type AuthAction =
   | { type: typeof LOGIN; payload: { username: string } }
   | { type: typeof LOGOUT }
   | { type: typeof SET_COOKIE; payload: string }
-  | { type: typeof SET_LOADING; payload: boolean }
+  | {
+      type: typeof SET_LOADING;
+      payload: { type: UiLoading; isLoading: boolean };
+    }
+  | {
+      type: typeof FETCH_FAILED;
+      payload: { type: UiLoading; message: string };
+    }
   | { type: typeof SET_CONTEXT; payload: Context }
-  | { type: typeof SET_SESSIONS_STATS; payload: StatsData }
+  | { type: typeof SET_SESSIONS_STATS; payload: PlatformUsage }
   | { type: typeof SET_SESSIONS; payload: { sessions: Session[] } }
   | {
       type: typeof SET_IMAGES;

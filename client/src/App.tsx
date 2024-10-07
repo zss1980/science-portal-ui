@@ -8,10 +8,10 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-//import ProgressBar from "react-bootstrap/ProgressBar";
+import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
 import Tooltip from 'react-bootstrap/Tooltip';
-//import Alert from "react-bootstrap/Alert";
+import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons/faRefresh';
@@ -33,9 +33,24 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // hooks
 import { useAuth } from './auth/useAuth';
+import { fetchRunningSessions, fetchStatsData } from './auth/fetchData';
+import {
+  AVAILABLE_IMAGES,
+  OUTAGE,
+  RUNNING_SESSION,
+  SESSION_STATS,
+} from './auth/constants';
+import { getProgressBarVariant } from './utilities/appUI';
 
 const App = () => {
-  const { state } = useAuth();
+  const { state, dispatch } = useAuth();
+
+  const refreshStats = () => {
+    fetchStatsData(state.cookie.cookie, dispatch);
+  };
+  const refreshSessions = () => {
+    fetchRunningSessions(state.cookie.cookie, dispatch);
+  };
 
   /*  let isAuthenticated = true
   if (typeof this.state.userInfo.isAuth !== "undefined") {
@@ -98,6 +113,7 @@ const App = () => {
                       size="sm"
                       variant="outline-primary"
                       className="sp-session-reload"
+                      onClick={refreshSessions}
                     >
                       <FontAwesomeIcon icon={faRefresh} />
                     </Button>
@@ -106,18 +122,25 @@ const App = () => {
               </div>
             </Col>
           </Row>
-
-          {/*  attribute "animated" can be put on for when app is busy */}
-          {/* height is controlled by div.progress css */}
           <Row>
             <Col>
-              {/*this.state.pageState.spSessionList.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spSessionList.progressBar.type} now={100}
-                                                                                     animated className="sp-progress-bar" /> }
-                { this.state.pageState.spSessionList.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spSessionList.progressBar.type} now={100}
-                                                                                      className="sp-progress-bar" /> */}
-              {/*this.state.pageState.spSessionList.alert !== undefined && this.state.pageState.spSessionList.alert.show === true &&
-                    <Alert key={this.state.pageState.spSessionList.alert.type} variant={this.state.pageState.spSessionList.alert.type}>
-                      {this.state.pageState.spSessionList.alert.message} </Alert> */}
+              <ProgressBar
+                variant={getProgressBarVariant(
+                  state.services_statuses[RUNNING_SESSION].status,
+                )}
+                now={100}
+                animated={state.loading[RUNNING_SESSION]}
+                className="sp-progress-bar"
+              />
+              {state.services_statuses[RUNNING_SESSION].status === OUTAGE && (
+                <Alert
+                  variant={getProgressBarVariant(
+                    state.services_statuses[RUNNING_SESSION].status,
+                  )}
+                >
+                  {state.services_statuses[RUNNING_SESSION].message}{' '}
+                </Alert>
+              )}
             </Col>
           </Row>
 
@@ -131,7 +154,7 @@ const App = () => {
                 ))}
               </>
             )}
-            {state.isLoading && (
+            {state.loading[RUNNING_SESSION] && (
               <Col className="sp-card-container">
                 <SessionItem listType="loading" />
               </Col>
@@ -163,14 +186,24 @@ const App = () => {
                           </a>
                         </span>
                       </div>
-                      {/*
-              { this.state.pageState.spForm.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100}
-                                                                                             animated className="sp-progress-bar" /> }
-                        { this.state.pageState.spForm.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spForm.progressBar.type} now={100} className="sp-progress-bar" /> }
-                        {this.state.pageState.spForm.alert.show === true &&
-                            <Alert key={this.state.pageState.spForm.alert.type} variant={this.state.pageState.spForm.alert.type}>
-                              {this.state.pageState.spForm.alert.message} </Alert> }
-                      */}
+                      <ProgressBar
+                        variant={getProgressBarVariant(
+                          state.services_statuses[AVAILABLE_IMAGES].status,
+                        )}
+                        now={100}
+                        animated={state.loading[AVAILABLE_IMAGES]}
+                        className="sp-progress-bar"
+                      />
+                      {state.services_statuses[AVAILABLE_IMAGES].status ===
+                        OUTAGE && (
+                        <Alert
+                          variant={getProgressBarVariant(
+                            state.services_statuses[AVAILABLE_IMAGES].status,
+                          )}
+                        >
+                          {state.services_statuses[AVAILABLE_IMAGES].message}{' '}
+                        </Alert>
+                      )}
                     </Col>
                   </Row>
 
@@ -200,19 +233,32 @@ const App = () => {
                               size="sm"
                               variant="outline-primary"
                               className="sp-e-usage-reload sp-session-usage"
-                              onClick={state.platformUsage?.refreshHandler}
+                              onClick={refreshStats}
                             >
                               <FontAwesomeIcon icon={faRefresh} />
                             </Button>
                           </OverlayTrigger>
                         </span>
                       </div>
-                      {/* this.state.pageState.spPlatformUsage.progressBar.animated === true && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100}
-                                                                                                    animated className="sp-progress-bar" /> }
-                        { this.state.pageState.spPlatformUsage.progressBar.animated === false && <ProgressBar variant={this.state.pageState.spPlatformUsage.progressBar.type} now={100} className="sp-progress-bar" /> }
-                        {this.state.pageState.spPlatformUsage.alert.show === true &&
-                            <Alert key={this.state.pageState.spPlatformUsage.alert.type} variant={this.state.pageState.spPlatformUsage.alert.type}>
-                              {this.state.pageState.spPlatformUsage.alert.message} </Alert> */}
+                      <ProgressBar
+                        variant={getProgressBarVariant(
+                          state.services_statuses[SESSION_STATS].status,
+                        )}
+                        now={100}
+                        animated={state.loading[SESSION_STATS]}
+                        className="sp-progress-bar"
+                      />
+
+                      {state.services_statuses[SESSION_STATS].status ===
+                        OUTAGE && (
+                        <Alert
+                          variant={getProgressBarVariant(
+                            state.services_statuses[SESSION_STATS].status,
+                          )}
+                        >
+                          {state.services_statuses[SESSION_STATS].message}{' '}
+                        </Alert>
+                      )}
                     </Col>
                   </Row>
                   <SciencePortalPlatformLoad usage={state.platformUsage} />

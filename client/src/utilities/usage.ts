@@ -1,65 +1,6 @@
-interface PlatformUsage {
-  instances: {
-    session: number;
-    desktopApp: number;
-    headless: number;
-    total: number;
-  };
-  cores: {
-    requestedCPUCores: number;
-    cpuCoresAvailable: number;
-    maxCPUCores: {
-      cpuCores: number;
-      withRam: string;
-    };
-  };
-  ram: {
-    requestedRAM: string;
-    ramAvailable: string;
-    maxRAM: {
-      ram: string;
-      withCPUCores: number;
-    };
-  };
-}
+import { PlatformUsage, StatsData } from '../auth/types';
 
-interface ProcessedPlatformUsage {
-  updated: string;
-  cpu: {
-    used: number;
-    free: number;
-    total: number;
-    display: {
-      free: string;
-      total: string;
-    };
-  };
-  ram: {
-    unit: string;
-    used: number;
-    free: number;
-    total: number;
-    display: {
-      free: string;
-      total: string;
-    };
-  };
-  instances: {
-    labels: string[];
-    data: number[];
-    backgroundColor: string[];
-    hoverBackgroundColor: string[];
-    total: number;
-    biggestCount: number;
-  };
-  refreshHandler: () => void;
-  listType: string;
-}
-
-const processPlatformUsage = (
-  platformUsage: PlatformUsage,
-  refreshHandler: () => void,
-): ProcessedPlatformUsage => {
+const processPlatformUsage = (platformUsage: StatsData): PlatformUsage => {
   console.log('platformUsage', platformUsage);
   const zeroPrefix = (num: number): string => (num < 10 ? `0${num}` : `${num}`);
 
@@ -94,7 +35,7 @@ const processPlatformUsage = (
     return `hsl(${hue}, ${saturation}, ${lightness})`;
   };
 
-  const processedUsage: ProcessedPlatformUsage = {
+  const processedUsage: PlatformUsage = {
     updated,
     cpu: {
       used: platformUsage.cores.requestedCPUCores,
@@ -128,7 +69,6 @@ const processPlatformUsage = (
       total: platformUsage.instances.total,
       biggestCount: 0,
     },
-    refreshHandler,
     listType: 'data',
   };
 

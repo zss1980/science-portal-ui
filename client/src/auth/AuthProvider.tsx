@@ -5,26 +5,14 @@ import { initialState } from './store';
 import { fetchWithAuth } from './authFetch';
 import {
   SET_LOADING,
-  LOGIN,
   LOGOUT,
   SET_COOKIE,
   BASE_URL,
   LOGIN_URL,
   LOGOUT_URL,
-  USERINFO_URL,
-  IMAGE_URL,
-  SET_IMAGES,
-  SET_SESSIONS,
-  SESSION_URL,
-  CONTEXT_URL,
-  SET_CONTEXT,
-  SESSION_VIEW_URL,
-  SET_SESSIONS_STATS,
 } from './constants';
 import { AuthContext } from './authContext';
-import { getImagesByProject } from '../utilities/images';
-import { getTransformedSessions } from '../utilities/sessions';
-import processPlatformUsage from '../utilities/usage';
+import fetchDataConcurrently from './fetchData';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -40,52 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
       const data = await response.json();
       dispatch({ type: SET_COOKIE, payload: data });
-      const responseUser = await fetchWithAuth(`${BASE_URL}${USERINFO_URL}`, {
-        method: 'POST',
-        body: JSON.stringify({ cookie: data.cookie }),
-      });
-      const userData = await responseUser.json();
-      dispatch({ type: LOGIN, payload: { username: userData.data.name } });
-      const responseContext = await fetchWithAuth(`${BASE_URL}${CONTEXT_URL}`, {
-        method: 'POST',
-        body: JSON.stringify({ cookie: data.cookie }),
-      });
-      const contextData = await responseContext.json();
-      dispatch({ type: SET_CONTEXT, payload: contextData.data });
-      const responseStats = await fetchWithAuth(
-        `${BASE_URL}${SESSION_VIEW_URL}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ cookie: data.cookie }),
-        },
-      );
-      const statsData = await responseStats.json();
-      const reprocessedStatsData = processPlatformUsage(
-        statsData.data,
-        () => null,
-      );
-      dispatch({ type: SET_SESSIONS_STATS, payload: reprocessedStatsData });
-      const responseSessions = await fetchWithAuth(
-        `${BASE_URL}${SESSION_URL}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ cookie: data.cookie }),
-        },
-      );
-      const sessionsData = await responseSessions.json();
-      const reprocessedSessions = getTransformedSessions(sessionsData.data);
-      dispatch({
-        type: SET_SESSIONS,
-        payload: { sessions: reprocessedSessions },
-      });
-
-      const responseImages = await fetchWithAuth(`${BASE_URL}${IMAGE_URL}`, {
-        method: 'POST',
-        body: JSON.stringify({ cookie: data.cookie }),
-      });
-      const imagesData = await responseImages.json();
-      const imagesByProject = getImagesByProject(imagesData.data);
-      dispatch({ type: SET_IMAGES, payload: { images: imagesByProject } });
+      fetchDataConcurrently(data.cookie, dispatch);
     } catch (error) {
       console.error('Login failed:', error);
       // Handle login error (e.g., show error message to user)
@@ -95,15 +38,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const logout = useCallback(async () => {
-    dispatch({ type: SET_LOADING, payload: true });
     try {
       await fetchWithAuth(`${BASE_URL}/${LOGOUT_URL}`, { method: 'POST' });
       dispatch({ type: LOGOUT });
     } catch (error) {
       console.error('Logout failed:', error);
       // Handle logout error
-    } finally {
-      dispatch({ type: SET_LOADING, payload: false });
     }
   }, []);
 

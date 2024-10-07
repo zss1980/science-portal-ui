@@ -1,18 +1,28 @@
 import { Image } from '../auth/types';
+import { DESKTOP, DESKTOP_APP, HEADLESS } from '../auth/constants';
 
-export const getImagesByProject = (images: Image[]) => {
+export const getImagesByType = (images: Image[]) => {
   return images.reduce(
     (acc, img) => {
-      const imageProject = getImageProject(img);
-      if (!acc[imageProject]) {
-        acc[imageProject] = {};
-      }
-
-      img.types.forEach((type) => {
-        if (!acc?.[imageProject]?.[type]) {
-          acc[imageProject][type] = [];
+      img.types.forEach((bType) => {
+        let type = bType;
+        if (type === HEADLESS) {
+          return acc;
         }
-        acc[imageProject][type].push(img);
+        if (type === DESKTOP_APP) {
+          type = DESKTOP;
+        }
+
+        const imageProject = getImageProject(img);
+
+        if (!acc?.[type]) {
+          acc[type] = {};
+        }
+        if (!acc?.[type]?.[imageProject]) {
+          acc[type][imageProject] = [];
+        }
+
+        acc[type][imageProject].push(img);
       });
       return acc;
     },

@@ -23,7 +23,13 @@ interface Props {
 }
 
 const CanfarNavbar = (props: Props) => {
-  const { state } = useAuth();
+  const { state, logout } = useAuth();
+
+  const handleLogout = () => {
+    // log user out
+    logout();
+  };
+
   console.log(state);
   const renderButton = () => {
     return (
@@ -153,14 +159,7 @@ const CanfarNavbar = (props: Props) => {
                 <NavDropdown.Item href="https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/cred/priv?daysValid=30">
                   Obtain Certificate
                 </NavDropdown.Item>
-                <NavDropdown.Item
-                  href={
-                    baseURLCanfar +
-                    '/access/logout?target=' +
-                    baseURLCanfar +
-                    '/science-portal/'
-                  }
-                >
+                <NavDropdown.Item onClick={handleLogout}>
                   <span className="sp-buffer-span-right">
                     <FontAwesomeIcon icon={faRightFromBracket} />
                   </span>

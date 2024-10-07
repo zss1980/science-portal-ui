@@ -19,6 +19,7 @@ import {
 } from 'chart.js';
 import Placeholder from 'react-bootstrap/Placeholder';
 import { useAuth } from '../auth/useAuth';
+import { SESSION_STATS } from '../auth/constants';
 
 ChartJS.register(
   CategoryScale,
@@ -289,7 +290,7 @@ const SciencePortalPlatformLoad = () => {
         </>
       )}
 
-      {state.usage?.listType === 'loading' && (
+      {state.loading[SESSION_STATS] && (
         <>
           <Row className="sp-usage-title-placeholder">
             <Col>
