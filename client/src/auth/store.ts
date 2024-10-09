@@ -1,6 +1,9 @@
 import { AuthState } from './types';
 import {
+  AUTHENTICATING,
   AVAILABLE_IMAGES,
+  CREATE_SESSION,
+  DELETE_SESSION,
   OPERATIONAL,
   RUNNING_SESSION,
   SESSION_STATS,
@@ -14,11 +17,26 @@ export const initialState: AuthState = {
   },
   cookie: '',
   loading: {
+    [AUTHENTICATING]: false,
     [SESSION_STATS]: false,
     [AVAILABLE_IMAGES]: false,
     [RUNNING_SESSION]: false,
+    [DELETE_SESSION]: false,
+    [CREATE_SESSION]: false,
   },
   services_statuses: {
+    [AUTHENTICATING]: {
+      status: OPERATIONAL,
+      message: '',
+    },
+    [DELETE_SESSION]: {
+      status: OPERATIONAL,
+      message: '',
+    },
+    [CREATE_SESSION]: {
+      status: OPERATIONAL,
+      message: '',
+    },
     [SESSION_STATS]: {
       status: OPERATIONAL,
       message: '',
@@ -36,4 +54,9 @@ export const initialState: AuthState = {
   images: {},
   sessions: [],
   context: null,
+  deleteSessionInfo: {
+    showModal: false,
+    sessionId: '',
+    sessionName: '',
+  },
 };

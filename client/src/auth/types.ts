@@ -74,6 +74,16 @@ import {
   OUTAGE,
   ACTIVE,
   FETCH_FAILED,
+  AUTHENTICATING,
+  CLEAR_DELETE_SESSION_INFO,
+  SET_DELETE_SESSION_INFO,
+  DELETE_SESSION,
+  PROP_SESSION_TYPE,
+  PROP_SESSION_NAME,
+  PROP_SESSION_IMAGE,
+  PROP_SESSION_RAM,
+  PROP_SESSION_CORES,
+  CREATE_SESSION,
 } from './constants';
 
 // State interface
@@ -88,11 +98,21 @@ export interface AuthState {
   context: Context | null;
   usage: PlatformUsage | null;
   loading: {
+    [AUTHENTICATING]: boolean;
+    [DELETE_SESSION]: boolean;
+    [CREATE_SESSION]: boolean;
     [SESSION_STATS]: boolean;
     [AVAILABLE_IMAGES]: boolean;
     [RUNNING_SESSION]: boolean;
   };
   services_statuses: ServiceStatus;
+  deleteSessionInfo: SessionDeleteInfo;
+}
+
+export interface SessionDeleteInfo {
+  showModal: boolean;
+  sessionId: string;
+  sessionName: string;
 }
 
 export type SStatuse = typeof OPERATIONAL | typeof OUTAGE | typeof ACTIVE;
@@ -104,8 +124,11 @@ export interface Status {
 
 export interface ServiceStatus {
   [SESSION_STATS]: Status;
+  [CREATE_SESSION]: Status;
+  [DELETE_SESSION]: Status;
   [AVAILABLE_IMAGES]: Status;
   [RUNNING_SESSION]: Status;
+  [AUTHENTICATING]: Status;
 }
 
 export interface FormValues {
@@ -169,6 +192,17 @@ export interface Context {
   [PROP_AVAILABLE_GPUS]: number[];
 }
 
+export interface StandardSession {
+  [PROP_SESSION_TYPE]: ImageType;
+  [PROP_SESSION_NAME]: string;
+  [PROP_SESSION_IMAGE]: string;
+}
+
+export interface NewSession extends StandardSession {
+  [PROP_SESSION_RAM]?: number;
+  [PROP_SESSION_CORES]?: number;
+}
+
 export interface StatsData {
   [PROP_STATS_INSTANCES]: {
     [PROP_STATS_SESSION]: number;
@@ -229,7 +263,10 @@ export interface PlatformUsage {
 export type UiLoading =
   | typeof SESSION_STATS
   | typeof RUNNING_SESSION
-  | typeof AVAILABLE_IMAGES;
+  | typeof AVAILABLE_IMAGES
+  | typeof AUTHENTICATING
+  | typeof CREATE_SESSION
+  | typeof DELETE_SESSION;
 
 // Action types
 export type AuthAction =
@@ -247,6 +284,11 @@ export type AuthAction =
   | { type: typeof SET_CONTEXT; payload: Context }
   | { type: typeof SET_SESSIONS_STATS; payload: PlatformUsage }
   | { type: typeof SET_SESSIONS; payload: { sessions: Session[] } }
+  | {
+      type: typeof SET_DELETE_SESSION_INFO;
+      payload: Omit<SessionDeleteInfo, 'showModal'>;
+    }
+  | { type: typeof CLEAR_DELETE_SESSION_INFO }
   | {
       type: typeof SET_IMAGES;
       payload: { images: { [key: string]: { [key: string]: Image[] } } };

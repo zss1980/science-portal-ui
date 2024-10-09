@@ -93,6 +93,63 @@ app.post('/api/session', (_req, res) => {
     })
 
 })
+app.post('/api/create_session', (_req, res) => {
+    console.log(_req.body.cookie)
+    console.log(_req.body)
+    const payload: {
+        type: string
+        image: string
+        name: string
+        ram?: string
+        cores?: string
+    } = {
+        type: _req.body.sessionType,
+        image: _req.body.sessionImage,
+        name: _req.body.sessionName,
+    }
+
+    if (_req.body.sessionType !== 'desktop-app') {
+        payload.ram = _req.body.sessionRam
+        payload.cores = _req.body.sessionCores
+    }
+    axios.post('https://www.canfar.net/science-portal/session',
+      new URLSearchParams(payload),
+      {
+        headers: {
+            'Cookie': `CADC_SSO=${_req.body.cookie}`
+        },
+        withCredentials: true
+    }).then(logRes => {
+        console.log(logRes)
+        res.status(200).json({ data: logRes.data });
+        //res.status(500).json({ message: 'Fatal Error!!! Abort! Abort!! Abort!!!' });
+
+    }).catch(rej =>{
+            res.status(400).json({ message: rej.message });
+
+    })
+
+})
+
+app.delete('/api/delete_session', (_req, res) => {
+    console.log(_req.body.cookie)
+    axios.delete(`https://www.canfar.net/science-portal/session/${_req.body.sessionId}`,
+      {
+        headers: {
+            'Cookie': `CADC_SSO=${_req.body.cookie}`
+        },
+        withCredentials: true
+    }).then(logRes => {
+        console.log(logRes)
+        res.status(200).json({ data: logRes.data });
+        //res.status(500).json({ message: 'Fatal Error!!! Abort! Abort!! Abort!!!' });
+
+    }).catch(rej =>{
+            res.status(400).json({ message: rej.message });
+
+    })
+
+})
 app.post('/api/session_view', (_req, res) => {
     console.log(_req.body.cookie)
     axios.get('https://www.canfar.net/science-portal/session?view=stats',{

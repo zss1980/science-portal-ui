@@ -9,8 +9,9 @@ export const getImagesByType = (images: Image[]) => {
         if (type === HEADLESS) {
           return acc;
         }
+        // desktop-app type is for te desktop running sessions
         if (type === DESKTOP_APP) {
-          type = DESKTOP;
+          return acc;
         }
 
         const imageProject = getImageProject(img);
@@ -34,9 +35,13 @@ export const getImagesByType = (images: Image[]) => {
 export const getImageProject = (image: Image): string => {
   return image.id.split('/')?.[1];
 };
-export const getImagesNamesSorted = (images: Image[]): string[] => {
+export const getImagesNamesSorted = (images: Image[]): Image[] => {
   return images
-    .map((image) => image.id.split('/')?.[2] || '')
+    .map((image) => ({ ...image, imageName: image.id.split('/')?.[2] || '' }))
     .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    .sort((a, b) =>
+      a.imageName.localeCompare(b.imageName, undefined, {
+        sensitivity: 'base',
+      }),
+    );
 };

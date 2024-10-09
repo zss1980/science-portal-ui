@@ -8,16 +8,25 @@ export const LOGIN_URL = '/access/login';
 export const LOGOUT_URL = '/access/logout';
 export const IMAGE_URL = '/image';
 export const SESSION_URL = '/session';
+export const DELETE_SESSION_URL = '/delete_session';
+export const CREATE_SESSION_URL = '/create_session';
 export const SESSION_VIEW_URL = '/session_view';
 export const USERINFO_URL = '/userinfo';
 export const CONTEXT_URL = '/context';
+export const PASSWORD_RESET_URL =
+  'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/auth/resetPassword.html';
+export const ACCOUNT_REQUEST_URL =
+  'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/auth/request.html';
 
 // Actions
 const prefix = '@AUTH';
+export const SET_AUTHENTICATING = `${prefix}/SET_AUTHENTICATING`;
 export const LOGIN = `${prefix}/LOGIN`;
 export const SET_IMAGES = `${prefix}/SET_IMAGES`;
 export const SET_SESSIONS = `${prefix}/SET_SESSIONS`;
 export const SET_SESSIONS_STATS = `${prefix}/SET_SESSIONS_STATS`;
+export const SET_DELETE_SESSION_INFO = `${prefix}/SET_DELETE_SESSION_INFO`;
+export const CLEAR_DELETE_SESSION_INFO = `${prefix}/CLEAR_DELETE_SESSION_INFO`;
 export const SET_CONTEXT = `${prefix}/SET_CONTEXT`;
 export const LOGOUT = `${prefix}/LOGOUT`;
 export const SET_COOKIE = `${prefix}/SET_COOKIE`;
@@ -25,9 +34,12 @@ export const SET_LOADING = `${prefix}/SET_LOADING`;
 export const FETCH_FAILED = `${prefix}/FETCH_FAILED`;
 
 // State
+export const AUTHENTICATING = 'authenticating';
 export const SESSION_STATS = 'session_stats';
 export const AVAILABLE_IMAGES = 'available_images';
 export const RUNNING_SESSION = 'running_sessions';
+export const DELETE_SESSION = 'delete_session';
+export const CREATE_SESSION = 'create_session';
 export const OPERATIONAL = 'operational';
 export const OUTAGE = 'outage';
 export const ACTIVE = 'active';
@@ -99,6 +111,13 @@ export const NEW_SESSION_INITIAL_VALUES: FormValues = {
   [VAL_CORES]: 2,
   [VAL_GPU]: 0,
 };
+
+// New Session props
+export const PROP_SESSION_TYPE = 'sessionType';
+export const PROP_SESSION_NAME = 'sessionName';
+export const PROP_SESSION_IMAGE = 'sessionImage';
+export const PROP_SESSION_RAM = 'sessionRam';
+export const PROP_SESSION_CORES = 'sessionCores';
 
 // Stats props
 // Instance properties

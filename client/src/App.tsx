@@ -41,6 +41,8 @@ import {
   SESSION_STATS,
 } from './auth/constants';
 import { getProgressBarVariant } from './utilities/appUI';
+import StatusModal from './components/common/StatusModal';
+import DeleteSessionModal from './components/common/DeleteSessionModal';
 
 const App = () => {
   const { state, dispatch } = useAuth();
@@ -276,6 +278,8 @@ const App = () => {
               <SciencePortalConfirm modalData={this.state.confirmModalData.dynamicProps} handlers={this.state.confirmModalData.handlers}/>
             */}
         {!state.isAuthenticated && <CanfarLoginModal />}
+        {<StatusModal />}
+        {<DeleteSessionModal />}
       </Container>
     </Container>
   );

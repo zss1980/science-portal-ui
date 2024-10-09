@@ -10,9 +10,15 @@ import {
 import { useAuth } from '../../auth/useAuth';
 import { getImagesNamesSorted } from '../../utilities/images';
 import {
+  DESKTOP,
   NEW_SESSION_INITIAL_VALUES,
   PROP_AVAILABLE_CORES,
   PROP_AVAILABLE_RAM,
+  PROP_SESSION_CORES,
+  PROP_SESSION_IMAGE,
+  PROP_SESSION_NAME,
+  PROP_SESSION_RAM,
+  PROP_SESSION_TYPE,
   VAL_CORES,
   VAL_IMAGE,
   VAL_INSTANCE_NAME,
@@ -28,6 +34,8 @@ import {
 import { session_types as SESSION_TYPES } from '../../session/sessiontype_map_en.json';
 import FormPopover from '../common/Popover';
 import FieldPlaceholder from '../common/FieldPlaceholder';
+import { fetchCreateSession } from '../../auth/fetchData';
+import { ImageType, NewSession } from '../../auth/types';
 
 interface FormValues {
   project: string;
@@ -36,15 +44,24 @@ interface FormValues {
 }
 
 const NewSessionForm: React.FC = () => {
-  const { state } = useAuth();
+  const { state, dispatch } = useAuth();
   const hasImages = state.images && Object.keys(state.images).length > 0;
   const availableTypes = Object.keys(state.images);
   const createSessionName = getDefaultSessionName(state.sessions.length + 1);
 
   const onSubmit = async (values: FormValues) => {
     console.log(values);
-    // Here you would typically handle the form submission
-    alert(`Selected project: ${values.project}, Selected type: ${values.type}`);
+    const sessionPayload: NewSession = {
+      [PROP_SESSION_TYPE]: values[VAL_TYPE],
+      [PROP_SESSION_NAME]: values[VAL_INSTANCE_NAME],
+      [PROP_SESSION_IMAGE]: values[VAL_IMAGE],
+    };
+    if (values[VAL_TYPE] !== DESKTOP) {
+      sessionPayload[PROP_SESSION_RAM] = +values[VAL_MEMORY];
+      sessionPayload[PROP_SESSION_CORES] = +values[VAL_CORES];
+    }
+
+    fetchCreateSession(state.cookie.cookie, dispatch, sessionPayload);
   };
 
   const validate = (values: FormValues) => {
@@ -154,9 +171,9 @@ const NewSessionForm: React.FC = () => {
                             values[VAL_PROJECT]
                           ] ?? {},
                         ),
-                      ).map((imageName: string) => (
-                        <option key={imageName} value={imageName}>
-                          {imageName}
+                      ).map((image: Image) => (
+                        <option key={image.id} value={image.id}>
+                          {image.imageName}
                         </option>
                       ))}
                     </BootstrapForm.Select>
@@ -202,70 +219,76 @@ const NewSessionForm: React.FC = () => {
                 </BootstrapForm.Group>
               )}
             </Field>
-            <Field name={VAL_MEMORY}>
-              {({ input, meta }) => (
-                <BootstrapForm.Group className="mb-3">
-                  <BootstrapForm.Label>
-                    Memory
-                    <FormPopover
-                      headerText={'Memory'}
-                      bodyText={'System memory (RAM) in gigabytes.'}
-                    />
-                  </BootstrapForm.Label>
-                  {hasImages ? (
-                    <BootstrapForm.Select
-                      {...input}
-                      isInvalid={meta.touched && meta.error}
-                    >
-                      <option value="">Select instance RAM</option>
-                      {state.context?.[PROP_AVAILABLE_RAM]?.map((mem) => (
-                        <option key={mem} value={mem}>
-                          {mem}
+            {values?.[VAL_TYPE] !== DESKTOP && (
+              <Field name={VAL_MEMORY}>
+                {({ input, meta }) => (
+                  <BootstrapForm.Group className="mb-3">
+                    <BootstrapForm.Label>
+                      Memory
+                      <FormPopover
+                        headerText={'Memory'}
+                        bodyText={'System memory (RAM) in gigabytes.'}
+                      />
+                    </BootstrapForm.Label>
+                    {hasImages ? (
+                      <BootstrapForm.Select
+                        {...input}
+                        isInvalid={meta.touched && meta.error}
+                      >
+                        <option value="">Select instance RAM</option>
+                        {state.context?.[PROP_AVAILABLE_RAM]?.map((mem) => (
+                          <option key={mem} value={mem}>
+                            {mem}
+                          </option>
+                        ))}
+                      </BootstrapForm.Select>
+                    ) : (
+                      <FieldPlaceholder />
+                    )}
+                    <BootstrapForm.Control.Feedback type="invalid">
+                      {meta.error}
+                    </BootstrapForm.Control.Feedback>
+                  </BootstrapForm.Group>
+                )}
+              </Field>
+            )}
+            {values?.[VAL_TYPE] !== DESKTOP && (
+              <Field name={VAL_CORES}>
+                {({ input, meta }) => (
+                  <BootstrapForm.Group className="mb-3">
+                    <BootstrapForm.Label>
+                      # CPU Cores
+                      <FormPopover
+                        headerText={'# of Cores'}
+                        bodyText={
+                          'Number of cores used by the session. Default: 2'
+                        }
+                      />
+                    </BootstrapForm.Label>
+                    {hasImages ? (
+                      <BootstrapForm.Select
+                        {...input}
+                        isInvalid={meta.touched && meta.error}
+                      >
+                        <option value="">
+                          Select instance number of cores
                         </option>
-                      ))}
-                    </BootstrapForm.Select>
-                  ) : (
-                    <FieldPlaceholder />
-                  )}
-                  <BootstrapForm.Control.Feedback type="invalid">
-                    {meta.error}
-                  </BootstrapForm.Control.Feedback>
-                </BootstrapForm.Group>
-              )}
-            </Field>
-            <Field name={VAL_CORES}>
-              {({ input, meta }) => (
-                <BootstrapForm.Group className="mb-3">
-                  <BootstrapForm.Label>
-                    # CPU Cores
-                    <FormPopover
-                      headerText={'# of Cores'}
-                      bodyText={
-                        'Number of cores used by the session. Default: 2'
-                      }
-                    />
-                  </BootstrapForm.Label>
-                  {hasImages ? (
-                    <BootstrapForm.Select
-                      {...input}
-                      isInvalid={meta.touched && meta.error}
-                    >
-                      <option value="">Select instance number of cores</option>
-                      {state.context?.[PROP_AVAILABLE_CORES]?.map((core) => (
-                        <option key={core} value={core}>
-                          {core}
-                        </option>
-                      ))}
-                    </BootstrapForm.Select>
-                  ) : (
-                    <FieldPlaceholder />
-                  )}
-                  <BootstrapForm.Control.Feedback type="invalid">
-                    {meta.error}
-                  </BootstrapForm.Control.Feedback>
-                </BootstrapForm.Group>
-              )}
-            </Field>
+                        {state.context?.[PROP_AVAILABLE_CORES]?.map((core) => (
+                          <option key={core} value={core}>
+                            {core}
+                          </option>
+                        ))}
+                      </BootstrapForm.Select>
+                    ) : (
+                      <FieldPlaceholder />
+                    )}
+                    <BootstrapForm.Control.Feedback type="invalid">
+                      {meta.error}
+                    </BootstrapForm.Control.Feedback>
+                  </BootstrapForm.Group>
+                )}
+              </Field>
+            )}
             <Row className="mt-3">
               <Col xs={12} sm={6} className="mb-2 mb-sm-0">
                 {hasImages ? (

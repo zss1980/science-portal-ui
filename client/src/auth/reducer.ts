@@ -1,6 +1,8 @@
 import {
   ACTIVE,
+  AUTHENTICATING,
   AVAILABLE_IMAGES,
+  CLEAR_DELETE_SESSION_INFO,
   FETCH_FAILED,
   LOGIN,
   LOGOUT,
@@ -10,6 +12,7 @@ import {
   SESSION_STATS,
   SET_CONTEXT,
   SET_COOKIE,
+  SET_DELETE_SESSION_INFO,
   SET_IMAGES,
   SET_LOADING,
   SET_SESSIONS,
@@ -25,7 +28,6 @@ export const authReducer = (
     case LOGIN:
       return {
         ...state,
-        isAuthenticated: true,
         user: {
           username: action.payload.username,
         },
@@ -39,11 +41,16 @@ export const authReducer = (
         },
         cookie: '',
         loading: {
+          [AUTHENTICATING]: false,
           [SESSION_STATS]: true,
           [AVAILABLE_IMAGES]: true,
           [RUNNING_SESSION]: true,
         },
         services_statuses: {
+          [AUTHENTICATING]: {
+            status: ACTIVE,
+            message: 'Waiting for server response...',
+          },
           [SESSION_STATS]: {
             status: ACTIVE,
             message: 'Waiting for user input...',
@@ -61,11 +68,17 @@ export const authReducer = (
         images: {},
         sessions: [],
         context: null,
+        deleteSessionInfo: {
+          showModal: false,
+          sessionId: '',
+          sessionName: '',
+        },
       };
     case SET_COOKIE:
       return {
         ...state,
         cookie: action.payload,
+        isAuthenticated: true,
       };
     case SET_IMAGES:
       return {
@@ -86,6 +99,24 @@ export const authReducer = (
       return {
         ...state,
         usage: action.payload,
+      };
+    case CLEAR_DELETE_SESSION_INFO:
+      return {
+        ...state,
+        deleteSessionInfo: {
+          showModal: false,
+          sessionId: '',
+          sessionName: '',
+        },
+      };
+    case SET_DELETE_SESSION_INFO:
+      return {
+        ...state,
+        deleteSessionInfo: {
+          showModal: true,
+          sessionId: action.payload.sessionId,
+          sessionName: action.payload.sessionName,
+        },
       };
     case SET_LOADING:
       return {

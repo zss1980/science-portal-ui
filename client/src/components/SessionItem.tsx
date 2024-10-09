@@ -15,6 +15,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Spinner from 'react-bootstrap/Spinner';
 import { Session } from '../auth/types';
+import { useAuth } from '../auth/useAuth';
+import { SET_DELETE_SESSION_INFO } from '../auth/constants';
 
 interface Props {
   listType: string;
@@ -32,6 +34,8 @@ let hiddenPendingCSS = 'sp-card-text sp-session-button';
 let displayGPU = true;
 
 const SessionItem = (props: Props) => {
+  const { dispatch } = useAuth();
+
   if (props.listType === 'list') {
     if (props.session.status === 'Running') {
       bgClass = 'success';
@@ -214,7 +218,15 @@ const SessionItem = (props: Props) => {
                       }
                     >
                       <FontAwesomeIcon
-                        onClick={props.session.deleteHandler}
+                        onClick={() =>
+                          dispatch({
+                            type: SET_DELETE_SESSION_INFO,
+                            payload: {
+                              sessionId: props.session.id,
+                              sessionName: props.session.name,
+                            },
+                          })
+                        }
                         data-id={props.session.id}
                         data-name={props.session.name}
                         className={alwaysAvailableCSS}

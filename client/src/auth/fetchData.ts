@@ -16,8 +16,13 @@ import {
   RUNNING_SESSION,
   AVAILABLE_IMAGES,
   FETCH_FAILED,
+  DELETE_SESSION_URL,
+  DELETE_SESSION,
+  CLEAR_DELETE_SESSION_INFO,
+  CREATE_SESSION_URL,
+  CREATE_SESSION,
 } from './constants';
-import { AuthAction } from './types';
+import { AuthAction, NewSession } from './types';
 import { fetchWithAuth } from './authFetch';
 import processPlatformUsage from '../utilities/usage';
 import { getTransformedSessions } from '../utilities/sessions';
@@ -110,6 +115,77 @@ export const fetchRunningSessions = (
       dispatch({
         type: FETCH_FAILED,
         payload: { type: RUNNING_SESSION, message: e.message },
+      });
+    });
+};
+
+export const fetchDeleteSession = (
+  cookie: string,
+  dispatch: Dispatch<AuthAction>,
+  sessionId: string,
+) => {
+  const fetchOptions = {
+    method: 'DELETE',
+    body: JSON.stringify({ cookie, sessionId }),
+  };
+  dispatch({ type: CLEAR_DELETE_SESSION_INFO });
+  dispatch({
+    type: SET_LOADING,
+    payload: { type: DELETE_SESSION, isLoading: true },
+  });
+
+  fetchWithAuth(`${BASE_URL}${DELETE_SESSION_URL}`, fetchOptions)
+    .then((response) => response.json())
+    .then(() => {
+      fetchRunningSessions(cookie, dispatch);
+      dispatch({
+        type: SET_LOADING,
+        payload: { type: DELETE_SESSION, isLoading: false },
+      });
+    })
+    .catch((e) => {
+      dispatch({
+        type: FETCH_FAILED,
+        payload: { type: DELETE_SESSION, message: e.message },
+      });
+    });
+};
+
+export const fetchCreateSession = (
+  cookie: string,
+  dispatch: Dispatch<AuthAction>,
+  sessionPayload: NewSession,
+) => {
+  const fetchOptions = {
+    method: 'POST',
+    body: JSON.stringify({
+      cookie,
+      sessionName: 'FirstOne',
+      sessionType: 'notebook',
+      sessionImage: 'images.canfar.net/canucs/canucs:1.2.9',
+      sessionRam: 1,
+      sessionCores: 1,
+    }),
+  };
+
+  dispatch({
+    type: SET_LOADING,
+    payload: { type: CREATE_SESSION, isLoading: true },
+  });
+
+  fetchWithAuth(`${BASE_URL}${CREATE_SESSION_URL}`, fetchOptions)
+    .then((response) => response.json())
+    .then(() => {
+      fetchRunningSessions(cookie, dispatch);
+      dispatch({
+        type: SET_LOADING,
+        payload: { type: CREATE_SESSION, isLoading: false },
+      });
+    })
+    .catch((e) => {
+      dispatch({
+        type: FETCH_FAILED,
+        payload: { type: CREATE_SESSION, message: e.message },
       });
     });
 };

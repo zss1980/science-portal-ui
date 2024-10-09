@@ -10,6 +10,8 @@ import {
   BASE_URL,
   LOGIN_URL,
   LOGOUT_URL,
+  AUTHENTICATING,
+  FETCH_FAILED,
 } from './constants';
 import { AuthContext } from './authContext';
 import fetchDataConcurrently from './fetchData';
@@ -20,7 +22,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   const login = useCallback(async (username: string, password: string) => {
-    dispatch({ type: SET_LOADING, payload: true });
+    dispatch({
+      type: SET_LOADING,
+      payload: { isLoading: true, type: AUTHENTICATING },
+    });
     try {
       const response = await fetchWithAuth(`${BASE_URL}${LOGIN_URL}`, {
         method: 'POST',
@@ -29,11 +34,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const data = await response.json();
       dispatch({ type: SET_COOKIE, payload: data });
       fetchDataConcurrently(data.cookie, dispatch);
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (e) {
+      console.error('Login failed:', e);
+      dispatch({
+        type: FETCH_FAILED,
+        payload: { type: AUTHENTICATING, message: e.message },
+      });
       // Handle login error (e.g., show error message to user)
     } finally {
-      dispatch({ type: SET_LOADING, payload: false });
+      dispatch({
+        type: SET_LOADING,
+        payload: { isLoading: false, type: AUTHENTICATING },
+      });
     }
   }, []);
 
