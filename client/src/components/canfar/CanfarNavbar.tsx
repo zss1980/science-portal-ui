@@ -12,6 +12,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../auth/useAuth';
+import {
+  BASE_HOST_URL,
+  CADC_BASE_HOST_URL,
+  CADC_GROUPS_URL,
+  CADC_RESET_URL,
+  CADC_SEARCH_URL,
+  CADC_UPDATE_URL,
+} from '../../auth/constants';
 
 const GROUP_MANAGEMENT_URI = 'ivo://cadc.nrc.ca/groups';
 const ADVANCED_SEARCH_URI = 'ivo://cadc.nrc.ca/search';
@@ -53,7 +61,7 @@ const CanfarNavbar = (props: Props) => {
     );
   };
 
-  const baseURLCanfar = state.appSettings?.headerURLs?.baseURLCanfar;
+  const baseURLCanfar = BASE_HOST_URL;
 
   return (
     <div className="canfar-header">
@@ -76,7 +84,7 @@ const CanfarNavbar = (props: Props) => {
                   Storage Management
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href={state.appSettings?.headerURLs?.[GROUP_MANAGEMENT_URI]}
+                  href={`${CADC_BASE_HOST_URL}${CADC_GROUPS_URL}`}
                   target="_blank"
                 >
                   Group Management
@@ -94,7 +102,7 @@ const CanfarNavbar = (props: Props) => {
                   Science Portal
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href={state.appSettings?.headerURLs?.[ADVANCED_SEARCH_URI]}
+                  href={`${CADC_BASE_HOST_URL}${CADC_SEARCH_URL}`}
                   target="_blank"
                 >
                   CADC Search
@@ -109,7 +117,11 @@ const CanfarNavbar = (props: Props) => {
               <Nav.Link href={baseURLCanfar + '/en/about/organization/'}>
                 About
               </Nav.Link>
-              <Nav.Link href="https://github.com/opencadc">
+              <Nav.Link
+                href="https://github.com/opencadc"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Open Source
               </Nav.Link>
               <NavDropdown title="Support">
@@ -145,13 +157,13 @@ const CanfarNavbar = (props: Props) => {
                 className="sp-auth-dropdown"
               >
                 <NavDropdown.Item
-                  href={state.appSettings?.headerURLs?.[ACCOUNT_UPDATE_URI]}
+                  href={`${CADC_BASE_HOST_URL}${CADC_UPDATE_URL}`}
                   target="_blank"
                 >
                   Update Profile
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href={state.appSettings?.headerURLs?.[PASSWORD_CHANGE_URI]}
+                  href={`${CADC_BASE_HOST_URL}${CADC_RESET_URL}`}
                   target="_blank"
                 >
                   Reset Password

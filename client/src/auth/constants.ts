@@ -2,7 +2,15 @@
 import { FormValues } from './types';
 
 export const BASE_HOST_URL = 'https://www.canfar.net';
+export const CADC_BASE_HOST_URL =
+  'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/';
+export const CADC_GROUPS_URL = '/groups';
+export const CADC_SEARCH_URL = '/search';
+export const CADC_RESET_URL = '/auth/resetPassword.html';
+export const CADC_UPDATE_URL = '/auth/update.html';
+
 export const SCIENCE_PORTAL_URL = `${BASE_HOST_URL}/science-portal`;
+
 // API
 export const BASE_URL = '/api';
 export const LOGIN_URL = '/access/login';

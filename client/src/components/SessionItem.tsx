@@ -67,7 +67,7 @@ const SessionItem = (props: Props) => {
       displayGPU = false;
     }
   }
-  console.log('item props', props);
+
   const onOpenSession = () => {
     window.open(props.session.connectURL, '_blank', 'noopener,noreferrer');
   };
