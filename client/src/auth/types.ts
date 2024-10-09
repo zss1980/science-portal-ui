@@ -116,10 +116,20 @@ export interface SessionDeleteInfo {
 }
 
 export type SStatuse = typeof OPERATIONAL | typeof OUTAGE | typeof ACTIVE;
-
+export type Service =
+  | typeof SESSION_STATS
+  | typeof AVAILABLE_IMAGES
+  | typeof CREATE_SESSION
+  | typeof RUNNING_SESSION
+  | typeof AUTHENTICATING
+  | typeof DELETE_SESSION;
 export interface Status {
   status: SStatuse;
   message: string;
+}
+
+export interface AlertInfo extends Status {
+  show: boolean;
 }
 
 export interface ServiceStatus {
@@ -130,7 +140,14 @@ export interface ServiceStatus {
   [RUNNING_SESSION]: Status;
   [AUTHENTICATING]: Status;
 }
-
+export type FormKeys =
+  | typeof VAL_TYPE
+  | typeof VAL_PROJECT
+  | typeof VAL_IMAGE
+  | typeof VAL_INSTANCE_NAME
+  | typeof VAL_MEMORY
+  | typeof VAL_CORES
+  | typeof VAL_GPU;
 export interface FormValues {
   [VAL_PROJECT]: string;
   [VAL_TYPE]: string;

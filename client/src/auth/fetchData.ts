@@ -1,26 +1,32 @@
 import { Dispatch } from 'react';
 import {
-  LOGIN,
-  SET_CONTEXT,
-  SET_SESSIONS_STATS,
-  SET_SESSIONS,
-  SET_IMAGES,
-  BASE_URL,
-  USERINFO_URL,
-  CONTEXT_URL,
-  SESSION_VIEW_URL,
-  SESSION_URL,
-  IMAGE_URL,
-  SET_LOADING,
-  SESSION_STATS,
-  RUNNING_SESSION,
   AVAILABLE_IMAGES,
-  FETCH_FAILED,
-  DELETE_SESSION_URL,
-  DELETE_SESSION,
+  BASE_URL,
   CLEAR_DELETE_SESSION_INFO,
-  CREATE_SESSION_URL,
+  CONTEXT_URL,
   CREATE_SESSION,
+  CREATE_SESSION_URL,
+  DELETE_SESSION,
+  DELETE_SESSION_URL,
+  DESKTOP,
+  FETCH_FAILED,
+  IMAGE_URL,
+  LOGIN,
+  PROP_SESSION_CORES,
+  PROP_SESSION_IMAGE,
+  PROP_SESSION_NAME,
+  PROP_SESSION_RAM,
+  PROP_SESSION_TYPE,
+  RUNNING_SESSION,
+  SESSION_STATS,
+  SESSION_URL,
+  SESSION_VIEW_URL,
+  SET_CONTEXT,
+  SET_IMAGES,
+  SET_LOADING,
+  SET_SESSIONS,
+  SET_SESSIONS_STATS,
+  USERINFO_URL,
 } from './constants';
 import { AuthAction, NewSession } from './types';
 import { fetchWithAuth } from './authFetch';
@@ -156,15 +162,21 @@ export const fetchCreateSession = (
   dispatch: Dispatch<AuthAction>,
   sessionPayload: NewSession,
 ) => {
+  const submitPayload: NewSession = {
+    sessionName: sessionPayload[PROP_SESSION_NAME],
+    sessionType: sessionPayload[PROP_SESSION_TYPE],
+    sessionImage: sessionPayload[PROP_SESSION_IMAGE],
+  };
+  if (sessionPayload[PROP_SESSION_TYPE] !== DESKTOP) {
+    submitPayload[PROP_SESSION_CORES] = sessionPayload[PROP_SESSION_CORES];
+    submitPayload[PROP_SESSION_RAM] = sessionPayload[PROP_SESSION_RAM];
+  }
+
   const fetchOptions = {
     method: 'POST',
     body: JSON.stringify({
       cookie,
-      sessionName: 'FirstOne',
-      sessionType: 'notebook',
-      sessionImage: 'images.canfar.net/canucs/canucs:1.2.9',
-      sessionRam: 1,
-      sessionCores: 1,
+      ...submitPayload,
     }),
   };
 
@@ -175,7 +187,7 @@ export const fetchCreateSession = (
 
   fetchWithAuth(`${BASE_URL}${CREATE_SESSION_URL}`, fetchOptions)
     .then((response) => response.json())
-    .then(() => {
+    .then((data) => {
       fetchRunningSessions(cookie, dispatch);
       dispatch({
         type: SET_LOADING,

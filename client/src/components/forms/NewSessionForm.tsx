@@ -28,20 +28,16 @@ import {
 } from '../../auth/constants';
 import {
   getDefaultSessionName,
+  getMissedFieldError,
   isCoresDisabled,
   isMemoryDisabled,
+  validateAlphanumericHyphen,
 } from '../../utilities/form';
 import { session_types as SESSION_TYPES } from '../../session/sessiontype_map_en.json';
 import FormPopover from '../common/Popover';
 import FieldPlaceholder from '../common/FieldPlaceholder';
 import { fetchCreateSession } from '../../auth/fetchData';
-import { ImageType, NewSession } from '../../auth/types';
-
-interface FormValues {
-  project: string;
-  type: string;
-  // Add other form values here
-}
+import { FormKeys, FormValues, ImageType, NewSession } from '../../auth/types';
 
 const NewSessionForm: React.FC = () => {
   const { state, dispatch } = useAuth();
@@ -64,14 +60,46 @@ const NewSessionForm: React.FC = () => {
     fetchCreateSession(state.cookie.cookie, dispatch, sessionPayload);
   };
 
+  const REQUIRED_FIELDS: FormKeys[] = [
+    VAL_INSTANCE_NAME,
+    VAL_TYPE,
+    VAL_PROJECT,
+    VAL_IMAGE,
+  ];
+
   const validate = (values: FormValues) => {
-    const errors: Partial<FormValues> = {};
+    const errors: { [key: keyof typeof FormKeys]: string | undefined } = {};
+    REQUIRED_FIELDS.forEach((fieldProp: FormKeys) => {
+      if (!values[fieldProp]) {
+        errors[fieldProp] = getMissedFieldError(fieldProp);
+      }
+    });
+
+    if (values[VAL_TYPE] !== DESKTOP) {
+      if (!values[VAL_MEMORY]) {
+        errors[VAL_MEMORY] = getMissedFieldError(VAL_MEMORY);
+      }
+      if (!values[VAL_CORES]) {
+        errors[VAL_CORES] = getMissedFieldError(VAL_CORES);
+      }
+    }
+
+    if (!errors[VAL_INSTANCE_NAME]) {
+      errors[VAL_INSTANCE_NAME] = validateAlphanumericHyphen(
+        values[VAL_INSTANCE_NAME],
+      );
+    }
+
     if (!values.project) {
       errors.project = 'Project is required';
     }
     if (!values.type) {
       errors.type = 'Type is required';
     }
+    // validate name
+    errors[VAL_INSTANCE_NAME] = validateAlphanumericHyphen(
+      values[VAL_INSTANCE_NAME],
+    );
     return errors;
   };
 

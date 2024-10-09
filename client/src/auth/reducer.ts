@@ -3,6 +3,8 @@ import {
   AUTHENTICATING,
   AVAILABLE_IMAGES,
   CLEAR_DELETE_SESSION_INFO,
+  CREATE_SESSION,
+  DELETE_SESSION,
   FETCH_FAILED,
   LOGIN,
   LOGOUT,
@@ -45,6 +47,8 @@ export const authReducer = (
           [SESSION_STATS]: true,
           [AVAILABLE_IMAGES]: true,
           [RUNNING_SESSION]: true,
+          [CREATE_SESSION]: false,
+          [DELETE_SESSION]: false,
         },
         services_statuses: {
           [AUTHENTICATING]: {
@@ -56,6 +60,14 @@ export const authReducer = (
             message: 'Waiting for user input...',
           },
           [AVAILABLE_IMAGES]: {
+            status: ACTIVE,
+            message: 'Waiting for user input...',
+          },
+          [CREATE_SESSION]: {
+            status: ACTIVE,
+            message: 'Waiting for user input...',
+          },
+          [DELETE_SESSION]: {
             status: ACTIVE,
             message: 'Waiting for user input...',
           },

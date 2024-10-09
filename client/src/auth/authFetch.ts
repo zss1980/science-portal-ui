@@ -11,7 +11,8 @@ export const fetchWithAuth = async (
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const resData = await response.json();
+    throw new Error(`Network Error: ${response.status} - ${resData.message}`);
   }
 
   return response;

@@ -40,9 +40,16 @@ import {
   RUNNING_SESSION,
   SESSION_STATS,
 } from './auth/constants';
-import { getProgressBarVariant } from './utilities/appUI';
+import {
+  ACTIVE_SESSION_SERVICES,
+  getAlerts,
+  getProgressBarVariant,
+  NEW_SESSION_SERVICES,
+  STATS_SERVICES,
+} from './utilities/appUI';
 import StatusModal from './components/common/StatusModal';
 import DeleteSessionModal from './components/common/DeleteSessionModal';
+import { Service } from './auth/types';
 
 const App = () => {
   const { state, dispatch } = useAuth();
@@ -82,6 +89,10 @@ const App = () => {
                                                 submitHandler={null}
                                                 errMsg={'error'}/>
   } */
+
+  const newSessionAlerts = getAlerts(state, NEW_SESSION_SERVICES);
+  const activeSessionAlerts = getAlerts(state, ACTIVE_SESSION_SERVICES);
+  const activeStatsAlerts = getAlerts(state, STATS_SERVICES);
 
   return (
     <Container fluid className="bg-white">
@@ -134,15 +145,14 @@ const App = () => {
                 animated={state.loading[RUNNING_SESSION]}
                 className="sp-progress-bar"
               />
-              {state.services_statuses[RUNNING_SESSION].status === OUTAGE && (
+              {activeSessionAlerts.map((alert, index) => (
                 <Alert
-                  variant={getProgressBarVariant(
-                    state.services_statuses[RUNNING_SESSION].status,
-                  )}
+                  key={`${alert.status} + index`}
+                  variant={getProgressBarVariant(alert.status)}
                 >
-                  {state.services_statuses[RUNNING_SESSION].message}{' '}
+                  {alert.message}{' '}
                 </Alert>
-              )}
+              ))}
             </Col>
           </Row>
 
@@ -196,16 +206,14 @@ const App = () => {
                         animated={state.loading[AVAILABLE_IMAGES]}
                         className="sp-progress-bar"
                       />
-                      {state.services_statuses[AVAILABLE_IMAGES].status ===
-                        OUTAGE && (
+                      {newSessionAlerts.map((alert, index) => (
                         <Alert
-                          variant={getProgressBarVariant(
-                            state.services_statuses[AVAILABLE_IMAGES].status,
-                          )}
+                          key={`${alert.status} + index`}
+                          variant={getProgressBarVariant(alert.status)}
                         >
-                          {state.services_statuses[AVAILABLE_IMAGES].message}{' '}
+                          {alert.message}{' '}
                         </Alert>
-                      )}
+                      ))}
                     </Col>
                   </Row>
 
@@ -251,16 +259,14 @@ const App = () => {
                         className="sp-progress-bar"
                       />
 
-                      {state.services_statuses[SESSION_STATS].status ===
-                        OUTAGE && (
+                      {activeStatsAlerts.map((alert, index) => (
                         <Alert
-                          variant={getProgressBarVariant(
-                            state.services_statuses[SESSION_STATS].status,
-                          )}
+                          key={`${alert.status} + index`}
+                          variant={getProgressBarVariant(alert.status)}
                         >
-                          {state.services_statuses[SESSION_STATS].message}{' '}
+                          {alert.message}{' '}
                         </Alert>
-                      )}
+                      ))}
                     </Col>
                   </Row>
                   <SciencePortalPlatformLoad usage={state.platformUsage} />

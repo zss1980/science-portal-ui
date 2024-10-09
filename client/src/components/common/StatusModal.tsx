@@ -70,16 +70,24 @@ const StatusModal = () => {
         break;
       }
     }
-    if (hasFinished) {
+    if (
+      hasFinished ||
+      (!state.isAuthenticated && !state.loading[AUTHENTICATING])
+    ) {
       setStatus(null);
     }
-  }, [state, state.loading]);
+  }, [state, state.isAuthenticated, state.loading]);
 
   if (!status) {
     return null;
   }
   return (
-    <Modal show={!!status} backdrop="static" keyboard={false}>
+    <Modal
+      show={!!status}
+      onHide={() => setStatus(null)}
+      backdrop="static"
+      keyboard={false}
+    >
       <Modal.Header closeButton>
         <Modal.Title className="sp-modal-header">{status.header}</Modal.Title>
       </Modal.Header>

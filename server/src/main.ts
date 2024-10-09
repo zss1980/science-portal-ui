@@ -108,7 +108,7 @@ app.post('/api/create_session', (_req, res) => {
         name: _req.body.sessionName,
     }
 
-    if (_req.body.sessionType !== 'desktop-app') {
+    if (_req.body.sessionType !== 'desktop') {
         payload.ram = _req.body.sessionRam
         payload.cores = _req.body.sessionCores
     }
@@ -125,7 +125,7 @@ app.post('/api/create_session', (_req, res) => {
         //res.status(500).json({ message: 'Fatal Error!!! Abort! Abort!! Abort!!!' });
 
     }).catch(rej =>{
-            res.status(400).json({ message: rej.message });
+            res.status(400).json({ message: rej.response.data });
 
     })
 
@@ -145,7 +145,7 @@ app.delete('/api/delete_session', (_req, res) => {
         //res.status(500).json({ message: 'Fatal Error!!! Abort! Abort!! Abort!!!' });
 
     }).catch(rej =>{
-            res.status(400).json({ message: rej.message });
+            res.status(400).json({ message: rej.response.data });
 
     })
 
