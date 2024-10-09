@@ -150,6 +150,26 @@ app.delete('/api/delete_session', (_req, res) => {
     })
 
 })
+
+app.post('/api/renew_session', (_req, res) => {
+    console.log(_req.body.cookie)
+    axios.post(`https://www.canfar.net/science-portal/session/${_req.body.sessionId}`,
+      new URLSearchParams({action: 'renew'}),{
+        headers: {
+            'Cookie': `CADC_SSO=${_req.body.cookie}`
+        },
+        withCredentials: true
+    }).then(logRes => {
+        console.log(logRes)
+        res.status(200).json({ data: logRes.data });
+        //res.status(500).json({ message: 'Fatal Error!!! Abort! Abort!! Abort!!!' });
+
+    }).catch(rej =>{
+            res.status(400).json({ message: rej.response.data });
+
+    })
+
+})
 app.post('/api/session_view', (_req, res) => {
     console.log(_req.body.cookie)
     axios.get('https://www.canfar.net/science-portal/session?view=stats',{

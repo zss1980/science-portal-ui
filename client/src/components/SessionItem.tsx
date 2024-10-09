@@ -16,7 +16,13 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import Spinner from 'react-bootstrap/Spinner';
 import { Session } from '../auth/types';
 import { useAuth } from '../auth/useAuth';
-import { SET_DELETE_SESSION_INFO } from '../auth/constants';
+import {
+  BASE_HOST_URL,
+  SCIENCE_PORTAL_URL,
+  SESSION_URL,
+  SET_DELETE_SESSION_INFO,
+} from '../auth/constants';
+import { fetchRenewSession } from '../auth/fetchData';
 
 interface Props {
   listType: string;
@@ -34,7 +40,7 @@ let hiddenPendingCSS = 'sp-card-text sp-session-button';
 let displayGPU = true;
 
 const SessionItem = (props: Props) => {
-  const { dispatch } = useAuth();
+  const { state, dispatch } = useAuth();
 
   if (props.listType === 'list') {
     if (props.session.status === 'Running') {
@@ -61,6 +67,10 @@ const SessionItem = (props: Props) => {
       displayGPU = false;
     }
   }
+  console.log('item props', props);
+  const onOpenSession = () => {
+    window.open(props.session.connectURL, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <>
@@ -69,7 +79,7 @@ const SessionItem = (props: Props) => {
           <Card.Body className={cardCSS}>
             <div
               className={connectCSS}
-              onClick={props.session.connectHandler}
+              onClick={onOpenSession}
               data-connecturl={props.session.connectURL}
             >
               <Row>
@@ -237,7 +247,7 @@ const SessionItem = (props: Props) => {
 
                   <span className="sp-card-button-span">
                     <a
-                      href={props.session.viewEventsURL}
+                      href={`${SCIENCE_PORTAL_URL}${SESSION_URL}/${props.session.id}?view=events`}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -261,7 +271,7 @@ const SessionItem = (props: Props) => {
 
                   <span className="sp-card-button-span">
                     <a
-                      href={props.session.viewLogsURL}
+                      href={`${SCIENCE_PORTAL_URL}${SESSION_URL}/${props.session.id}?view=logs`}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -294,7 +304,13 @@ const SessionItem = (props: Props) => {
                       }
                     >
                       <FontAwesomeIcon
-                        onClick={props.session.renewHandler}
+                        onClick={() =>
+                          fetchRenewSession(
+                            state.cookie.cookie,
+                            dispatch,
+                            props.session.id!,
+                          )
+                        }
                         data-id={props.session.id}
                         className={hiddenPendingCSS}
                         icon={faClock}

@@ -11,6 +11,7 @@ import {
   CREATE_SESSION,
   DELETE_SESSION,
   OUTAGE,
+  RENEW_SESSION,
   RUNNING_SESSION,
   SESSION_STATS,
 } from '../auth/constants';
@@ -31,6 +32,7 @@ export const NEW_SESSION_SERVICES: Service[] = [
 ];
 export const ACTIVE_SESSION_SERVICES: Service[] = [
   RUNNING_SESSION,
+  RENEW_SESSION,
   DELETE_SESSION,
 ];
 export const STATS_SERVICES: Service[] = [SESSION_STATS];

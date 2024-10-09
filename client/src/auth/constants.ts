@@ -2,12 +2,14 @@
 import { FormValues } from './types';
 
 export const BASE_HOST_URL = 'https://www.canfar.net';
+export const SCIENCE_PORTAL_URL = `${BASE_HOST_URL}/science-portal`;
 // API
 export const BASE_URL = '/api';
 export const LOGIN_URL = '/access/login';
 export const LOGOUT_URL = '/access/logout';
 export const IMAGE_URL = '/image';
 export const SESSION_URL = '/session';
+export const RENEW_SESSION_URL = '/renew_session';
 export const DELETE_SESSION_URL = '/delete_session';
 export const CREATE_SESSION_URL = '/create_session';
 export const SESSION_VIEW_URL = '/session_view';
@@ -38,6 +40,7 @@ export const AUTHENTICATING = 'authenticating';
 export const SESSION_STATS = 'session_stats';
 export const AVAILABLE_IMAGES = 'available_images';
 export const RUNNING_SESSION = 'running_sessions';
+export const RENEW_SESSION = 'renew_session';
 export const DELETE_SESSION = 'delete_session';
 export const CREATE_SESSION = 'create_session';
 export const OPERATIONAL = 'operational';

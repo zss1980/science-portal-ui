@@ -17,6 +17,8 @@ import {
   PROP_SESSION_NAME,
   PROP_SESSION_RAM,
   PROP_SESSION_TYPE,
+  RENEW_SESSION,
+  RENEW_SESSION_URL,
   RUNNING_SESSION,
   SESSION_STATS,
   SESSION_URL,
@@ -153,6 +155,37 @@ export const fetchDeleteSession = (
       dispatch({
         type: FETCH_FAILED,
         payload: { type: DELETE_SESSION, message: e.message },
+      });
+    });
+};
+
+export const fetchRenewSession = (
+  cookie: string,
+  dispatch: Dispatch<AuthAction>,
+  sessionId: string,
+) => {
+  const fetchOptions = {
+    method: 'POST',
+    body: JSON.stringify({ cookie, sessionId }),
+  };
+  dispatch({
+    type: SET_LOADING,
+    payload: { type: RENEW_SESSION, isLoading: true },
+  });
+
+  fetchWithAuth(`${BASE_URL}${RENEW_SESSION_URL}`, fetchOptions)
+    .then((response) => response.json())
+    .then(() => {
+      fetchRunningSessions(cookie, dispatch);
+      dispatch({
+        type: SET_LOADING,
+        payload: { type: RENEW_SESSION, isLoading: false },
+      });
+    })
+    .catch((e) => {
+      dispatch({
+        type: FETCH_FAILED,
+        payload: { type: RENEW_SESSION, message: e.message },
       });
     });
 };

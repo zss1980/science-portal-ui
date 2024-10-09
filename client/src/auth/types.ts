@@ -84,6 +84,7 @@ import {
   PROP_SESSION_RAM,
   PROP_SESSION_CORES,
   CREATE_SESSION,
+  RENEW_SESSION,
 } from './constants';
 
 // State interface
@@ -101,6 +102,7 @@ export interface AuthState {
     [AUTHENTICATING]: boolean;
     [DELETE_SESSION]: boolean;
     [CREATE_SESSION]: boolean;
+    [RENEW_SESSION]: boolean;
     [SESSION_STATS]: boolean;
     [AVAILABLE_IMAGES]: boolean;
     [RUNNING_SESSION]: boolean;
@@ -121,6 +123,7 @@ export type Service =
   | typeof AVAILABLE_IMAGES
   | typeof CREATE_SESSION
   | typeof RUNNING_SESSION
+  | typeof RENEW_SESSION
   | typeof AUTHENTICATING
   | typeof DELETE_SESSION;
 export interface Status {
@@ -135,6 +138,7 @@ export interface AlertInfo extends Status {
 export interface ServiceStatus {
   [SESSION_STATS]: Status;
   [CREATE_SESSION]: Status;
+  [RENEW_SESSION]: Status;
   [DELETE_SESSION]: Status;
   [AVAILABLE_IMAGES]: Status;
   [RUNNING_SESSION]: Status;
@@ -280,6 +284,7 @@ export interface PlatformUsage {
 export type UiLoading =
   | typeof SESSION_STATS
   | typeof RUNNING_SESSION
+  | typeof RENEW_SESSION
   | typeof AVAILABLE_IMAGES
   | typeof AUTHENTICATING
   | typeof CREATE_SESSION

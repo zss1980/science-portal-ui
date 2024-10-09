@@ -9,6 +9,7 @@ import {
   AVAILABLE_IMAGES,
   CREATE_SESSION,
   DELETE_SESSION,
+  RENEW_SESSION,
   RUNNING_SESSION,
   SESSION_STATS,
 } from '../../auth/constants';
@@ -43,6 +44,11 @@ const PLATFORM_LOADING_STEPS: {
     label: 'Request session',
     value: CREATE_SESSION,
     message: 'Requesting session...',
+  },
+  {
+    label: 'Renew session',
+    value: RENEW_SESSION,
+    message: 'Extending session time...',
   },
   {
     label: 'Delete session',
