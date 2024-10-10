@@ -69,7 +69,7 @@ import {
   SET_SESSIONS_STATS,
   SESSION_STATS,
   AVAILABLE_IMAGES,
-  RUNNING_SESSION,
+  RUNNING_SESSIONS,
   OPERATIONAL,
   OUTAGE,
   ACTIVE,
@@ -85,6 +85,8 @@ import {
   PROP_SESSION_CORES,
   CREATE_SESSION,
   RENEW_SESSION,
+  SET_SESSION,
+  FETCHING_SESSION,
 } from './constants';
 
 // State interface
@@ -102,10 +104,9 @@ export interface AuthState {
     [AUTHENTICATING]: boolean;
     [DELETE_SESSION]: boolean;
     [CREATE_SESSION]: boolean;
-    [RENEW_SESSION]: boolean;
     [SESSION_STATS]: boolean;
     [AVAILABLE_IMAGES]: boolean;
-    [RUNNING_SESSION]: boolean;
+    [RUNNING_SESSIONS]: boolean;
   };
   services_statuses: ServiceStatus;
   deleteSessionInfo: SessionDeleteInfo;
@@ -122,7 +123,7 @@ export type Service =
   | typeof SESSION_STATS
   | typeof AVAILABLE_IMAGES
   | typeof CREATE_SESSION
-  | typeof RUNNING_SESSION
+  | typeof RUNNING_SESSIONS
   | typeof RENEW_SESSION
   | typeof AUTHENTICATING
   | typeof DELETE_SESSION;
@@ -139,9 +140,10 @@ export interface ServiceStatus {
   [SESSION_STATS]: Status;
   [CREATE_SESSION]: Status;
   [RENEW_SESSION]: Status;
+  [FETCHING_SESSION]: Status;
   [DELETE_SESSION]: Status;
   [AVAILABLE_IMAGES]: Status;
-  [RUNNING_SESSION]: Status;
+  [RUNNING_SESSIONS]: Status;
   [AUTHENTICATING]: Status;
 }
 export type FormKeys =
@@ -154,7 +156,7 @@ export type FormKeys =
   | typeof VAL_GPU;
 export interface FormValues {
   [VAL_PROJECT]: string;
-  [VAL_TYPE]: string;
+  [VAL_TYPE]: ImageType;
   [VAL_IMAGE]: string;
   [VAL_INSTANCE_NAME]: string;
   [VAL_MEMORY]: number;
@@ -174,6 +176,9 @@ export interface Image {
   id: string;
   digest: string;
   types: ImageType[];
+}
+export interface ImageEx extends Image {
+  imageName: string;
 }
 
 export interface Session {
@@ -283,7 +288,8 @@ export interface PlatformUsage {
 
 export type UiLoading =
   | typeof SESSION_STATS
-  | typeof RUNNING_SESSION
+  | typeof RUNNING_SESSIONS
+  | typeof FETCHING_SESSION
   | typeof RENEW_SESSION
   | typeof AVAILABLE_IMAGES
   | typeof AUTHENTICATING
@@ -305,7 +311,11 @@ export type AuthAction =
     }
   | { type: typeof SET_CONTEXT; payload: Context }
   | { type: typeof SET_SESSIONS_STATS; payload: PlatformUsage }
-  | { type: typeof SET_SESSIONS; payload: { sessions: Session[] } }
+  | {
+      type: typeof SET_SESSIONS;
+      payload: { sessions: { [key: string]: Session } };
+    }
+  | { type: typeof SET_SESSION; payload: { session: Session } }
   | {
       type: typeof SET_DELETE_SESSION_INFO;
       payload: Omit<SessionDeleteInfo, 'showModal'>;

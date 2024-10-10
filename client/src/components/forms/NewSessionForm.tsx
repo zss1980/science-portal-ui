@@ -29,21 +29,20 @@ import {
 import {
   getDefaultSessionName,
   getMissedFieldError,
-  isCoresDisabled,
-  isMemoryDisabled,
   validateAlphanumericHyphen,
 } from '../../utilities/form';
-import { session_types as SESSION_TYPES } from '../../session/sessiontype_map_en.json';
 import FormPopover from '../common/Popover';
 import FieldPlaceholder from '../common/FieldPlaceholder';
 import { fetchCreateSession } from '../../auth/fetchData';
-import { FormKeys, FormValues, ImageType, NewSession } from '../../auth/types';
+import { FormKeys, FormValues, ImageEx, NewSession } from '../../auth/types';
 
 const NewSessionForm: React.FC = () => {
   const { state, dispatch } = useAuth();
   const hasImages = state.images && Object.keys(state.images).length > 0;
   const availableTypes = Object.keys(state.images);
-  const createSessionName = getDefaultSessionName(state.sessions.length + 1);
+  const createSessionName = getDefaultSessionName(
+    Object.keys(state.sessions).length + 1,
+  );
 
   const onSubmit = async (values: FormValues) => {
     console.log(values);
@@ -199,7 +198,7 @@ const NewSessionForm: React.FC = () => {
                             values[VAL_PROJECT]
                           ] ?? {},
                         ),
-                      ).map((image: Image) => (
+                      ).map((image: ImageEx) => (
                         <option key={image.id} value={image.id}>
                           {image.imageName}
                         </option>

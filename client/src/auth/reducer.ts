@@ -6,17 +6,20 @@ import {
   CREATE_SESSION,
   DELETE_SESSION,
   FETCH_FAILED,
+  FETCHING_SESSION,
   LOGIN,
   LOGOUT,
   OPERATIONAL,
   OUTAGE,
-  RUNNING_SESSION,
+  RENEW_SESSION,
+  RUNNING_SESSIONS,
   SESSION_STATS,
   SET_CONTEXT,
   SET_COOKIE,
   SET_DELETE_SESSION_INFO,
   SET_IMAGES,
   SET_LOADING,
+  SET_SESSION,
   SET_SESSIONS,
   SET_SESSIONS_STATS,
 } from './constants';
@@ -46,7 +49,7 @@ export const authReducer = (
           [AUTHENTICATING]: false,
           [SESSION_STATS]: true,
           [AVAILABLE_IMAGES]: true,
-          [RUNNING_SESSION]: true,
+          [RUNNING_SESSIONS]: true,
           [CREATE_SESSION]: false,
           [DELETE_SESSION]: false,
         },
@@ -67,11 +70,19 @@ export const authReducer = (
             status: ACTIVE,
             message: 'Waiting for user input...',
           },
+          [FETCHING_SESSION]: {
+            status: ACTIVE,
+            message: 'Waiting for user input...',
+          },
+          [RENEW_SESSION]: {
+            status: ACTIVE,
+            message: 'Waiting for user input...',
+          },
           [DELETE_SESSION]: {
             status: ACTIVE,
             message: 'Waiting for user input...',
           },
-          [RUNNING_SESSION]: {
+          [RUNNING_SESSIONS]: {
             status: ACTIVE,
             message: 'Waiting for user input...',
           },
@@ -101,6 +112,14 @@ export const authReducer = (
       return {
         ...state,
         sessions: action.payload.sessions,
+      };
+    case SET_SESSION:
+      return {
+        ...state,
+        sessions: {
+          ...state.sessions,
+          [action.payload.session.id]: action.payload.session,
+        },
       };
     case SET_CONTEXT:
       return {

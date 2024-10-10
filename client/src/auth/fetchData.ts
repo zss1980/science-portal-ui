@@ -10,6 +10,8 @@ import {
   DELETE_SESSION_URL,
   DESKTOP,
   FETCH_FAILED,
+  FETCH_SESSION_URL,
+  FETCHING_SESSION,
   IMAGE_URL,
   LOGIN,
   PROP_SESSION_CORES,
@@ -19,13 +21,14 @@ import {
   PROP_SESSION_TYPE,
   RENEW_SESSION,
   RENEW_SESSION_URL,
-  RUNNING_SESSION,
+  RUNNING_SESSIONS,
   SESSION_STATS,
   SESSION_URL,
   SESSION_VIEW_URL,
   SET_CONTEXT,
   SET_IMAGES,
   SET_LOADING,
+  SET_SESSION,
   SET_SESSIONS,
   SET_SESSIONS_STATS,
   USERINFO_URL,
@@ -33,7 +36,10 @@ import {
 import { AuthAction, NewSession } from './types';
 import { fetchWithAuth } from './authFetch';
 import processPlatformUsage from '../utilities/usage';
-import { getTransformedSessions } from '../utilities/sessions';
+import {
+  getTransformedSessions,
+  transformSession,
+} from '../utilities/sessions';
 import { getImagesByType } from '../utilities/images';
 
 const fetchDataConcurrently = (
@@ -103,7 +109,7 @@ export const fetchRunningSessions = (
   };
   dispatch({
     type: SET_LOADING,
-    payload: { type: RUNNING_SESSION, isLoading: true },
+    payload: { type: RUNNING_SESSIONS, isLoading: true },
   });
 
   fetchWithAuth(`${BASE_URL}${SESSION_URL}`, fetchOptions)
@@ -116,13 +122,13 @@ export const fetchRunningSessions = (
       });
       dispatch({
         type: SET_LOADING,
-        payload: { type: RUNNING_SESSION, isLoading: false },
+        payload: { type: RUNNING_SESSIONS, isLoading: false },
       });
     })
     .catch((e) => {
       dispatch({
         type: FETCH_FAILED,
-        payload: { type: RUNNING_SESSION, message: e.message },
+        payload: { type: RUNNING_SESSIONS, message: e.message },
       });
     });
 };
@@ -190,6 +196,41 @@ export const fetchRenewSession = (
     });
 };
 
+export const fetchSessionStatus = (
+  cookie: string,
+  dispatch: Dispatch<AuthAction>,
+  sessionId: string,
+) => {
+  const fetchOptions = {
+    method: 'POST',
+    body: JSON.stringify({ cookie, sessionId }),
+  };
+  dispatch({
+    type: SET_LOADING,
+    payload: { type: FETCHING_SESSION, isLoading: true },
+  });
+
+  fetchWithAuth(`${BASE_URL}${FETCH_SESSION_URL}`, fetchOptions)
+    .then((response) => response.json())
+    .then((sessionsData) => {
+      const reprocessedSession = transformSession(sessionsData.data);
+      dispatch({
+        type: SET_SESSION,
+        payload: { session: reprocessedSession },
+      });
+      dispatch({
+        type: SET_LOADING,
+        payload: { type: FETCHING_SESSION, isLoading: false },
+      });
+    })
+    .catch((e) => {
+      dispatch({
+        type: FETCH_FAILED,
+        payload: { type: RUNNING_SESSIONS, message: e.message },
+      });
+    });
+};
+
 export const fetchCreateSession = (
   cookie: string,
   dispatch: Dispatch<AuthAction>,
@@ -220,7 +261,7 @@ export const fetchCreateSession = (
 
   fetchWithAuth(`${BASE_URL}${CREATE_SESSION_URL}`, fetchOptions)
     .then((response) => response.json())
-    .then((data) => {
+    .then(() => {
       fetchRunningSessions(cookie, dispatch);
       dispatch({
         type: SET_LOADING,

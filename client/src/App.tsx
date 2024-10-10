@@ -22,7 +22,10 @@ import CanfarNavbar from './components/canfar/CanfarNavbar';
 
 /* import SRCLoginModal from "./components/SRCLoginModal";
 import SRCNavbar from "./components/SRCNavbar"; */
-import SessionItem from './components/SessionItem'; /*
+import SessionItem, {
+  EmptySessionItem,
+  LoadingSessionItem,
+} from './components/SessionItem'; /*
 import SciencePortalConfirm from "./components/SciencePortalConfirm"*/
 import SciencePortalForm from './components/SciencePortalForm'; /*
 import SciencePortalModal from "./components/SciencePortalModal";*/
@@ -37,7 +40,7 @@ import { fetchRunningSessions, fetchStatsData } from './auth/fetchData';
 import {
   AVAILABLE_IMAGES,
   OUTAGE,
-  RUNNING_SESSION,
+  RUNNING_SESSIONS,
   SESSION_STATS,
 } from './auth/constants';
 import {
@@ -139,10 +142,10 @@ const App = () => {
             <Col>
               <ProgressBar
                 variant={getProgressBarVariant(
-                  state.services_statuses[RUNNING_SESSION].status,
+                  state.services_statuses[RUNNING_SESSIONS].status,
                 )}
                 now={100}
-                animated={state.loading[RUNNING_SESSION]}
+                animated={state.loading[RUNNING_SESSIONS]}
                 className="sp-progress-bar"
               />
               {activeSessionAlerts.map((alert, index) => (
@@ -157,25 +160,26 @@ const App = () => {
           </Row>
 
           <Row xs={1} md={3} className="g-4">
-            {state.sessions.length !== 0 && (
+            {Object.keys(state.sessions).length !== 0 && (
               <>
-                {state.sessions.map((mapObj) => (
-                  <Col key={mapObj.id} className="sp-card-container">
-                    <SessionItem listType="list" session={mapObj} />
+                {Object.keys(state.sessions).map((sessionId) => (
+                  <Col key={sessionId} className="sp-card-container">
+                    <SessionItem session={state.sessions[sessionId]} />
                   </Col>
                 ))}
               </>
             )}
-            {state.loading[RUNNING_SESSION] && (
+            {state.loading[RUNNING_SESSIONS] && (
               <Col className="sp-card-container">
-                <SessionItem listType="loading" />
+                <LoadingSessionItem />
               </Col>
             )}
-            {state.sessions.length === 0 && (
-              <Col className="sp-card-container">
-                <SessionItem listType="empty" />
-              </Col>
-            )}
+            {!state.loading[RUNNING_SESSIONS] &&
+              Object.keys(state.sessions).length === 0 && (
+                <Col className="sp-card-container">
+                  <EmptySessionItem />
+                </Col>
+              )}
           </Row>
         </Container>
 

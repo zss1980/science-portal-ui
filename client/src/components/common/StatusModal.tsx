@@ -10,7 +10,7 @@ import {
   CREATE_SESSION,
   DELETE_SESSION,
   RENEW_SESSION,
-  RUNNING_SESSION,
+  RUNNING_SESSIONS,
   SESSION_STATS,
 } from '../../auth/constants';
 import { UiLoading } from '../../auth/types';
@@ -27,7 +27,7 @@ const PLATFORM_LOADING_STEPS: {
   },
   {
     label: 'Fetching sessions...',
-    value: RUNNING_SESSION,
+    value: RUNNING_SESSIONS,
     message: 'Checking user sessions...',
   },
   {

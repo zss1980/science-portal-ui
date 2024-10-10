@@ -1,4 +1,4 @@
-import { Image } from '../auth/types';
+import { Image, ImageEx } from '../auth/types';
 import { DESKTOP, DESKTOP_APP, HEADLESS } from '../auth/constants';
 
 export const getImagesByType = (images: Image[]) => {
@@ -35,7 +35,7 @@ export const getImagesByType = (images: Image[]) => {
 export const getImageProject = (image: Image): string => {
   return image.id.split('/')?.[1];
 };
-export const getImagesNamesSorted = (images: Image[]): Image[] => {
+export const getImagesNamesSorted = (images: Image[]): ImageEx[] => {
   return images
     .map((image) => ({ ...image, imageName: image.id.split('/')?.[2] || '' }))
     .filter(Boolean)

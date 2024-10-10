@@ -58,17 +58,27 @@ export const getSessionImageName = (session: Session) => {
   );
 };
 
+export const transformSession = (session: Session) => {
+  const sessionLogo = getSessionTypeData(session)?.portal_icon;
+  const stripedStartTime = getStrippedTime(session[PROP_START_TIME]);
+  const stripedExpiryTime = getStrippedTime(session[PROP_EXPIRY_TIME]);
+  return {
+    ...session,
+    [PROP_START_TIME]: stripedStartTime,
+    [PROP_EXPIRY_TIME]: stripedExpiryTime,
+    [PROP_IMAGE]: getSessionImageName(session),
+    [PROP_LOGO]: `${BASE_HOST_URL}${SP_IMAGE_URL}${sessionLogo}`,
+  };
+};
 export const getTransformedSessions = (sessions: Session[]) => {
-  return sessions.map((session) => {
-    const sessionLogo = getSessionTypeData(session)?.portal_icon;
-    const stripedStartTime = getStrippedTime(session[PROP_START_TIME]);
-    const stripedExpiryTime = getStrippedTime(session[PROP_EXPIRY_TIME]);
-    return {
-      ...session,
-      [PROP_START_TIME]: stripedStartTime,
-      [PROP_EXPIRY_TIME]: stripedExpiryTime,
-      [PROP_IMAGE]: getSessionImageName(session),
-      [PROP_LOGO]: `${BASE_HOST_URL}${SP_IMAGE_URL}${sessionLogo}`,
-    };
-  });
+  return sessions.reduce(
+    (acc: { [key: string]: Session }, session: Session) => {
+      if (session.status === 'Terminating') {
+        return acc;
+      }
+      acc[session.id] = transformSession(session);
+      return acc;
+    },
+    {} as { [key: string]: Session },
+  );
 };

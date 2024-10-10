@@ -5,7 +5,7 @@ import {
   CREATE_SESSION,
   DELETE_SESSION,
   OPERATIONAL,
-  RUNNING_SESSION,
+  RUNNING_SESSIONS,
   SESSION_STATS,
 } from './constants';
 
@@ -20,7 +20,7 @@ export const initialState: AuthState = {
     [AUTHENTICATING]: false,
     [SESSION_STATS]: false,
     [AVAILABLE_IMAGES]: false,
-    [RUNNING_SESSION]: false,
+    [RUNNING_SESSIONS]: false,
     [DELETE_SESSION]: false,
     [CREATE_SESSION]: false,
   },
@@ -45,7 +45,7 @@ export const initialState: AuthState = {
       status: OPERATIONAL,
       message: '',
     },
-    [RUNNING_SESSION]: {
+    [RUNNING_SESSIONS]: {
       status: OPERATIONAL,
       message: '',
     },
