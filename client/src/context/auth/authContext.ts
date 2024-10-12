@@ -1,6 +1,8 @@
+// Libs
 import React from 'react';
 import { createContext } from 'react';
 
+// Types
 import { AuthState, AuthAction } from './types';
 
 export const AuthContext = createContext<

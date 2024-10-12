@@ -11,7 +11,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../../auth/useAuth';
+import { useAuth } from '../../context/auth/useAuth';
 import {
   BASE_HOST_URL,
   CADC_BASE_HOST_URL,
@@ -20,11 +20,6 @@ import {
   CADC_SEARCH_URL,
   CADC_UPDATE_URL,
 } from '../../auth/constants';
-
-const GROUP_MANAGEMENT_URI = 'ivo://cadc.nrc.ca/groups';
-const ADVANCED_SEARCH_URI = 'ivo://cadc.nrc.ca/search';
-const ACCOUNT_UPDATE_URI = 'ivo://cadc.nrc.ca/acctupdate';
-const PASSWORD_CHANGE_URI = 'ivo://cadc.nrc.ca/passchg';
 
 interface Props {
   bannerText?: string;

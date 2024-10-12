@@ -7,7 +7,7 @@ import {
   Col,
   Placeholder,
 } from 'react-bootstrap';
-import { useAuth } from '../../auth/useAuth';
+import { useAuth } from '../../context/auth/useAuth';
 import { getImagesNamesSorted } from '../../utilities/images';
 import {
   DESKTOP,
@@ -39,10 +39,10 @@ import { FormKeys, FormValues, ImageEx, NewSession } from '../../auth/types';
 const NewSessionForm: React.FC = () => {
   const { state, dispatch } = useAuth();
   const hasImages = state.images && Object.keys(state.images).length > 0;
-  const availableTypes = Object.keys(state.images);
-  const createSessionName = getDefaultSessionName(
-    Object.keys(state.sessions).length + 1,
-  );
+  const availableTypes = state.images && Object.keys(state.images);
+  const createSessionName =
+    state.sessions &&
+    getDefaultSessionName(Object.keys(state.sessions).length + 1);
 
   const onSubmit = async (values: FormValues) => {
     console.log(values);

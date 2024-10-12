@@ -18,7 +18,7 @@ import {
   Legend,
 } from 'chart.js';
 import Placeholder from 'react-bootstrap/Placeholder';
-import { useAuth } from '../auth/useAuth';
+import { useAuth } from '../context/auth/useAuth';
 import { SESSION_STATS } from '../auth/constants';
 
 ChartJS.register(
@@ -290,7 +290,7 @@ const SciencePortalPlatformLoad = () => {
         </>
       )}
 
-      {state.loading[SESSION_STATS] && (
+      {state?.loading?.[SESSION_STATS] && (
         <>
           <Row className="sp-usage-title-placeholder">
             <Col>

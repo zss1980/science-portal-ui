@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import { useAuth } from '../../auth/useAuth';
+import { useAuth } from '../../context/auth/useAuth';
 import LoginForm from '../forms/LoginForm';
 
 const CanfarLoginModal = () => {

@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 
 // Hooks
-import { useAuth } from '../../auth/useAuth';
+import { useAuth } from '../../context/auth/useAuth';
 import {
   AUTHENTICATING,
   AVAILABLE_IMAGES,
@@ -67,7 +67,7 @@ const StatusModal = () => {
   React.useEffect(() => {
     let hasFinished = true;
     for (let plStep of PLATFORM_LOADING_STEPS) {
-      if (state.loading[plStep.value]) {
+      if (state?.loading?.[plStep.value]) {
         setStatus({
           header: plStep.label,
           message: plStep.message,
@@ -78,11 +78,11 @@ const StatusModal = () => {
     }
     if (
       hasFinished ||
-      (!state.isAuthenticated && !state.loading[AUTHENTICATING])
+      (!state?.isAuthenticated && !state?.loading?.[AUTHENTICATING])
     ) {
       setStatus(null);
     }
-  }, [state, state.isAuthenticated, state.loading]);
+  }, [state, state?.isAuthenticated, state?.loading]);
 
   if (!status) {
     return null;

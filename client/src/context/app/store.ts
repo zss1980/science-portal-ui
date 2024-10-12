@@ -1,0 +1,74 @@
+// Constants
+import {
+  APP_ACTION_MESSAGE,
+  APP_DELETE_SESSION_INFO,
+  APP_LOADING,
+  APP_SERVICE_STATUSES,
+  APP_SESSION_ID,
+  APP_SESSION_NAME,
+  APP_SHOW_MODAL,
+  APP_STATUS,
+  AUTHENTICATING,
+  AVAILABLE_IMAGES,
+  CREATE_SESSION,
+  DELETE_SESSION,
+  FETCHING_SESSION,
+  OPERATIONAL,
+  RENEW_SESSION,
+  RUNNING_SESSIONS,
+  SESSION_STATS,
+} from './constants';
+
+// Types
+import { AppState } from './types';
+
+// Initial state
+export const initialState: AppState = {
+  [APP_LOADING]: {
+    [AUTHENTICATING]: false,
+    [SESSION_STATS]: false,
+    [AVAILABLE_IMAGES]: false,
+    [RUNNING_SESSIONS]: false,
+    [DELETE_SESSION]: false,
+    [CREATE_SESSION]: false,
+  },
+  [APP_SERVICE_STATUSES]: {
+    [AUTHENTICATING]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [FETCHING_SESSION]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [DELETE_SESSION]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [CREATE_SESSION]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [RENEW_SESSION]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [SESSION_STATS]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [AVAILABLE_IMAGES]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [RUNNING_SESSIONS]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+  },
+  [APP_DELETE_SESSION_INFO]: {
+    [APP_SHOW_MODAL]: false,
+    [APP_SESSION_ID]: '',
+    [APP_SESSION_NAME]: '',
+  },
+};

@@ -40,7 +40,7 @@ export const getAlerts = (state: AuthState, services: Service[]) => {
   const newSessionEvents = services.map((ev) => {
     return {
       type: ev,
-      ...state.services_statuses[ev],
+      ...state?.services_statuses?.[ev],
     };
   });
 

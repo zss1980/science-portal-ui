@@ -3,7 +3,7 @@ import { Form, Field } from 'react-final-form';
 import { Form as BootstrapForm, Button, Alert } from 'react-bootstrap';
 import { ModalFooter, ModalBody } from 'react-bootstrap';
 
-import { useAuth } from '../../auth/useAuth';
+import { useAuth } from '../../context/auth/useAuth';
 import {
   ACCOUNT_REQUEST_URL,
   AUTHENTICATING,
@@ -100,7 +100,7 @@ const LoginForm: React.FC = () => {
           <ModalFooter>
             {submitError && <Alert variant="danger">{submitError}</Alert>}
             <Button variant="primary" type="submit" disabled={submitting}>
-              {state.loading[AUTHENTICATING] ? 'Logging in...' : 'Login'}
+              {state?.loading?.[AUTHENTICATING] ? 'Logging in...' : 'Login'}
             </Button>
           </ModalFooter>
         </BootstrapForm>

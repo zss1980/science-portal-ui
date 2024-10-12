@@ -35,7 +35,6 @@ import SciencePortalPlatformLoad from './components/SciencePortalPlatformLoad';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // hooks
-import { useAuth } from './auth/useAuth';
 import { fetchRunningSessions, fetchStatsData } from './auth/fetchData';
 import {
   AVAILABLE_IMAGES,
@@ -53,6 +52,7 @@ import {
 import StatusModal from './components/common/StatusModal';
 import DeleteSessionModal from './components/common/DeleteSessionModal';
 import { Service } from './auth/types';
+import { useAuth } from './context/auth/useAuth';
 
 const App = () => {
   const { state, dispatch } = useAuth();
@@ -142,10 +142,10 @@ const App = () => {
             <Col>
               <ProgressBar
                 variant={getProgressBarVariant(
-                  state.services_statuses[RUNNING_SESSIONS].status,
+                  state?.services_statuses?.[RUNNING_SESSIONS]?.status,
                 )}
                 now={100}
-                animated={state.loading[RUNNING_SESSIONS]}
+                animated={state?.loading?.[RUNNING_SESSIONS]}
                 className="sp-progress-bar"
               />
               {activeSessionAlerts.map((alert, index) => (
@@ -160,21 +160,23 @@ const App = () => {
           </Row>
 
           <Row xs={1} md={3} className="g-4">
-            {Object.keys(state.sessions).length !== 0 && (
+            {state?.sessions && Object.keys(state?.sessions).length !== 0 && (
               <>
-                {Object.keys(state.sessions).map((sessionId) => (
-                  <Col key={sessionId} className="sp-card-container">
-                    <SessionItem session={state.sessions[sessionId]} />
-                  </Col>
-                ))}
+                {state?.sessions &&
+                  Object.keys(state.sessions).map((sessionId) => (
+                    <Col key={sessionId} className="sp-card-container">
+                      <SessionItem session={state.sessions[sessionId]} />
+                    </Col>
+                  ))}
               </>
             )}
-            {state.loading[RUNNING_SESSIONS] && (
+            {state?.loading?.[RUNNING_SESSIONS] && (
               <Col className="sp-card-container">
                 <LoadingSessionItem />
               </Col>
             )}
-            {!state.loading[RUNNING_SESSIONS] &&
+            {!state?.loading?.[RUNNING_SESSIONS] &&
+              state?.sessions &&
               Object.keys(state.sessions).length === 0 && (
                 <Col className="sp-card-container">
                   <EmptySessionItem />
@@ -204,10 +206,10 @@ const App = () => {
                       </div>
                       <ProgressBar
                         variant={getProgressBarVariant(
-                          state.services_statuses[AVAILABLE_IMAGES].status,
+                          state?.services_statuses?.[AVAILABLE_IMAGES]?.status,
                         )}
                         now={100}
-                        animated={state.loading[AVAILABLE_IMAGES]}
+                        animated={state?.loading?.[AVAILABLE_IMAGES]}
                         className="sp-progress-bar"
                       />
                       {newSessionAlerts.map((alert, index) => (
@@ -256,10 +258,10 @@ const App = () => {
                       </div>
                       <ProgressBar
                         variant={getProgressBarVariant(
-                          state.services_statuses[SESSION_STATS].status,
+                          state?.services_statuses?.[SESSION_STATS]?.status,
                         )}
                         now={100}
-                        animated={state.loading[SESSION_STATS]}
+                        animated={state?.loading?.[SESSION_STATS]}
                         className="sp-progress-bar"
                       />
 

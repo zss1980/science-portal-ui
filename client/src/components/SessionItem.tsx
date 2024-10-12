@@ -15,7 +15,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Spinner from 'react-bootstrap/Spinner';
 import { Session } from '../auth/types';
-import { useAuth } from '../auth/useAuth';
+import { useAuth } from '../context/auth/useAuth';
 import {
   SCIENCE_PORTAL_URL,
   SESSION_URL,
