@@ -12,7 +12,7 @@ import Popover from 'react-bootstrap/Popover';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
 
-class SciencePortalForm extends React.Component {
+class SciencePortalPrivateForm extends React.Component {
 
   constructor(props) {
     super(props)
@@ -29,15 +29,29 @@ class SciencePortalForm extends React.Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.resetForm = this.resetForm.bind(this);
+    this.handleImageChange = this.handleImageChange.bind(this);
+    this.handleSecretChange = this.handleSecretChange.bind(this);
   }
 
   handleChange(event) {
     // Entire session form state data object needs to be put back
     // into the form on session name input change or the
     // form can't render
-    var tmpData = this.state.fData
+    const tmpData = this.state.fData
     tmpData.sessionName = event.target.value
     this.setState({fData: tmpData});
+  }
+
+  handleImageChange(event) {
+    this.setState({
+      image: event.target.value
+    })
+  }
+
+  handleSecretChange(event) {
+    this.setState({
+      registrySecret: event.target.value
+    })
   }
 
   handleRAMChange(event) {
@@ -134,7 +148,6 @@ class SciencePortalForm extends React.Component {
     return (
       <>
         {Object.keys(this.state.fData).length !== 0 && 
-         this.state.fData.imageList && 
           <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
             <Row className="sp-form-row">
               <Col sm={4}>
@@ -159,18 +172,36 @@ class SciencePortalForm extends React.Component {
             <Row className="sp-form-row">
               <Col sm={4}>
                 <Form.Label className="sp-form-label" column="sm">container image
-                  {this.renderPopover("Container Image","The Docker image for the session.")}
+                  {this.renderPopover("Container Image","The full Docker image URI for the session.")}
                 </Form.Label>
               </Col>
               <Col sm={7}>
-                <Form.Select
-                  name="image"
-                  className="sp-form-cursor"
-                  >
-                  {this.state.fData.imageList.map(mapObj => (
-                    <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
-                  ))}
-                </Form.Select>
+                <Form.Control
+                    type="text"
+                    placeholder="Image URI"
+                    value={this.state.image}
+                    onChange={this.handleImageChange}
+                    name="image"
+                    className="sp-form-input"
+                />
+              </Col>
+            </Row>
+            <Row className="sp-form-row">
+              <Col sm={4}>
+                <Form.Label className="sp-form-label" column="sm">image registry secret
+                  {this.renderPopover("Image registry secret","The secret for authenticated access to the Image Registry.")}
+                </Form.Label>
+              </Col>
+              <Col sm={7}>
+                <Form.Control
+                    type="password"
+                    maxLength={15}
+                    placeholder="Registry secret"
+                    value={this.state.fData.registrySecret}
+                    onChange={this.handleSecretChange}
+                    name="secret"
+                    className="sp-form-input"
+                />
               </Col>
             </Row>
             <Row className="sp-form-row">
@@ -243,7 +274,7 @@ class SciencePortalForm extends React.Component {
           </Form>
         }
 
-        {(Object.keys(this.state.fData).length === 0 || !this.state.fData.imageList) && 
+        {(Object.keys(this.state.fData).length === 0) &&
           <Form className="sp-form">
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
@@ -304,4 +335,4 @@ class SciencePortalForm extends React.Component {
   }
 }
 
-export default SciencePortalForm;
+export default SciencePortalPrivateForm;
