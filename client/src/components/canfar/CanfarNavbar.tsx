@@ -11,7 +11,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../../auth/useAuth';
+import { useAuth } from '../../context/auth/useAuth';
 import {
   BASE_HOST_URL,
   CADC_BASE_HOST_URL,
@@ -19,12 +19,9 @@ import {
   CADC_RESET_URL,
   CADC_SEARCH_URL,
   CADC_UPDATE_URL,
-} from '../../auth/constants';
-
-const GROUP_MANAGEMENT_URI = 'ivo://cadc.nrc.ca/groups';
-const ADVANCED_SEARCH_URI = 'ivo://cadc.nrc.ca/search';
-const ACCOUNT_UPDATE_URI = 'ivo://cadc.nrc.ca/acctupdate';
-const PASSWORD_CHANGE_URI = 'ivo://cadc.nrc.ca/passchg';
+} from '../../context/app/constants';
+import { USER, USER_NAME } from '../../context/auth/constants';
+import { useData } from '../../context/data/useData';
 
 interface Props {
   bannerText?: string;
@@ -32,17 +29,16 @@ interface Props {
 
 const CanfarNavbar = (props: Props) => {
   const { state, logout } = useAuth();
+  const { clearData } = useData();
 
   const handleLogout = () => {
-    // log user out
     logout();
+    clearData();
   };
-
-  console.log(state);
   const renderButton = () => {
     return (
       <Button size="sm" variant="outline-primary">
-        {state.user.username}
+        {state?.[USER]?.[USER_NAME]}
         <span className="sp-buffer-span-left">
           <FontAwesomeIcon icon={faCaretDown} />
         </span>

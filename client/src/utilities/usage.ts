@@ -1,7 +1,6 @@
-import { PlatformUsage, StatsData } from '../auth/types';
+import { PlatformUsage, StatsData } from '../context/data/types';
 
 const processPlatformUsage = (platformUsage: StatsData): PlatformUsage => {
-  console.log('platformUsage', platformUsage);
   const zeroPrefix = (num: number): string => (num < 10 ? `0${num}` : `${num}`);
 
   const parseFileSize = (size: string): number => {

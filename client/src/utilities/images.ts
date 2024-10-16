@@ -1,5 +1,5 @@
-import { Image, ImageEx } from '../auth/types';
-import { DESKTOP, DESKTOP_APP, HEADLESS } from '../auth/constants';
+import { Image, ImageEx } from '../context/data/types';
+import { DESKTOP_APP, HEADLESS } from '../context/data/constants';
 
 export const getImagesByType = (images: Image[]) => {
   return images.reduce(

@@ -1,19 +1,26 @@
+// Libs
 import React from 'react';
+
+// Components
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 
 // Hooks
-import { useAuth } from '../../auth/useAuth';
+import { useAuth } from '../../context/auth/useAuth';
 import {
+  APP_LOADING,
   AUTHENTICATING,
   AVAILABLE_IMAGES,
   CREATE_SESSION,
   DELETE_SESSION,
   RENEW_SESSION,
+  RETRIEVING_USER,
   RUNNING_SESSIONS,
   SESSION_STATS,
-} from '../../auth/constants';
-import { UiLoading } from '../../auth/types';
+} from '../../context/app/constants';
+import { UiLoading } from '../../context/app/types';
+import { useApp } from '../../context/app/useApp';
+import { IS_AUTHENTICATED } from '../../context/auth/constants';
 
 const PLATFORM_LOADING_STEPS: {
   label: string;
@@ -21,22 +28,27 @@ const PLATFORM_LOADING_STEPS: {
   value: UiLoading;
 }[] = [
   {
-    label: 'Initializing...',
+    label: 'Initializing',
     value: AUTHENTICATING,
     message: 'Checking user credentials...',
   },
   {
-    label: 'Fetching sessions...',
+    label: 'User profile',
+    value: RETRIEVING_USER,
+    message: 'Retrieving user information...',
+  },
+  {
+    label: 'Fetching sessions',
     value: RUNNING_SESSIONS,
     message: 'Checking user sessions...',
   },
   {
-    label: 'Loading images...',
+    label: 'Loading images',
     value: AVAILABLE_IMAGES,
     message: 'Checking available images...',
   },
   {
-    label: 'Checking platform...',
+    label: 'Checking platform',
     value: SESSION_STATS,
     message: 'Retrieving platform usage data...',
   },
@@ -58,7 +70,8 @@ const PLATFORM_LOADING_STEPS: {
 ];
 
 const StatusModal = () => {
-  const { state } = useAuth();
+  const { state } = useApp();
+  const { state: authState } = useAuth();
   const [status, setStatus] = React.useState<null | {
     header: string;
     message: string;
@@ -67,7 +80,7 @@ const StatusModal = () => {
   React.useEffect(() => {
     let hasFinished = true;
     for (let plStep of PLATFORM_LOADING_STEPS) {
-      if (state.loading[plStep.value]) {
+      if (state?.[APP_LOADING]?.[plStep.value]) {
         setStatus({
           header: plStep.label,
           message: plStep.message,
@@ -78,11 +91,12 @@ const StatusModal = () => {
     }
     if (
       hasFinished ||
-      (!state.isAuthenticated && !state.loading[AUTHENTICATING])
+      (!authState?.[IS_AUTHENTICATED] &&
+        !state?.[APP_LOADING]?.[AUTHENTICATING])
     ) {
       setStatus(null);
     }
-  }, [state, state.isAuthenticated, state.loading]);
+  }, [authState, authState?.[IS_AUTHENTICATED], state, state?.[APP_LOADING]]);
 
   if (!status) {
     return null;

@@ -3,11 +3,7 @@ import '../index.css';
 import NewSessionForm from './forms/NewSessionForm';
 
 const SciencePortalForm = () => {
-  return (
-    <>
-      <NewSessionForm />
-    </>
-  );
+  return <NewSessionForm />;
 };
 
 export default SciencePortalForm;

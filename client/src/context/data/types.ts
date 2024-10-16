@@ -2,12 +2,8 @@ import {
   CARTA,
   DESKTOP_APP,
   HEADLESS,
-  LOGIN,
-  LOGOUT,
   NOTEBOOK,
-  SET_COOKIE,
   SET_IMAGES,
-  SET_LOADING,
   SET_SESSIONS,
   PROP_ID,
   PROP_USERID,
@@ -43,13 +39,6 @@ import {
   PROP_DEFAULT_RAM_HEADLESS,
   PROP_AVAILABLE_RAM,
   PROP_AVAILABLE_GPUS,
-  VAL_PROJECT,
-  VAL_TYPE,
-  VAL_IMAGE,
-  VAL_INSTANCE_NAME,
-  VAL_MEMORY,
-  VAL_CORES,
-  VAL_GPU,
   PROP_STATS_SESSION,
   PROP_STATS_DESKTOP_APP,
   PROP_STATS_HEADLESS,
@@ -67,84 +56,36 @@ import {
   PROP_STATS_CORES,
   PROP_STATS_INSTANCES,
   SET_SESSIONS_STATS,
-  SESSION_STATS,
-  AVAILABLE_IMAGES,
-  RUNNING_SESSIONS,
-  OPERATIONAL,
-  OUTAGE,
-  ACTIVE,
-  FETCH_FAILED,
-  AUTHENTICATING,
-  CLEAR_DELETE_SESSION_INFO,
-  SET_DELETE_SESSION_INFO,
-  DELETE_SESSION,
   PROP_SESSION_TYPE,
   PROP_SESSION_NAME,
   PROP_SESSION_IMAGE,
   PROP_SESSION_RAM,
   PROP_SESSION_CORES,
-  CREATE_SESSION,
-  RENEW_SESSION,
   SET_SESSION,
-  FETCHING_SESSION,
+  DATA_IMAGES,
+  DATA_SESSIONS,
+  DATA_CONTEXT,
+  DATA_USAGE,
+  PROP_IMAGE_ID,
+  PROP_DIGEST,
+  PROP_TYPES,
+  IMAGE_NAME,
+  VAL_CORES,
+  VAL_GPU,
+  VAL_IMAGE,
+  VAL_INSTANCE_NAME,
+  VAL_MEMORY,
+  VAL_PROJECT,
+  VAL_TYPE,
+  CLEAR_DATA,
 } from './constants';
 
 // State interface
-export interface AuthState {
-  isAuthenticated: boolean;
-  user: {
-    username: string;
-  };
-  cookie: string;
-  images: { [key: string]: { [key: string]: Image[] } };
-  sessions: Session[];
-  context: Context | null;
-  usage: PlatformUsage | null;
-  loading: {
-    [AUTHENTICATING]: boolean;
-    [DELETE_SESSION]: boolean;
-    [CREATE_SESSION]: boolean;
-    [SESSION_STATS]: boolean;
-    [AVAILABLE_IMAGES]: boolean;
-    [RUNNING_SESSIONS]: boolean;
-  };
-  services_statuses: ServiceStatus;
-  deleteSessionInfo: SessionDeleteInfo;
-}
-
-export interface SessionDeleteInfo {
-  showModal: boolean;
-  sessionId: string;
-  sessionName: string;
-}
-
-export type SStatuse = typeof OPERATIONAL | typeof OUTAGE | typeof ACTIVE;
-export type Service =
-  | typeof SESSION_STATS
-  | typeof AVAILABLE_IMAGES
-  | typeof CREATE_SESSION
-  | typeof RUNNING_SESSIONS
-  | typeof RENEW_SESSION
-  | typeof AUTHENTICATING
-  | typeof DELETE_SESSION;
-export interface Status {
-  status: SStatuse;
-  message: string;
-}
-
-export interface AlertInfo extends Status {
-  show: boolean;
-}
-
-export interface ServiceStatus {
-  [SESSION_STATS]: Status;
-  [CREATE_SESSION]: Status;
-  [RENEW_SESSION]: Status;
-  [FETCHING_SESSION]: Status;
-  [DELETE_SESSION]: Status;
-  [AVAILABLE_IMAGES]: Status;
-  [RUNNING_SESSIONS]: Status;
-  [AUTHENTICATING]: Status;
+export interface DataState {
+  [DATA_IMAGES]: { [key: string]: { [key: string]: Image[] } };
+  [DATA_SESSIONS]: { [key: string]: Session };
+  [DATA_CONTEXT]: Context | null;
+  [DATA_USAGE]: PlatformUsage | null;
 }
 export type FormKeys =
   | typeof VAL_TYPE
@@ -154,6 +95,7 @@ export type FormKeys =
   | typeof VAL_MEMORY
   | typeof VAL_CORES
   | typeof VAL_GPU;
+
 export interface FormValues {
   [VAL_PROJECT]: string;
   [VAL_TYPE]: ImageType;
@@ -173,12 +115,12 @@ export type ImageType =
   | typeof CONTRIBUTED;
 
 export interface Image {
-  id: string;
-  digest: string;
-  types: ImageType[];
+  [PROP_IMAGE_ID]: string;
+  [PROP_DIGEST]: string;
+  [PROP_TYPES]: ImageType[];
 }
 export interface ImageEx extends Image {
-  imageName: string;
+  [IMAGE_NAME]: string;
 }
 
 export interface Session {
@@ -202,6 +144,9 @@ export interface Session {
   [PROP_GPU_RAM_IN_USE]: string;
   [PROP_CPU_CORES_IN_USE]: string;
   [PROP_GPU_UTILIZATION]: string;
+  logo?: string;
+  altText?: string;
+  coresInUse?: string;
 }
 
 export interface Context {
@@ -286,42 +231,17 @@ export interface PlatformUsage {
   listType: string;
 }
 
-export type UiLoading =
-  | typeof SESSION_STATS
-  | typeof RUNNING_SESSIONS
-  | typeof FETCHING_SESSION
-  | typeof RENEW_SESSION
-  | typeof AVAILABLE_IMAGES
-  | typeof AUTHENTICATING
-  | typeof CREATE_SESSION
-  | typeof DELETE_SESSION;
-
 // Action types
-export type AuthAction =
-  | { type: typeof LOGIN; payload: { username: string } }
-  | { type: typeof LOGOUT }
-  | { type: typeof SET_COOKIE; payload: string }
-  | {
-      type: typeof SET_LOADING;
-      payload: { type: UiLoading; isLoading: boolean };
-    }
-  | {
-      type: typeof FETCH_FAILED;
-      payload: { type: UiLoading; message: string };
-    }
+export type DataAction =
   | { type: typeof SET_CONTEXT; payload: Context }
   | { type: typeof SET_SESSIONS_STATS; payload: PlatformUsage }
   | {
       type: typeof SET_SESSIONS;
-      payload: { sessions: { [key: string]: Session } };
+      payload: { [DATA_SESSIONS]: { [key: string]: Session } };
     }
   | { type: typeof SET_SESSION; payload: { session: Session } }
-  | {
-      type: typeof SET_DELETE_SESSION_INFO;
-      payload: Omit<SessionDeleteInfo, 'showModal'>;
-    }
-  | { type: typeof CLEAR_DELETE_SESSION_INFO }
+  | { type: typeof CLEAR_DATA }
   | {
       type: typeof SET_IMAGES;
-      payload: { images: { [key: string]: { [key: string]: Image[] } } };
+      payload: { [DATA_IMAGES]: { [key: string]: { [key: string]: Image[] } } };
     };

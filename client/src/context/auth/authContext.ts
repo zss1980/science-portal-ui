@@ -1,5 +1,8 @@
+// Libs
+import React from 'react';
 import { createContext } from 'react';
 
+// Types
 import { AuthState, AuthAction } from './types';
 
 export const AuthContext = createContext<
@@ -8,6 +11,7 @@ export const AuthContext = createContext<
       dispatch: React.Dispatch<AuthAction>;
       login: (username: string, password: string) => Promise<void>;
       logout: () => Promise<void>;
+      getUser: () => void;
     }
   | undefined
 >(undefined);

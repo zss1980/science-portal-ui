@@ -1,27 +1,30 @@
+// Libs
 import React from 'react';
+
+// Components
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
+// Constants
+import { APP_DELETE_SESSION_INFO } from '../../context/app/constants';
+
 // Hooks
-import { useAuth } from '../../auth/useAuth';
-import { CLEAR_DELETE_SESSION_INFO } from '../../auth/constants';
-import { fetchDeleteSession } from '../../auth/fetchData';
+import { useApp } from '../../context/app/useApp';
+import { useData } from '../../context/data/useData';
 
 const DeleteSessionModal = () => {
-  const {
-    state: {
-      deleteSessionInfo: { showModal, sessionName, sessionId },
-      cookie,
-    },
-    dispatch,
-  } = useAuth();
+  const { state, clearDeleteSessionInfo } = useApp();
+  const { fetchDeleteSession } = useData();
+  const { showModal, sessionName, sessionId } =
+    state?.[APP_DELETE_SESSION_INFO] ?? {};
 
   const onClose = () => {
-    dispatch({ type: CLEAR_DELETE_SESSION_INFO });
+    clearDeleteSessionInfo();
   };
 
   const onConfirm = () => {
-    fetchDeleteSession(cookie.cookie, dispatch, sessionId);
+    fetchDeleteSession(sessionId);
+    clearDeleteSessionInfo();
   };
 
   return (

@@ -14,14 +14,11 @@ import '../styles/sessions.css';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Spinner from 'react-bootstrap/Spinner';
-import { Session } from '../auth/types';
-import { useAuth } from '../auth/useAuth';
-import {
-  SCIENCE_PORTAL_URL,
-  SESSION_URL,
-  SET_DELETE_SESSION_INFO,
-} from '../auth/constants';
-import { fetchRenewSession, fetchSessionStatus } from '../auth/fetchData';
+import { Session } from '../context/data/types';
+import { SCIENCE_PORTAL_URL, SESSION_URL } from '../context/data/constants';
+import { useApp } from '../context/app/useApp';
+import { useData } from '../context/data/useData';
+import { APP_LOADING, FETCHING_SESSION } from '../context/app/constants';
 
 interface Props {
   session: Session;
@@ -38,21 +35,25 @@ let hiddenPendingCSS = 'sp-card-text sp-session-button';
 let displayGPU = true;
 
 const SessionItem = (props: Props) => {
-  const { state, dispatch } = useAuth();
+  const { fetchSessionStatus, fetchRenewSession } = useData();
+  const { state, requestDeleteSessionConfirmation } = useApp();
 
   const timeoutRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     const checkAndFetch = () => {
-      fetchSessionStatus(state.cookie.cookie, dispatch, props.session?.id);
-      timeoutRef.current = setTimeout(checkAndFetch, 7200);
+      const isFetching = state[APP_LOADING][FETCHING_SESSION];
+      if (!isFetching) {
+        fetchSessionStatus(props.session?.id);
+      }
+      timeoutRef.current = null;
     };
 
     if (props.session?.status === 'Pending' && !timeoutRef.current) {
-      checkAndFetch();
+      timeoutRef.current = setTimeout(checkAndFetch, 4000);
     }
 
-    if (props.session?.status === 'Running' && timeoutRef.current) {
+    if (props.session?.status !== 'Pending' && timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
@@ -63,7 +64,11 @@ const SessionItem = (props: Props) => {
         timeoutRef.current = null;
       }
     };
-  }, [props.session?.status, state.cookie.cookie]);
+  }, [
+    props.session?.id,
+    props.session?.status,
+    state[APP_LOADING][FETCHING_SESSION],
+  ]);
 
   if (props.session.status === 'Running') {
     bgClass = 'success';
@@ -236,19 +241,15 @@ const SessionItem = (props: Props) => {
                 <OverlayTrigger
                   key="top"
                   placement="top"
-                  className="sp-b-tooltip"
                   overlay={
                     <Tooltip className="sp-b-tooltip">delete session</Tooltip>
                   }
                 >
                   <FontAwesomeIcon
                     onClick={() =>
-                      dispatch({
-                        type: SET_DELETE_SESSION_INFO,
-                        payload: {
-                          sessionId: props.session.id,
-                          sessionName: props.session.name,
-                        },
+                      requestDeleteSessionConfirmation({
+                        sessionId: props.session.id,
+                        sessionName: props.session.name,
                       })
                     }
                     data-id={props.session.id}
@@ -268,7 +269,6 @@ const SessionItem = (props: Props) => {
                   <OverlayTrigger
                     key="top"
                     placement="top"
-                    className="sp-b-tooltip"
                     overlay={
                       <Tooltip className="sp-b-tooltip">
                         view launch info
@@ -292,7 +292,6 @@ const SessionItem = (props: Props) => {
                   <OverlayTrigger
                     key="top"
                     placement="top"
-                    className="sp-b-tooltip"
                     overlay={
                       <Tooltip className="sp-b-tooltip">
                         view session logs
@@ -310,19 +309,12 @@ const SessionItem = (props: Props) => {
                 <OverlayTrigger
                   key="top"
                   placement="top"
-                  className="sp-b-tooltip"
                   overlay={
                     <Tooltip className="sp-b-tooltip">renew session</Tooltip>
                   }
                 >
                   <FontAwesomeIcon
-                    onClick={() =>
-                      fetchRenewSession(
-                        state.cookie.cookie,
-                        dispatch,
-                        props.session.id!,
-                      )
-                    }
+                    onClick={() => fetchRenewSession(props.session.id!)}
                     data-id={props.session.id}
                     className={hiddenPendingCSS}
                     icon={faClock}

@@ -1,13 +1,13 @@
+// Libs
 import React from 'react';
 
+// Constants
+import { APP_LOADING, SESSION_STATS } from '../context/app/constants';
+
+// Components
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-
-import '../index.css';
-import '../styles/sessions.css';
-
 import { Bar } from 'react-chartjs-2';
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,8 +18,16 @@ import {
   Legend,
 } from 'chart.js';
 import Placeholder from 'react-bootstrap/Placeholder';
-import { useAuth } from '../auth/useAuth';
-import { SESSION_STATS } from '../auth/constants';
+
+// Hooks
+import { useData } from '../context/data/useData';
+import { useApp } from '../context/app/useApp';
+
+// Styles
+import '../index.css';
+import '../styles/sessions.css';
+import { DATA_USAGE } from '../context/data/constants';
+import { ChartOptions } from '../types';
 
 ChartJS.register(
   CategoryScale,
@@ -33,7 +41,11 @@ ChartJS.register(
 export const barThickness = 12;
 
 const SciencePortalPlatformLoad = () => {
-  const { state } = useAuth();
+  const { state: appState } = useApp();
+  const { state } = useData();
+  if (!state[DATA_USAGE]) {
+    return <PlatformLoadPlaceholder />;
+  }
   // 99% sure that user feedback will be the horizontal stacked
   // charts are ok. Hanging on to this in case that changes in the
   // first pass of the Platform Usage panel addition
@@ -142,7 +154,7 @@ const SciencePortalPlatformLoad = () => {
   // };
 
   // CPU usage has its own max value, so this object is needed
-  const horizontalStackedCPUOptions = {
+  const horizontalStackedCPUOptions: ChartOptions = {
     indexAxis: 'y',
     maintainAspectRatio: false,
     plugins: {
@@ -172,7 +184,7 @@ const SciencePortalPlatformLoad = () => {
     barThickness: barThickness,
   };
 
-  const horizontalStackedRAMOptions = {
+  const horizontalStackedRAMOptions: ChartOptions = {
     indexAxis: 'y',
     maintainAspectRatio: false,
     plugins: {
@@ -202,7 +214,7 @@ const SciencePortalPlatformLoad = () => {
     barThickness: barThickness,
   };
 
-  const horizontalStackedBarOptions = {
+  const horizontalStackedBarOptions: ChartOptions = {
     indexAxis: 'y',
     maintainAspectRatio: false,
     plugins: {
@@ -290,90 +302,92 @@ const SciencePortalPlatformLoad = () => {
         </>
       )}
 
-      {state.loading[SESSION_STATS] && (
-        <>
-          <Row className="sp-usage-title-placeholder">
-            <Col>
-              <Placeholder
-                className="sp-form-p sp-usage-title-placeholder"
-                animation="glow"
-              >
-                <Placeholder
-                  className="sp-form-placeholder sp-usage-title-placeholder"
-                  xs={12}
-                />
-              </Placeholder>
-            </Col>
-          </Row>
-          <Row className="sp-usage-placeholder">
-            <Col>
-              <Placeholder
-                className="sp-form-p sp-usage-placeholder"
-                animation="glow"
-              >
-                <Placeholder
-                  className="sp-form-placeholder sp-usage-placeholder"
-                  xs={12}
-                />
-              </Placeholder>
-            </Col>
-          </Row>
-          <Row className="sp-usage-title-placeholder">
-            <Col>
-              <Placeholder
-                className="sp-form-p sp-usage-title-placeholder"
-                animation="glow"
-              >
-                <Placeholder
-                  className="sp-form-placeholder sp-usage-title-placeholder"
-                  xs={12}
-                />
-              </Placeholder>
-            </Col>
-          </Row>
-          <Row className="sp-usage-placeholder">
-            <Col>
-              <Placeholder
-                className="sp-form-p sp-usage-placeholder"
-                animation="glow"
-              >
-                <Placeholder
-                  className="sp-form-placeholder sp-usage-placeholder"
-                  xs={12}
-                />
-              </Placeholder>
-            </Col>
-          </Row>
-          <Row className="sp-usage-title-placeholder">
-            <Col>
-              <Placeholder
-                className="sp-form-p sp-usage-title-placeholder"
-                animation="glow"
-              >
-                <Placeholder
-                  className="sp-form-placeholder sp-usage-title-placeholder"
-                  xs={12}
-                />
-              </Placeholder>
-            </Col>
-          </Row>
-          <Row className="sp-usage-placeholder">
-            <Col>
-              <Placeholder
-                className="sp-form-p sp-usage-placeholder"
-                animation="glow"
-              >
-                <Placeholder
-                  className="sp-form-placeholder sp-usage-placeholder"
-                  xs={12}
-                />
-              </Placeholder>
-            </Col>
-          </Row>
-        </>
-      )}
+      {appState?.[APP_LOADING]?.[SESSION_STATS] && <PlatformLoadPlaceholder />}
     </>
   );
 };
+
+export const PlatformLoadPlaceholder = () => (
+  <>
+    <Row className="sp-usage-title-placeholder">
+      <Col>
+        <Placeholder
+          className="sp-form-p sp-usage-title-placeholder"
+          animation="glow"
+        >
+          <Placeholder
+            className="sp-form-placeholder sp-usage-title-placeholder"
+            xs={12}
+          />
+        </Placeholder>
+      </Col>
+    </Row>
+    <Row className="sp-usage-placeholder">
+      <Col>
+        <Placeholder
+          className="sp-form-p sp-usage-placeholder"
+          animation="glow"
+        >
+          <Placeholder
+            className="sp-form-placeholder sp-usage-placeholder"
+            xs={12}
+          />
+        </Placeholder>
+      </Col>
+    </Row>
+    <Row className="sp-usage-title-placeholder">
+      <Col>
+        <Placeholder
+          className="sp-form-p sp-usage-title-placeholder"
+          animation="glow"
+        >
+          <Placeholder
+            className="sp-form-placeholder sp-usage-title-placeholder"
+            xs={12}
+          />
+        </Placeholder>
+      </Col>
+    </Row>
+    <Row className="sp-usage-placeholder">
+      <Col>
+        <Placeholder
+          className="sp-form-p sp-usage-placeholder"
+          animation="glow"
+        >
+          <Placeholder
+            className="sp-form-placeholder sp-usage-placeholder"
+            xs={12}
+          />
+        </Placeholder>
+      </Col>
+    </Row>
+    <Row className="sp-usage-title-placeholder">
+      <Col>
+        <Placeholder
+          className="sp-form-p sp-usage-title-placeholder"
+          animation="glow"
+        >
+          <Placeholder
+            className="sp-form-placeholder sp-usage-title-placeholder"
+            xs={12}
+          />
+        </Placeholder>
+      </Col>
+    </Row>
+    <Row className="sp-usage-placeholder">
+      <Col>
+        <Placeholder
+          className="sp-form-p sp-usage-placeholder"
+          animation="glow"
+        >
+          <Placeholder
+            className="sp-form-placeholder sp-usage-placeholder"
+            xs={12}
+          />
+        </Placeholder>
+      </Col>
+    </Row>
+  </>
+);
 
 export default SciencePortalPlatformLoad;
