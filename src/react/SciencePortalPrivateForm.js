@@ -18,6 +18,7 @@ class SciencePortalPrivateForm extends React.Component {
     super(props)
     this.selectedRAM = ""
     this.selectedCores = ""
+    this.registryUsername = props.authenticatedUsername && props.authenticatedUsername !== "Login" ? props.authenticatedUsername : ""
     if (typeof props.fData.contextData !== "undefined") {
       this.selectedRAM = props.fData.contextData.defaultRAM
       this.selectedCores = props.fData.contextData.defaultCores
@@ -25,12 +26,14 @@ class SciencePortalPrivateForm extends React.Component {
     this.state = {
       fData:props.fData,
       selectedRAM: this.selectedRAM,
-      selectedCores: this.selectedCores
+      selectedCores: this.selectedCores,
+      registryUsername: this.registryUsername
     }
     this.handleChange = this.handleChange.bind(this);
     this.resetForm = this.resetForm.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
-    this.handleSecretChange = this.handleSecretChange.bind(this);
+    this.handleRegistrySecretChange = this.handleRegistrySecretChange.bind(this);
+    this.handleRegistryUsernameChange = this.handleRegistryUsernameChange.bind(this);
   }
 
   handleChange(event) {
@@ -48,7 +51,13 @@ class SciencePortalPrivateForm extends React.Component {
     })
   }
 
-  handleSecretChange(event) {
+  handleRegistryUsernameChange(event) {
+    this.setState({
+      registryUsername: event.target.value
+    })
+  }
+
+  handleRegistrySecretChange(event) {
     this.setState({
       registrySecret: event.target.value
     })
@@ -71,7 +80,8 @@ class SciencePortalPrivateForm extends React.Component {
 
     this.setState({
       selectedCores : this.state.fData.contextData.defaultCores,
-      selectedRAM : this.state.fData.contextData.defaultRAM
+      selectedRAM : this.state.fData.contextData.defaultRAM,
+      registryUsername: props.authenticatedUsername && props.authenticatedUsername !== "Login" ? props.authenticatedUsername : ""
     });
     this.state.fData.resetHandler();
   }
@@ -149,133 +159,158 @@ class SciencePortalPrivateForm extends React.Component {
       <>
         {Object.keys(this.state.fData).length !== 0 && 
           <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
-            <Row className="sp-form-row">
-              <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm">type
-                  {this.renderPopover("Session Type","Select from the list of supported session types")}
-                </Form.Label>
-              </Col>
-              <Col sm={7}>
-                <Form.Select
-                  value={this.state.fData.selectedType}
-                  onChange={this.state.fData.changeTypeHandler}
-                  name="type"
-                  size="sm"
-                  className="sp-form-cursor"
-                >
-                  {this.state.fData.types.map(mapObj => (
-                    <option className="sp-form" key={mapObj} name={mapObj} value={mapObj}>{mapObj}</option>
-                  ))}
-                </Form.Select>
-              </Col>
-            </Row>
-            <Row className="sp-form-row">
-              <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm">container image
-                  {this.renderPopover("Container Image","The full Docker image URI for the session.")}
-                </Form.Label>
-              </Col>
-              <Col sm={7}>
-                <Form.Control
-                    type="text"
-                    placeholder="Image URI"
-                    value={this.state.image}
-                    onChange={this.handleImageChange}
-                    name="image"
-                    className="sp-form-input"
-                />
-              </Col>
-            </Row>
-            <Row className="sp-form-row">
-              <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm">image registry secret
-                  {this.renderPopover("Image registry secret","The secret for authenticated access to the Image Registry.")}
-                </Form.Label>
-              </Col>
-              <Col sm={7}>
-                <Form.Control
-                    type="password"
-                    maxLength={15}
-                    placeholder="Registry secret"
-                    value={this.state.fData.registrySecret}
-                    onChange={this.handleSecretChange}
-                    name="secret"
-                    className="sp-form-input"
-                />
-              </Col>
-            </Row>
-            <Row className="sp-form-row">
-              <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm">name
-                  {this.renderPopover("Session Name","Name for the session. Alphanumeric and '-' characters only.")}
-                </Form.Label>
-              </Col>
-              <Col sm={7}>
-                <Form.Control
-                    type="text"
-                    maxLength={15}
-                    placeholder="Enter session name"
-                    value={this.state.fData.sessionName}
-                    onChange={this.handleChange}
-                    name="name"
-                    className="sp-form-input"
-                />
-              </Col>
-            </Row>
-            {showRAM === true &&
-            <Row className="sp-form-row">
-              <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm">memory
-                  {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
-                </Form.Label>
-              </Col>
-              <Col sm={7}>
-                <Form.Select
-                  value={this.state.selectedRAM || this.state.fData.contextData.defaultRAM}
-                  name="ram"
-                  className="sp-form-cursor"
-                  onChange={this.handleRAMChange.bind(this)}>
-                  {this.state.fData.contextData.availableRAM.map(mapObj => (
-                    <option key={mapObj} value={mapObj}>{mapObj}</option>
-                  ))}
-                </Form.Select>
-              </Col>
-            </Row>
-            }
-            {showCores === true &&
-            <Row className="sp-form-row">
-              <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm"># cores
-                  {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
-                </Form.Label>
-              </Col>
-              <Col sm={7}>
-                <Form.Select
-                  name="cores"
-                  className="sp-form-cursor"
-                  value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
-                  onChange={this.handleCoresChange.bind(this)}>
-                  {this.state.fData.contextData.availableCores.map(mapObj => (
-                    <option key={mapObj} value={mapObj}>{mapObj}</option>
-                  ))}
-                </Form.Select>
-              </Col>
-            </Row>
-            }
-            <Row className="sp-form-row">
-              <Col sm={4}>
-              {/* placeholder column so buttons line up with form entry elements */}
-              </Col>
-              <Col sm={7}>
-                <Button variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
-                <Button variant="secondary" size="sm" onClick={this.resetForm} className="sp-reset-button">Reset</Button>
-              </Col>
-            </Row>
+            <fieldset className="mt-3">
+              <legend className="fs-6 ms-4">Image access details</legend>
+              <hr className="ms-4" />
+              <Row className="sp-form-row">
+                <Col sm={4}>
+                  <Form.Label className="sp-form-label" column="sm">container image
+                    {this.renderPopover("Container Image","The full Docker image URI for the session.")}
+                  </Form.Label>
+                </Col>
+                <Col sm={7}>
+                  <Form.Control
+                      type="text"
+                      placeholder="images.example.org/images/example:1.0.0"
+                      value={this.state.image}
+                      onChange={this.handleImageChange}
+                      name="image"
+                      className="sp-form-input"
+                  />
+                </Col>
+              </Row>
+              <Row className="sp-form-row">
+                <Col sm={4}>
+                  <Form.Label className="sp-form-label" column="sm">registry username
+                    {this.renderPopover("Image registry username","The username for authenticated access to the Image Registry.")}
+                  </Form.Label>
+                </Col>
+                <Col sm={7}>
+                  <Form.Control
+                      type="text"
+                      placeholder="Registry username"
+                      value={this.state.registryUsername}
+                      onChange={this.handleRegistryUsernameChange}
+                      name="registryAuthUsername"
+                      className="sp-form-input"
+                  />
+                </Col>
+              </Row>
+              <Row className="sp-form-row">
+                <Col sm={4}>
+                  <Form.Label className="sp-form-label" column="sm">registry secret
+                    {this.renderPopover("Image registry secret","The secret for authenticated access to the Image Registry.")}
+                  </Form.Label>
+                </Col>
+                <Col sm={7}>
+                  <Form.Control
+                      type="password"
+                      placeholder="Registry secret"
+                      value={this.state.fData.registrySecret}
+                      onChange={this.handleRegistrySecretChange}
+                      name="registryAuthSecret"
+                      className="sp-form-input"
+                  />
+                </Col>
+              </Row>
+            </fieldset>
+            <fieldset>
+              <legend className="fs-6 ms-4">Execution details</legend>
+              <hr className="ms-4"/>
+              <Row className="sp-form-row">
+                <Col sm={4}>
+                  <Form.Label className="sp-form-label" column="sm">type
+                    {this.renderPopover("Session Type", "Select from the list of supported session types")}
+                  </Form.Label>
+                </Col>
+                <Col sm={7}>
+                  <Form.Select
+                      value={this.state.fData.selectedType}
+                      onChange={this.state.fData.changeTypeHandler}
+                      name="type"
+                      size="sm"
+                      className="sp-form-cursor"
+                  >
+                    {this.state.fData.types.map(mapObj => (
+                        <option className="sp-form" key={mapObj} name={mapObj} value={mapObj}>{mapObj}</option>
+                    ))}
+                  </Form.Select>
+                </Col>
+              </Row>
+              <Row className="sp-form-row">
+                <Col sm={4}>
+                  <Form.Label className="sp-form-label" column="sm">name
+                    {this.renderPopover("Session Name", "Name for the session. Alphanumeric and '-' characters only.")}
+                  </Form.Label>
+                </Col>
+                <Col sm={7}>
+                  <Form.Control
+                      type="text"
+                      maxLength={15}
+                      placeholder="Enter session name"
+                      value={this.state.fData.sessionName}
+                      onChange={this.handleChange}
+                      name="name"
+                      className="sp-form-input"
+                  />
+                </Col>
+              </Row>
+              {showRAM === true &&
+                  <Row className="sp-form-row">
+                    <Col sm={4}>
+                      <Form.Label className="sp-form-label" column="sm">memory
+                        {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
+                      </Form.Label>
+                    </Col>
+                    <Col sm={7}>
+                      <Form.Select
+                          value={this.state.selectedRAM || this.state.fData.contextData.defaultRAM}
+                          name="ram"
+                          className="sp-form-cursor"
+                          onChange={this.handleRAMChange.bind(this)}>
+                        {this.state.fData.contextData.availableRAM.map(mapObj => (
+                            <option key={mapObj} value={mapObj}>{mapObj}</option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                  </Row>
+              }
+              {showCores === true &&
+                  <Row className="sp-form-row">
+                    <Col sm={4}>
+                      <Form.Label className="sp-form-label" column="sm"># cores
+                        {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
+                      </Form.Label>
+                    </Col>
+                    <Col sm={7}>
+                      <Form.Select
+                          name="cores"
+                          className="sp-form-cursor"
+                          value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
+                          onChange={this.handleCoresChange.bind(this)}>
+                        {this.state.fData.contextData.availableCores.map(mapObj => (
+                            <option key={mapObj} value={mapObj}>{mapObj}</option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                  </Row>
+              }
+              <Row className="sp-form-row">
+                <Col sm={4}>
+                  {/* placeholder column so buttons line up with form entry elements */}
+                </Col>
+                <Col sm={7}>
+                  <Button variant="primary" type="submit" size="sm" className="sp-form-button">Launch</Button>
+                  <Button variant="secondary" size="sm" onClick={this.resetForm}
+                          className="sp-reset-button">Reset</Button>
+                </Col>
+              </Row>
+            </fieldset>
           </Form>
         }
 
         {(Object.keys(this.state.fData).length === 0) &&
-          <Form className="sp-form">
+            <Form className="sp-form">
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
                 <Form.Label  className="sp-form-label" column="sm">type

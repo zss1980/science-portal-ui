@@ -252,6 +252,8 @@ class SciencePortalApp extends React.Component {
         }
 
         const authModal = isAuthenticated ? "" : authModalImplementation
+        const publicImageForm = <SciencePortalForm fData={this.state.fData} />
+        const unlistedImageForm = <SciencePortalPrivateForm fData={this.state.fData} authenticatedUsername={name} />
 
         return (
             <Container fluid className="bg-white">
@@ -345,16 +347,16 @@ class SciencePortalApp extends React.Component {
                                                 <Alert key={this.state.pageState.spForm.alert.type}
                                                        variant={this.state.pageState.spForm.alert.type}>
                                                     {this.state.pageState.spForm.alert.message} </Alert>}
-                                            <Tabs>
+                                            <Tabs selectedTabClassName="fw-bold react-tabs__tab--selected">
                                                 <TabList className="react-tabs__tab-list mt-4">
                                                     <Tab>Public image</Tab>
-                                                    <Tab>Private image</Tab>
+                                                    <Tab>Unlisted image</Tab>
                                                 </TabList>
                                                 <TabPanel>
-                                                    <SciencePortalForm fData={this.state.fData}/>
+                                                    {publicImageForm}
                                                 </TabPanel>
                                                 <TabPanel>
-                                                    <SciencePortalPrivateForm fData={this.state.fData}/>
+                                                    {unlistedImageForm}
                                                 </TabPanel>
                                             </Tabs>
                                         </Col></Row>

@@ -451,13 +451,21 @@
         request.open("POST", serviceURL)
 
         // Request headers can only be set after the request is open.
-        if (sessionData.has("secret")) {
-          const secret = sessionData.get("secret")
+        const secretFieldName = "registryAuthSecret"
+        const secretHeader = "x-registry-secret"
+        const usernameHeader = "x-registry-username"
+        if (sessionData.has(secretFieldName)) {
+          const secret = sessionData.get(secretFieldName)
+          const username = sessionData.get("registryAuthUsername")
           if (secret) {
-            request.setRequestHeader("x-registry-secret", secret)
+            request.setRequestHeader(secretHeader, secret)
           }
 
-          sessionData.delete("secret")
+          if (username) {
+            request.setRequestHeader(usernameHeader, username)
+          }
+
+          sessionData.delete(secretFieldName)
         }
 
         request.send(sessionData)

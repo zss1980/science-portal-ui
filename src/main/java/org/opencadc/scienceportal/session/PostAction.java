@@ -69,7 +69,6 @@
 package org.opencadc.scienceportal.session;
 
 import ca.nrc.cadc.auth.AuthMethod;
-import ca.nrc.cadc.auth.AuthenticationUtil;
 import ca.nrc.cadc.net.HttpPost;
 import ca.nrc.cadc.reg.Standards;
 import ca.nrc.cadc.reg.client.RegistryClient;
@@ -84,7 +83,6 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
 import org.opencadc.scienceportal.ApplicationConfiguration;
@@ -92,7 +90,8 @@ import org.opencadc.scienceportal.SciencePortalAuthAction;
 
 public class PostAction extends SciencePortalAuthAction {
     private static final String SESSION_ENDPOINT = "/session";
-    private static final String SECRET_REQUEST_HEADER_NAME_FROM_BROWSER = "x-registry-secret";
+    private static final String REGISTRY_AUTH_SECRET_FROM_BROWSER = "x-registry-secret";
+    private static final String REGISTRY_AUTH_USERNAME_FROM_BROWSER = "x-registry-username";
     private static final String SECRET_REQUEST_HEADER_NAME_TO_SKAHA = "x-skaha-registry-auth";
 
     @Override
@@ -109,22 +108,26 @@ public class PostAction extends SciencePortalAuthAction {
             apiURLBuilder.append(path);
         }
 
-        final String registrySecret = syncInput.getHeader(PostAction.SECRET_REQUEST_HEADER_NAME_FROM_BROWSER);
-
+        final String registrySecret = syncInput.getHeader(PostAction.REGISTRY_AUTH_SECRET_FROM_BROWSER);
+        final String registryUsername = syncInput.getHeader(PostAction.REGISTRY_AUTH_USERNAME_FROM_BROWSER);
         final URL apiURL = new URL(apiURLBuilder.toString());
         final Subject authenticatedUser = getCurrentSubject(apiURL);
         final Map<String, Object> payload = new HashMap<>();
-        payload.putAll(syncInput.getParameterNames().stream().collect(Collectors.toMap(key -> key, key -> syncInput.getParameter(key))));
+        payload.putAll(syncInput.getParameterNames().stream()
+                                .collect(Collectors.toMap(key -> key, key -> syncInput.getParameter(key) == null ? "" : syncInput.getParameter(key).trim())));
         try {
             Subject.doAs(authenticatedUser, (PrivilegedExceptionAction<?>) () -> {
                 final HttpPost httpPost = new HttpPost(apiURL, payload, false);
 
                 if (StringUtil.hasText(registrySecret)) {
-                    final Set<String> userNames = AuthenticationUtil.getUseridsFromSubject();
-
-                    // Assume the first username is the only one as there should never be more than that.
-                    final String userName = userNames.stream().findAny().orElseThrow(IllegalStateException::new);
-                    httpPost.setRequestProperty(PostAction.SECRET_REQUEST_HEADER_NAME_TO_SKAHA, Base64.encodeString(userName + ":" + registrySecret));
+                    if (StringUtil.hasText(registryUsername)) {
+                        httpPost.setRequestProperty(PostAction.SECRET_REQUEST_HEADER_NAME_TO_SKAHA,
+                                                    Base64.encodeString(registryUsername + ":" + registrySecret));
+                    } else {
+                        throw new IllegalArgumentException("Secret specified but no username provided.");
+                    }
+                } else if (StringUtil.hasText(registryUsername)) {
+                    throw new IllegalArgumentException("Username specified but no secret provided.");
                 }
 
                 httpPost.prepare();
