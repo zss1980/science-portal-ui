@@ -7,11 +7,14 @@ import {
   APP_ACTION_MESSAGE,
   APP_ACTION_TYPE,
   APP_FETCH_OPTIONS,
+  APP_FETCH_RESULT,
   APP_FETCH_URL,
   APP_IS_LOADING,
   APP_PART_TYPE,
   FETCH_FAILED,
   SET_LOADING,
+  SET_DELETE_SESSION_INFO,
+  CLEAR_DELETE_SESSION_INFO,
 } from './constants';
 
 // Reducer
@@ -34,6 +37,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
+  const requestDeleteSessionConfirmation = React.useCallback(
+    ({
+      sessionId,
+      sessionName,
+    }: {
+      sessionId: string;
+      sessionName: string;
+    }) => {
+      dispatch({
+        type: SET_DELETE_SESSION_INFO,
+        payload: {
+          sessionId,
+          sessionName,
+        },
+      });
+    },
+    [dispatch],
+  );
+
+  const clearDeleteSessionInfo = React.useCallback(() => {
+    dispatch({
+      type: CLEAR_DELETE_SESSION_INFO,
+    });
+  }, [dispatch]);
+
   const fetchFn = useCallback(
     (dispatch: Dispatch<AppAction>) => async (payload: AppFetch) => {
       dispatch({
@@ -48,7 +76,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           payload[APP_FETCH_URL],
           payload[APP_FETCH_OPTIONS],
         );
-        return await response.json();
+        const data = await response.json();
+        return {
+          [APP_FETCH_RESULT]: data,
+        };
       } catch (e: unknown) {
         console.error('Fetch failed:', e);
         dispatch({
@@ -73,7 +104,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const appFetch = fetchFn(dispatch);
   return (
-    <AppContext.Provider value={{ state, appFetch }}>
+    <AppContext.Provider
+      value={{
+        state,
+        dispatch,
+        appFetch,
+        requestDeleteSessionConfirmation,
+        clearDeleteSessionInfo,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

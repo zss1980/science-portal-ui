@@ -7,11 +7,13 @@ import {
   Col,
   Placeholder,
 } from 'react-bootstrap';
-import { useAuth } from '../../context/auth/useAuth';
+
 import { getImagesNamesSorted } from '../../utilities/images';
 import {
+  DATA_CONTEXT,
+  DATA_IMAGES,
+  DATA_SESSIONS,
   DESKTOP,
-  NEW_SESSION_INITIAL_VALUES,
   PROP_AVAILABLE_CORES,
   PROP_AVAILABLE_RAM,
   PROP_SESSION_CORES,
@@ -25,7 +27,7 @@ import {
   VAL_MEMORY,
   VAL_PROJECT,
   VAL_TYPE,
-} from '../../auth/constants';
+} from '../../context/data/constants';
 import {
   getDefaultSessionName,
   getMissedFieldError,
@@ -33,19 +35,26 @@ import {
 } from '../../utilities/form';
 import FormPopover from '../common/Popover';
 import FieldPlaceholder from '../common/FieldPlaceholder';
-import { fetchCreateSession } from '../../auth/fetchData';
-import { FormKeys, FormValues, ImageEx, NewSession } from '../../auth/types';
+import {
+  FormKeys,
+  FormValues,
+  ImageEx,
+  NewSession,
+} from '../../context/data/types';
+import { useData } from '../../context/data/useData';
 
 const NewSessionForm: React.FC = () => {
-  const { state, dispatch } = useAuth();
-  const hasImages = state.images && Object.keys(state.images).length > 0;
-  const availableTypes = state.images && Object.keys(state.images);
+  //const { state, dispatch } = useAuth();
+  const { state, fetchCreateSession } = useData();
+  const hasImages =
+    state?.[DATA_IMAGES] && Object.keys(state[DATA_IMAGES]).length > 0;
+  const availableTypes =
+    state?.[DATA_IMAGES] && Object.keys(state[DATA_IMAGES]);
   const createSessionName =
-    state.sessions &&
-    getDefaultSessionName(Object.keys(state.sessions).length + 1);
+    state?.[DATA_SESSIONS] &&
+    getDefaultSessionName(Object.keys(state[DATA_SESSIONS]).length + 1);
 
   const onSubmit = async (values: FormValues) => {
-    console.log(values);
     const sessionPayload: NewSession = {
       [PROP_SESSION_TYPE]: values[VAL_TYPE],
       [PROP_SESSION_NAME]: values[VAL_INSTANCE_NAME],
@@ -56,7 +65,7 @@ const NewSessionForm: React.FC = () => {
       sessionPayload[PROP_SESSION_CORES] = +values[VAL_CORES];
     }
 
-    fetchCreateSession(state.cookie.cookie, dispatch, sessionPayload);
+    fetchCreateSession(sessionPayload);
   };
 
   const REQUIRED_FIELDS: FormKeys[] = [
@@ -67,7 +76,7 @@ const NewSessionForm: React.FC = () => {
   ];
 
   const validate = (values: FormValues) => {
-    const errors: { [key: keyof typeof FormKeys]: string | undefined } = {};
+    const errors: { [K in FormKeys]?: string } = {};
     REQUIRED_FIELDS.forEach((fieldProp: FormKeys) => {
       if (!values[fieldProp]) {
         errors[fieldProp] = getMissedFieldError(fieldProp);
@@ -106,7 +115,6 @@ const NewSessionForm: React.FC = () => {
     <Form
       onSubmit={onSubmit}
       validate={validate}
-      initialValues={NEW_SESSION_INITIAL_VALUES}
       render={({ handleSubmit, form, submitting, pristine, values }) => {
         return (
           <BootstrapForm onSubmit={handleSubmit}>
@@ -159,13 +167,13 @@ const NewSessionForm: React.FC = () => {
                       isInvalid={meta.touched && meta.error}
                     >
                       <option value="">Select a project</option>
-                      {Object.keys(state.images?.[values[VAL_TYPE]] ?? {}).map(
-                        (prj) => (
-                          <option key={prj} value={prj}>
-                            {prj}
-                          </option>
-                        ),
-                      )}
+                      {Object.keys(
+                        state?.[DATA_IMAGES]?.[values[VAL_TYPE]] ?? {},
+                      ).map((prj) => (
+                        <option key={prj} value={prj}>
+                          {prj}
+                        </option>
+                      ))}
                     </BootstrapForm.Select>
                   ) : (
                     <FieldPlaceholder />
@@ -194,7 +202,7 @@ const NewSessionForm: React.FC = () => {
                       <option value="">Select an image</option>
                       {getImagesNamesSorted(
                         Object.values(
-                          state.images?.[values[VAL_TYPE]]?.[
+                          state?.[DATA_IMAGES]?.[values[VAL_TYPE]]?.[
                             values[VAL_PROJECT]
                           ] ?? {},
                         ),
@@ -263,11 +271,13 @@ const NewSessionForm: React.FC = () => {
                         isInvalid={meta.touched && meta.error}
                       >
                         <option value="">Select instance RAM</option>
-                        {state.context?.[PROP_AVAILABLE_RAM]?.map((mem) => (
-                          <option key={mem} value={mem}>
-                            {mem}
-                          </option>
-                        ))}
+                        {state?.[DATA_CONTEXT]?.[PROP_AVAILABLE_RAM]?.map(
+                          (mem) => (
+                            <option key={mem} value={mem}>
+                              {mem}
+                            </option>
+                          ),
+                        )}
                       </BootstrapForm.Select>
                     ) : (
                       <FieldPlaceholder />
@@ -300,11 +310,13 @@ const NewSessionForm: React.FC = () => {
                         <option value="">
                           Select instance number of cores
                         </option>
-                        {state.context?.[PROP_AVAILABLE_CORES]?.map((core) => (
-                          <option key={core} value={core}>
-                            {core}
-                          </option>
-                        ))}
+                        {state?.[DATA_CONTEXT]?.[PROP_AVAILABLE_CORES]?.map(
+                          (core) => (
+                            <option key={core} value={core}>
+                              {core}
+                            </option>
+                          ),
+                        )}
                       </BootstrapForm.Select>
                     ) : (
                       <FieldPlaceholder />

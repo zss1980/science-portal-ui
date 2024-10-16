@@ -2,32 +2,18 @@
 import { FormValues } from './types';
 
 export const BASE_HOST_URL = 'https://www.canfar.net';
-export const CADC_BASE_HOST_URL =
-  'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/';
-export const CADC_GROUPS_URL = '/groups';
-export const CADC_SEARCH_URL = '/search';
-export const CADC_RESET_URL = '/auth/resetPassword.html';
-export const CADC_UPDATE_URL = '/auth/update.html';
-
 export const SCIENCE_PORTAL_URL = `${BASE_HOST_URL}/science-portal`;
 
 // API
 export const BASE_URL = '/api';
-export const LOGIN_URL = '/access/login';
-export const LOGOUT_URL = '/access/logout';
 export const IMAGE_URL = '/image';
 export const SESSION_URL = '/session';
-export const FETCH_SESSION_URL = '/fetch_session';
 export const RENEW_SESSION_URL = '/renew_session';
+export const FETCH_SESSION_URL = '/fetch_session';
 export const DELETE_SESSION_URL = '/delete_session';
 export const CREATE_SESSION_URL = '/create_session';
 export const SESSION_VIEW_URL = '/session_view';
-export const USERINFO_URL = '/userinfo';
 export const CONTEXT_URL = '/context';
-export const PASSWORD_RESET_URL =
-  'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/auth/resetPassword.html';
-export const ACCOUNT_REQUEST_URL =
-  'https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/auth/request.html';
 
 // Actions
 const prefix = '@DATA';
@@ -36,6 +22,7 @@ export const SET_SESSIONS = `${prefix}/SET_SESSIONS`;
 export const SET_SESSION = `${prefix}/SET_SESSION`;
 export const SET_SESSIONS_STATS = `${prefix}/SET_SESSIONS_STATS`;
 export const SET_CONTEXT = `${prefix}/SET_CONTEXT`;
+export const CLEAR_DATA = `${prefix}/CLEAR_DATA`;
 
 // State
 export const DATA_IMAGES = 'images';
@@ -45,14 +32,12 @@ export const DATA_USAGE = 'usage';
 
 export const SESSION_STATS = 'session_stats';
 export const AVAILABLE_IMAGES = 'available_images';
+export const PLATFORM_CONTEXT = 'platform_context';
 export const RUNNING_SESSIONS = 'running_sessions';
 export const FETCHING_SESSION = 'fetching_session';
 export const RENEW_SESSION = 'renew_session';
 export const DELETE_SESSION = 'delete_session';
 export const CREATE_SESSION = 'create_session';
-export const OPERATIONAL = 'operational';
-export const OUTAGE = 'outage';
-export const ACTIVE = 'active';
 
 // Images
 export const PROP_IMAGE_ID = 'id';
@@ -118,7 +103,7 @@ export const VAL_MEMORY = 'memory';
 export const VAL_CORES = 'cores';
 export const VAL_GPU = 'gpu';
 
-export const NEW_SESSION_INITIAL_VALUES: FormValues = {
+/*export const NEW_SESSION_INITIAL_VALUES: FormValues = {
   [VAL_PROJECT]: '',
   [VAL_TYPE]: '',
   [VAL_IMAGE]: '',
@@ -126,7 +111,7 @@ export const NEW_SESSION_INITIAL_VALUES: FormValues = {
   [VAL_MEMORY]: 2,
   [VAL_CORES]: 2,
   [VAL_GPU]: 0,
-};
+};*/
 
 // New Session props
 export const PROP_SESSION_TYPE = 'sessionType';

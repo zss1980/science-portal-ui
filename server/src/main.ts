@@ -19,7 +19,6 @@ app.get('/api', (_req, res) => {
 });
 
 app.post('/api/image', (_req, res) => {
-    console.log(_req.body.cookie)
     axios.get('https://www.canfar.net/science-portal/image',{
         headers: {
             'Cookie': `CADC_SSO=${_req.body.cookie}`
@@ -39,7 +38,6 @@ app.post('/api/image', (_req, res) => {
 })
 
 app.post('/api/userinfo', (_req, res) => {
-    console.log('the body:', _req.body)
     axios.get('https://www.canfar.net/science-portal/userinfo',{
         headers: {
             'Cookie': `CADC_SSO=${_req.body.cookie}`
@@ -57,7 +55,6 @@ app.post('/api/userinfo', (_req, res) => {
 })
 
 app.post('/api/context', (_req, res) => {
-    console.log(_req.body.cookie)
     axios.get('https://www.canfar.net/science-portal/context',{
         headers: {
             'Cookie': `CADC_SSO=${_req.body.cookie}`
@@ -76,7 +73,6 @@ app.post('/api/context', (_req, res) => {
 
 
 app.post('/api/session', (_req, res) => {
-    console.log(_req.body.cookie)
     axios.get('https://www.canfar.net/science-portal/session',{
         headers: {
             'Cookie': `CADC_SSO=${_req.body.cookie}`
@@ -94,8 +90,6 @@ app.post('/api/session', (_req, res) => {
 
 })
 app.post('/api/create_session', (_req, res) => {
-    console.log(_req.body.cookie)
-    console.log(_req.body)
     const payload: {
         type: string
         image: string
@@ -132,7 +126,6 @@ app.post('/api/create_session', (_req, res) => {
 })
 
 app.delete('/api/delete_session', (_req, res) => {
-    console.log(_req.body.cookie)
     axios.delete(`https://www.canfar.net/science-portal/session/${_req.body.sessionId}`,
       {
         headers: {
@@ -152,7 +145,6 @@ app.delete('/api/delete_session', (_req, res) => {
 })
 
 app.post('/api/fetch_session', (_req, res) => {
-    console.log(_req.body.cookie)
     axios.get(`https://www.canfar.net/science-portal/session/${_req.body.sessionId}`,
       {
         headers: {
@@ -172,7 +164,6 @@ app.post('/api/fetch_session', (_req, res) => {
 })
 
 app.post('/api/renew_session', (_req, res) => {
-    console.log(_req.body.cookie)
     axios.post(`https://www.canfar.net/science-portal/session/${_req.body.sessionId}`,
       new URLSearchParams({action: 'renew'}),{
         headers: {
@@ -191,7 +182,6 @@ app.post('/api/renew_session', (_req, res) => {
 
 })
 app.post('/api/session_view', (_req, res) => {
-    console.log(_req.body.cookie)
     axios.get('https://www.canfar.net/science-portal/session?view=stats',{
         headers: {
             'Cookie': `CADC_SSO=${_req.body.cookie}`
@@ -217,9 +207,8 @@ app.post('/api/access/login', (_req, res) => {
 }), {
     withCredentials: true
 }).then(logRes => {
-        console.log(decodeURIComponent(logRes.data))
         const cookie = decodeURIComponent(logRes.data).split('=')[1] + '='
-        res.status(200).json({ cookie, message: 'Logged in' });
+        res.status(200).json({ data: {cookie, message: 'Logged in' }});
 
 }
     ).catch(rej => {
@@ -235,7 +224,6 @@ app.post('/api/access/logout', (_req, res) => {
         },
         withCredentials: true
     }).then(logRes => {
-        console.log(logRes)
         res.status(200).json({ data: logRes.data });
         //res.status(500).json({ message: 'Fatal Error!!! Abort! Abort!! Abort!!!' });
 

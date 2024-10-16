@@ -2,6 +2,7 @@
 export const BASE_URL = '/api';
 export const LOGIN_URL = '/access/login';
 export const LOGOUT_URL = '/access/logout';
+export const USERINFO_URL = '/userinfo';
 
 // Actions
 const prefix = '@AUTH';

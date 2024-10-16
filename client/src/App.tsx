@@ -1,7 +1,5 @@
 // Libs
 import * as React from 'react';
-/*
-import { useState } from 'react'*/
 
 // Components
 import Button from 'react-bootstrap/Button';
@@ -35,13 +33,6 @@ import SciencePortalPlatformLoad from './components/SciencePortalPlatformLoad';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // hooks
-import { fetchRunningSessions, fetchStatsData } from './auth/fetchData';
-import {
-  AVAILABLE_IMAGES,
-  OUTAGE,
-  RUNNING_SESSIONS,
-  SESSION_STATS,
-} from './auth/constants';
 import {
   ACTIVE_SESSION_SERVICES,
   getAlerts,
@@ -51,17 +42,55 @@ import {
 } from './utilities/appUI';
 import StatusModal from './components/common/StatusModal';
 import DeleteSessionModal from './components/common/DeleteSessionModal';
-import { Service } from './auth/types';
 import { useAuth } from './context/auth/useAuth';
+import { useData } from './context/data/useData';
+import { useApp } from './context/app/useApp';
+import {
+  APP_LOADING,
+  APP_SERVICE_STATUSES,
+  AVAILABLE_IMAGES,
+  RETRIEVING_USER,
+  RUNNING_SESSIONS,
+  SESSION_STATS,
+} from './context/app/constants';
+import { DATA_SESSIONS } from './context/data/constants';
+import { IS_AUTHENTICATED, USER, USER_NAME } from './context/auth/constants';
 
 const App = () => {
-  const { state, dispatch } = useAuth();
+  const { state: authState, getUser } = useAuth();
+  const { state: appState } = useApp();
+  const {
+    state: dataState,
+    fetchStatsData,
+    fetchRunningSessions,
+    fetchPlatformContext,
+    fetchPlatformImages,
+  } = useData();
+
+  React.useEffect(() => {
+    if (
+      authState?.[IS_AUTHENTICATED] &&
+      !authState[USER][USER_NAME] &&
+      !appState[APP_LOADING][RETRIEVING_USER]
+    ) {
+      getUser();
+    }
+  }, [authState, appState]);
+
+  React.useEffect(() => {
+    if (authState?.[IS_AUTHENTICATED]) {
+      fetchStatsData();
+      fetchRunningSessions();
+      fetchPlatformContext();
+      fetchPlatformImages();
+    }
+  }, [authState, authState?.[IS_AUTHENTICATED]]);
 
   const refreshStats = () => {
-    fetchStatsData(state.cookie.cookie, dispatch);
+    fetchStatsData();
   };
   const refreshSessions = () => {
-    fetchRunningSessions(state.cookie.cookie, dispatch);
+    fetchRunningSessions();
   };
 
   /*  let isAuthenticated = true
@@ -93,9 +122,9 @@ const App = () => {
                                                 errMsg={'error'}/>
   } */
 
-  const newSessionAlerts = getAlerts(state, NEW_SESSION_SERVICES);
-  const activeSessionAlerts = getAlerts(state, ACTIVE_SESSION_SERVICES);
-  const activeStatsAlerts = getAlerts(state, STATS_SERVICES);
+  const newSessionAlerts = getAlerts(appState, NEW_SESSION_SERVICES);
+  const activeSessionAlerts = getAlerts(appState, ACTIVE_SESSION_SERVICES);
+  const activeStatsAlerts = getAlerts(appState, STATS_SERVICES);
 
   return (
     <Container fluid className="bg-white">
@@ -118,7 +147,6 @@ const App = () => {
                 <span className="sp-header-button">
                   <OverlayTrigger
                     placement="top"
-                    className="sp-b-tooltip"
                     overlay={
                       <Tooltip className="sp-b-tooltip">
                         refresh session list
@@ -142,15 +170,15 @@ const App = () => {
             <Col>
               <ProgressBar
                 variant={getProgressBarVariant(
-                  state?.services_statuses?.[RUNNING_SESSIONS]?.status,
+                  appState?.[APP_SERVICE_STATUSES]?.[RUNNING_SESSIONS]?.status,
                 )}
                 now={100}
-                animated={state?.loading?.[RUNNING_SESSIONS]}
+                animated={appState?.[APP_LOADING]?.[RUNNING_SESSIONS]}
                 className="sp-progress-bar"
               />
               {activeSessionAlerts.map((alert, index) => (
                 <Alert
-                  key={`${alert.status} + index`}
+                  key={`${alert.status} + ${index}`}
                   variant={getProgressBarVariant(alert.status)}
                 >
                   {alert.message}{' '}
@@ -160,24 +188,27 @@ const App = () => {
           </Row>
 
           <Row xs={1} md={3} className="g-4">
-            {state?.sessions && Object.keys(state?.sessions).length !== 0 && (
-              <>
-                {state?.sessions &&
-                  Object.keys(state.sessions).map((sessionId) => (
-                    <Col key={sessionId} className="sp-card-container">
-                      <SessionItem session={state.sessions[sessionId]} />
-                    </Col>
-                  ))}
-              </>
-            )}
-            {state?.loading?.[RUNNING_SESSIONS] && (
+            {dataState?.[DATA_SESSIONS] &&
+              Object.keys(dataState?.[DATA_SESSIONS]).length !== 0 && (
+                <>
+                  {dataState?.[DATA_SESSIONS] &&
+                    Object.keys(dataState[DATA_SESSIONS]).map((sessionId) => (
+                      <Col key={sessionId} className="sp-card-container">
+                        <SessionItem
+                          session={dataState[DATA_SESSIONS]?.[sessionId]}
+                        />
+                      </Col>
+                    ))}
+                </>
+              )}
+            {appState?.[APP_LOADING]?.[RUNNING_SESSIONS] && (
               <Col className="sp-card-container">
                 <LoadingSessionItem />
               </Col>
             )}
-            {!state?.loading?.[RUNNING_SESSIONS] &&
-              state?.sessions &&
-              Object.keys(state.sessions).length === 0 && (
+            {!appState?.[APP_LOADING]?.[RUNNING_SESSIONS] &&
+              dataState?.[DATA_SESSIONS] &&
+              Object.keys(dataState[DATA_SESSIONS]).length === 0 && (
                 <Col className="sp-card-container">
                   <EmptySessionItem />
                 </Col>
@@ -206,15 +237,16 @@ const App = () => {
                       </div>
                       <ProgressBar
                         variant={getProgressBarVariant(
-                          state?.services_statuses?.[AVAILABLE_IMAGES]?.status,
+                          appState?.[APP_SERVICE_STATUSES]?.[AVAILABLE_IMAGES]
+                            ?.status,
                         )}
                         now={100}
-                        animated={state?.loading?.[AVAILABLE_IMAGES]}
+                        animated={appState?.[APP_LOADING]?.[AVAILABLE_IMAGES]}
                         className="sp-progress-bar"
                       />
                       {newSessionAlerts.map((alert, index) => (
                         <Alert
-                          key={`${alert.status} + index`}
+                          key={`${alert.status} + ${index}`}
                           variant={getProgressBarVariant(alert.status)}
                         >
                           {alert.message}{' '}
@@ -238,7 +270,6 @@ const App = () => {
                           <OverlayTrigger
                             key="top"
                             placement="top"
-                            className="sp-b-tooltip"
                             overlay={
                               <Tooltip className="sp-b-tooltip">
                                 refresh statistics
@@ -258,16 +289,17 @@ const App = () => {
                       </div>
                       <ProgressBar
                         variant={getProgressBarVariant(
-                          state?.services_statuses?.[SESSION_STATS]?.status,
+                          appState?.[APP_SERVICE_STATUSES]?.[SESSION_STATS]
+                            ?.status,
                         )}
                         now={100}
-                        animated={state?.loading?.[SESSION_STATS]}
+                        animated={appState?.[APP_LOADING]?.[SESSION_STATS]}
                         className="sp-progress-bar"
                       />
 
                       {activeStatsAlerts.map((alert, index) => (
                         <Alert
-                          key={`${alert.status} + index`}
+                          key={`${alert.status} + ${index}`}
                           variant={getProgressBarVariant(alert.status)}
                         >
                           {alert.message}{' '}
@@ -275,21 +307,13 @@ const App = () => {
                       ))}
                     </Col>
                   </Row>
-                  <SciencePortalPlatformLoad usage={state.platformUsage} />
+                  <SciencePortalPlatformLoad />
                 </Card.Body>
               </Card>
             </Col>
           </Row>
         </Container>
-        {/*
-            { Modals, rendered as needed, set in the this.state object }
-            {this.state.modalData.msg !== undefined &&
-              <SciencePortalModal modalData={this.state.modalData} baseURLCanfar={this.state.urls.baseURLcanfar}/> }
-
-            {this.state.confirmModalData.dynamicProps.isOpen === true &&
-              <SciencePortalConfirm modalData={this.state.confirmModalData.dynamicProps} handlers={this.state.confirmModalData.handlers}/>
-            */}
-        {!state.isAuthenticated && <CanfarLoginModal />}
+        {!authState[IS_AUTHENTICATED] && <CanfarLoginModal />}
         {<StatusModal />}
         {<DeleteSessionModal />}
       </Container>

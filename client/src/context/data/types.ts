@@ -70,6 +70,14 @@ import {
   PROP_DIGEST,
   PROP_TYPES,
   IMAGE_NAME,
+  VAL_CORES,
+  VAL_GPU,
+  VAL_IMAGE,
+  VAL_INSTANCE_NAME,
+  VAL_MEMORY,
+  VAL_PROJECT,
+  VAL_TYPE,
+  CLEAR_DATA,
 } from './constants';
 
 // State interface
@@ -78,6 +86,24 @@ export interface DataState {
   [DATA_SESSIONS]: { [key: string]: Session };
   [DATA_CONTEXT]: Context | null;
   [DATA_USAGE]: PlatformUsage | null;
+}
+export type FormKeys =
+  | typeof VAL_TYPE
+  | typeof VAL_PROJECT
+  | typeof VAL_IMAGE
+  | typeof VAL_INSTANCE_NAME
+  | typeof VAL_MEMORY
+  | typeof VAL_CORES
+  | typeof VAL_GPU;
+
+export interface FormValues {
+  [VAL_PROJECT]: string;
+  [VAL_TYPE]: ImageType;
+  [VAL_IMAGE]: string;
+  [VAL_INSTANCE_NAME]: string;
+  [VAL_MEMORY]: number;
+  [VAL_CORES]: number;
+  [VAL_GPU]: number;
 }
 
 export type ImageType =
@@ -118,6 +144,9 @@ export interface Session {
   [PROP_GPU_RAM_IN_USE]: string;
   [PROP_CPU_CORES_IN_USE]: string;
   [PROP_GPU_UTILIZATION]: string;
+  logo?: string;
+  altText?: string;
+  coresInUse?: string;
 }
 
 export interface Context {
@@ -211,6 +240,7 @@ export type DataAction =
       payload: { [DATA_SESSIONS]: { [key: string]: Session } };
     }
   | { type: typeof SET_SESSION; payload: { session: Session } }
+  | { type: typeof CLEAR_DATA }
   | {
       type: typeof SET_IMAGES;
       payload: { [DATA_IMAGES]: { [key: string]: { [key: string]: Image[] } } };

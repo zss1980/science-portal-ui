@@ -1,13 +1,14 @@
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, loadEnv } from 'vite';
 
 // <https://vitejs.dev/config/>
 export default defineConfig((env) => {
   const envars = loadEnv(env.mode, './');
-
+  console.log('Loaded environment:', env.mode);
+  console.log('Environment variables:', envars);
   const serverURL = new URL(
-    envars.VITE_SERVER_URL ?? '<http://localhost:3001>'
+    envars.VITE_SERVER_URL ?? '<http://localhost:3001>',
   );
   const serverAPIPath = envars.VITE_SERVER_API_PATH ?? '/api';
 

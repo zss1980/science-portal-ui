@@ -11,6 +11,7 @@ export const AuthContext = createContext<
       dispatch: React.Dispatch<AuthAction>;
       login: (username: string, password: string) => Promise<void>;
       logout: () => Promise<void>;
+      getUser: () => void;
     }
   | undefined
 >(undefined);

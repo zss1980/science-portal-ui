@@ -14,7 +14,9 @@ import {
   DELETE_SESSION,
   FETCHING_SESSION,
   OPERATIONAL,
+  PLATFORM_CONTEXT,
   RENEW_SESSION,
+  RETRIEVING_USER,
   RUNNING_SESSIONS,
   SESSION_STATS,
 } from './constants';
@@ -27,8 +29,12 @@ export const initialState: AppState = {
   [APP_LOADING]: {
     [AUTHENTICATING]: false,
     [SESSION_STATS]: false,
+    [RETRIEVING_USER]: false,
     [AVAILABLE_IMAGES]: false,
+    [PLATFORM_CONTEXT]: false,
     [RUNNING_SESSIONS]: false,
+    [RENEW_SESSION]: false,
+    [FETCHING_SESSION]: false,
     [DELETE_SESSION]: false,
     [CREATE_SESSION]: false,
   },
@@ -62,6 +68,10 @@ export const initialState: AppState = {
       [APP_ACTION_MESSAGE]: '',
     },
     [RUNNING_SESSIONS]: {
+      [APP_STATUS]: OPERATIONAL,
+      [APP_ACTION_MESSAGE]: '',
+    },
+    [RETRIEVING_USER]: {
       [APP_STATUS]: OPERATIONAL,
       [APP_ACTION_MESSAGE]: '',
     },

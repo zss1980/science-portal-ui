@@ -28,17 +28,23 @@ import {
   APP_FETCH_OPTIONS,
   APP_FETCH_RESULT,
   APP_PART_TYPE,
+  PLATFORM_CONTEXT,
+  RETRIEVING_USER,
 } from './constants';
 
 // State interface
 export interface AppState {
   [APP_LOADING]: {
     [AUTHENTICATING]: boolean;
+    [RETRIEVING_USER]: boolean;
     [DELETE_SESSION]: boolean;
     [CREATE_SESSION]: boolean;
     [SESSION_STATS]: boolean;
     [AVAILABLE_IMAGES]: boolean;
+    [FETCHING_SESSION]: boolean;
+    [PLATFORM_CONTEXT]: boolean;
     [RUNNING_SESSIONS]: boolean;
+    [RENEW_SESSION]: boolean;
   };
   [APP_SERVICE_STATUSES]: ServiceStatus;
   [APP_DELETE_SESSION_INFO]: SessionDeleteInfo;
@@ -57,8 +63,10 @@ export type Service =
   | typeof AVAILABLE_IMAGES
   | typeof CREATE_SESSION
   | typeof RUNNING_SESSIONS
+  | typeof FETCHING_SESSION
   | typeof RENEW_SESSION
   | typeof AUTHENTICATING
+  | typeof RETRIEVING_USER
   | typeof DELETE_SESSION;
 
 export interface Status {
@@ -79,6 +87,7 @@ export interface ServiceStatus {
   [AVAILABLE_IMAGES]: Status;
   [RUNNING_SESSIONS]: Status;
   [AUTHENTICATING]: Status;
+  [RETRIEVING_USER]: Status;
 }
 
 export type UiLoading =
@@ -87,7 +96,9 @@ export type UiLoading =
   | typeof FETCHING_SESSION
   | typeof RENEW_SESSION
   | typeof AVAILABLE_IMAGES
+  | typeof PLATFORM_CONTEXT
   | typeof AUTHENTICATING
+  | typeof RETRIEVING_USER
   | typeof CREATE_SESSION
   | typeof DELETE_SESSION;
 
@@ -114,5 +125,7 @@ export interface AppFetch {
 }
 
 export interface FetchResult {
-  [APP_FETCH_RESULT]: { [key: string]: never };
+  [APP_FETCH_RESULT]: {
+    data: { [key: string]: never };
+  };
 }

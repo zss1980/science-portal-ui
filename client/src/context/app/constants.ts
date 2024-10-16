@@ -53,8 +53,10 @@ export const ACCOUNT_REQUEST_URL =
 
 // State
 export const AUTHENTICATING = 'authenticating';
+export const RETRIEVING_USER = 'retrieving_user';
 export const SESSION_STATS = 'session_stats';
 export const AVAILABLE_IMAGES = 'available_images';
+export const PLATFORM_CONTEXT = 'platform_context';
 export const RUNNING_SESSIONS = 'running_sessions';
 export const FETCHING_SESSION = 'fetching_session';
 export const RENEW_SESSION = 'renew_session';

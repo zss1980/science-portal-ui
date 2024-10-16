@@ -1,12 +1,7 @@
-import {
-  AlertInfo,
-  AuthState,
-  Service,
-  ServiceStatus,
-  SStatuse,
-} from '../auth/types';
+// Constants
 import {
   ACTIVE,
+  APP_SERVICE_STATUSES,
   AVAILABLE_IMAGES,
   CREATE_SESSION,
   DELETE_SESSION,
@@ -14,7 +9,10 @@ import {
   RENEW_SESSION,
   RUNNING_SESSIONS,
   SESSION_STATS,
-} from '../auth/constants';
+} from '../context/app/constants';
+
+// Types
+import { AppState, AlertInfo, Service, SStatuse } from '../context/app/types';
 
 export const getProgressBarVariant = (status: SStatuse): string => {
   switch (status) {
@@ -36,11 +34,11 @@ export const ACTIVE_SESSION_SERVICES: Service[] = [
   DELETE_SESSION,
 ];
 export const STATS_SERVICES: Service[] = [SESSION_STATS];
-export const getAlerts = (state: AuthState, services: Service[]) => {
+export const getAlerts = (state: AppState, services: Service[]) => {
   const newSessionEvents = services.map((ev) => {
     return {
       type: ev,
-      ...state?.services_statuses?.[ev],
+      ...state?.[APP_SERVICE_STATUSES]?.[ev],
     };
   });
 

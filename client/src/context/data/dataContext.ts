@@ -1,14 +1,21 @@
 // Libs
-import React from 'react';
 import { createContext } from 'react';
 
 // Types
-import { DataState, DataAction } from './types';
+import { DataState, NewSession } from './types';
 
 export const DataContext = createContext<
   | {
       state: DataState;
-      dispatch: React.Dispatch<DataAction>;
+      fetchRunningSessions: () => void;
+      fetchCreateSession: (sessionPayload: NewSession) => void;
+      fetchDeleteSession: (sessionId: string) => void;
+      fetchRenewSession: (sessionId: string) => void;
+      fetchSessionStatus: (sessionId: string) => void;
+      fetchStatsData: () => void;
+      fetchPlatformContext: () => void;
+      fetchPlatformImages: () => void;
+      clearData: () => void;
     }
   | undefined
 >(undefined);

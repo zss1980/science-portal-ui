@@ -1,4 +1,5 @@
 import {
+  CLEAR_DATA,
   DATA_CONTEXT,
   DATA_IMAGES,
   DATA_SESSIONS,
@@ -10,8 +11,9 @@ import {
   SET_SESSIONS_STATS,
 } from './constants';
 import { DataAction, DataState } from './types';
+import { initialState } from './store';
 
-export const authReducer = (
+export const dataReducer = (
   state: DataState,
   action: DataAction,
 ): DataState => {
@@ -44,6 +46,8 @@ export const authReducer = (
         ...state,
         [DATA_USAGE]: action.payload,
       };
+    case CLEAR_DATA:
+      return initialState;
 
     default:
       return state;

@@ -19,7 +19,9 @@ import {
   CADC_RESET_URL,
   CADC_SEARCH_URL,
   CADC_UPDATE_URL,
-} from '../../auth/constants';
+} from '../../context/app/constants';
+import { USER, USER_NAME } from '../../context/auth/constants';
+import { useData } from '../../context/data/useData';
 
 interface Props {
   bannerText?: string;
@@ -27,17 +29,16 @@ interface Props {
 
 const CanfarNavbar = (props: Props) => {
   const { state, logout } = useAuth();
+  const { clearData } = useData();
 
   const handleLogout = () => {
-    // log user out
     logout();
+    clearData();
   };
-
-  console.log(state);
   const renderButton = () => {
     return (
       <Button size="sm" variant="outline-primary">
-        {state.user.username}
+        {state?.[USER]?.[USER_NAME]}
         <span className="sp-buffer-span-left">
           <FontAwesomeIcon icon={faCaretDown} />
         </span>
