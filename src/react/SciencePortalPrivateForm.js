@@ -160,8 +160,10 @@ class SciencePortalPrivateForm extends React.Component {
         {Object.keys(this.state.fData).length !== 0 && 
           <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
             <fieldset className="mt-3">
-              <legend className="fs-6 ms-4">Image access details</legend>
-              <hr className="ms-4" />
+              <div className="ps-4 pe-4 pt-4 w-75">
+                <legend className="fs-6">Image access details</legend>
+                <hr />
+              </div>
               <Row className="sp-form-row">
                 <Col sm={4}>
                   <Form.Label className="sp-form-label" column="sm">container image
@@ -215,8 +217,10 @@ class SciencePortalPrivateForm extends React.Component {
               </Row>
             </fieldset>
             <fieldset>
-              <legend className="fs-6 ms-4">Execution details</legend>
-              <hr className="ms-4"/>
+              <div className="ps-4 pe-4 pt-4 w-75">
+                <legend className="fs-6">Execution details</legend>
+                <hr/>
+              </div>
               <Row className="sp-form-row">
                 <Col sm={4}>
                   <Form.Label className="sp-form-label" column="sm">type
@@ -311,7 +315,7 @@ class SciencePortalPrivateForm extends React.Component {
 
         {(Object.keys(this.state.fData).length === 0) &&
             <Form className="sp-form">
-            <Row className="sp-form-row">
+              <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
                 <Form.Label  className="sp-form-label" column="sm">type
                   {this.renderPopover("Session Type","Select from the list of supported session types")}
