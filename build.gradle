@@ -35,6 +35,9 @@ dependencies {
     runtimeOnly 'javax.servlet:jstl:1.2'
     runtimeOnly 'jstl:jstl:[1.0,)'
     runtimeOnly 'org.apache.taglibs:taglibs-standard-impl:1.2.5'
+
+    testImplementation 'junit:junit:[4.12,5.0)'
+    testImplementation 'org.mockito:mockito-core:[5.14.0,6.0.0)'
 }
 
 sourceCompatibility = '1.8'
