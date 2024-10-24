@@ -16,6 +16,7 @@ const GROUP_MANAGEMENT_URI = "ivo://cadc.nrc.ca/groups"
 const ADVANCED_SEARCH_URI = "ivo://cadc.nrc.ca/search"
 const ACCOUNT_UPDATE_URI = "ivo://cadc.nrc.ca/acctupdate"
 const PASSWORD_CHANGE_URI = "ivo://cadc.nrc.ca/passchg"
+const CRED_URI = "ivo://cadc.nrc.ca/cred"
 
 class CanfarNavbar extends React.Component {
 
@@ -129,7 +130,7 @@ class CanfarNavbar extends React.Component {
                 <NavDropdown align="end" title={this.renderButton()} id="authenticated_nav_dropdown" className="sp-auth-dropdown">
                   <NavDropdown.Item href={this.state.headerURLs[ACCOUNT_UPDATE_URI]}  target="_blank">Update Profile</NavDropdown.Item>
                   <NavDropdown.Item href={this.state.headerURLs[PASSWORD_CHANGE_URI]} target="_blank">Reset Password</NavDropdown.Item>
-                  <NavDropdown.Item href="https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/cred/priv?daysValid=30">Obtain Certificate</NavDropdown.Item>
+                  <NavDropdown.Item href={this.state.headerURLs[CRED_URI] + "?daysValid=30"}>Obtain Certificate</NavDropdown.Item>
                   <NavDropdown.Item href={baseURLCanfar + "/access/logout?target=" + baseURLCanfar + "/science-portal/"}>
                     <span className="sp-buffer-span-right"><FontAwesomeIcon  icon={faRightFromBracket} /></span>Logout
                   </NavDropdown.Item>

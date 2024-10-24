@@ -1,6 +1,10 @@
 package org.opencadc.scienceportal;
 
 
+import ca.nrc.cadc.auth.AuthMethod;
+import ca.nrc.cadc.net.ResourceNotFoundException;
+import ca.nrc.cadc.reg.Standards;
+import ca.nrc.cadc.reg.client.LocalAuthority;
 import ca.nrc.cadc.reg.client.RegistryClient;
 import ca.nrc.cadc.util.StringUtil;
 
@@ -10,6 +14,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 
+import java.util.NoSuchElementException;
+import java.util.Set;
 import org.apache.commons.configuration2.CombinedConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -98,6 +104,21 @@ public class ApplicationConfiguration {
                 LOGGER.warn("Unable to get Applications URL for " + applicationStandard.standardID, e);
             }
         });
+
+        final LocalAuthority localAuthority = new LocalAuthority();
+        try {
+            final Set<URI> credEndpoints = localAuthority.getServiceURIs(Standards.CRED_PROXY_10);
+            if (!credEndpoints.isEmpty()) {
+                final URI credServiceID = credEndpoints.stream().findFirst().orElseThrow(IllegalStateException::new);
+                final URL credServiceURL = registryClient.getServiceURL(credServiceID, Standards.CRED_PROXY_10, AuthMethod.CERT);
+
+                if (credServiceURL != null) {
+                    jsonObject.put("ivo://cadc.nrc.ca/cred", credServiceURL.toExternalForm());
+                }
+            }
+        } catch (NoSuchElementException noSuchElementException) {
+            LOGGER.debug("Not using proxy certificates.  Skipping menu addition.");
+        }
 
         return jsonObject;
     }
