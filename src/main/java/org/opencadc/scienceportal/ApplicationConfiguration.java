@@ -92,8 +92,10 @@ public class ApplicationConfiguration {
      * @return String array, never null.
      */
     public String[] getTabLabels() {
-        final String[] tabLabelArray = configuration.getStringArray(ConfigurationKey.TAB_LABELS.propertyName);
-        if (tabLabelArray == null || tabLabelArray.length == 0) {
+        final String[] tabLabelArray = Arrays.stream(configuration.getString(ConfigurationKey.TAB_LABELS.propertyName).split(","))
+                                             .map(String::trim)
+                                             .toArray(String[]::new);
+        if (tabLabelArray.length == 0) {
             throw new IllegalStateException("Configuration property " + ConfigurationKey.TAB_LABELS.propertyName + " is missing" + this.filePath);
         }
 
