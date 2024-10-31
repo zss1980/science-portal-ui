@@ -2,7 +2,6 @@ package org.opencadc.scienceportal;
 
 
 import ca.nrc.cadc.auth.AuthMethod;
-import ca.nrc.cadc.net.ResourceNotFoundException;
 import ca.nrc.cadc.reg.Standards;
 import ca.nrc.cadc.reg.client.LocalAuthority;
 import ca.nrc.cadc.reg.client.RegistryClient;
@@ -22,6 +21,7 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.SystemConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.MergeCombiner;
 import org.apache.log4j.Logger;
@@ -55,8 +55,7 @@ public class ApplicationConfiguration {
 
         final Parameters parameters = new Parameters();
         final FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
-                new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
-                        .configure(parameters.properties().setFileName(filePath));
+                new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class).configure(parameters.properties().setFileName(filePath));
 
         try {
             combinedConfiguration.addConfiguration(builder.getConfiguration());
@@ -85,6 +84,20 @@ public class ApplicationConfiguration {
 
     public String getTokenCacheURLString() {
         return getStringValue(ConfigurationKey.TOKEN_CACHE_URL);
+    }
+
+    /**
+     * Expected that the configuration is a forward slash list of tab labels.
+     * <a href="https://commons.apache.org/proper/commons-configuration/userguide/howto_basicfeatures.html">Apache Configuration reference</a>
+     * @return String array, never null.
+     */
+    public String[] getTabLabels() {
+        final String[] tabLabelArray = configuration.getStringArray(ConfigurationKey.TAB_LABELS.propertyName);
+        if (tabLabelArray == null || tabLabelArray.length == 0) {
+            throw new IllegalStateException("Configuration property " + ConfigurationKey.TAB_LABELS.propertyName + " is missing" + this.filePath);
+        }
+
+        return tabLabelArray;
     }
 
     /**
@@ -188,6 +201,7 @@ public class ApplicationConfiguration {
 
     private enum ConfigurationKey {
         THEME_NAME("org.opencadc.science-portal.themeName", true),
+        TAB_LABELS("org.opencadc.science-portal.tabLabels", true),
         SESSIONS_STANDARD_ID("org.opencadc.science-portal.sessions.standard", true),
         SESSIONS_RESOURCE_ID("org.opencadc.science-portal.sessions.resourceID", true),
         BANNER_TEXT("org.opencadc.science-portal.sessions.bannerText", false),

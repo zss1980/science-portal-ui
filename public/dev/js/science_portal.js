@@ -44,6 +44,9 @@
     inputs.reactApp = _reactApp
     _reactApp.setThemeName(inputs.themeName)
     _reactApp.setHeaderURLs(inputs.headerURLs)
+    if (inputs.tabLabels) {
+      _reactApp.setTabLabels(inputs.tabLabels)
+    }
 
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)

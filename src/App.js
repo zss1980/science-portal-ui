@@ -136,12 +136,13 @@ class SciencePortalApp extends React.Component {
             pageState: BASE_PAGE_STATE,
             headerURLs: HEADER_URL_DEFAULTS,
             userInfo: {},
-            themeName: "canfar"
+            themeName: "canfar",
+            tabLabels: ["Public", "Advanced"]
         };
     }
 
     // Use these functions via the window ref in order to
-    // inject or grab session data from the react app
+    // inject or grab session data from the ReactJS app
     //
     getPageState() {
         return this.state.pageState
@@ -206,6 +207,10 @@ class SciencePortalApp extends React.Component {
 
     setThemeName(themeName) {
         this.setState({themeName: themeName})
+    }
+
+    setTabLabels(tabLabels) {
+        this.setState({tabLabels: tabLabels})
     }
 
     getAccessToken() {
@@ -349,8 +354,8 @@ class SciencePortalApp extends React.Component {
                                                     {this.state.pageState.spForm.alert.message} </Alert>}
                                             <Tabs selectedTabClassName="fw-bold react-tabs__tab--selected">
                                                 <TabList className="react-tabs__tab-list mt-4">
-                                                    <Tab>Public image</Tab>
-                                                    <Tab>Unlisted image</Tab>
+                                                    <Tab>{this.state.tabLabels[0]}</Tab>
+                                                    <Tab>{this.state.tabLabels[1]}</Tab>
                                                 </TabList>
                                                 <TabPanel>
                                                     {publicImageForm}
