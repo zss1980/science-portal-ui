@@ -102,6 +102,13 @@ public class PostAction extends SciencePortalAuthAction {
         this.syncInput = syncInput;
     }
 
+    /**
+     * Not used explicitly, but needs to be present for the reflection-based client
+     */
+    public PostAction() {
+        super();
+    }
+
     @Override
     public void doAction() throws Exception {
         final URL apiURL = buildAPIURL();
