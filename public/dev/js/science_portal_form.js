@@ -264,10 +264,10 @@
             // _selfPortalForm._contextData.rawData, but it'd be a waste of storage
             // to do it currently.
             // Save items that are used by the front end
-            _selfPortalForm._contextData.availableCores = curContext.availableCores
-            _selfPortalForm._contextData.availableRAM = curContext.availableRAM
-            _selfPortalForm._contextData.defaultCores = curContext.defaultCores
-            _selfPortalForm._contextData.defaultRAM = curContext.defaultRAM
+            _selfPortalForm._contextData.availableCores = curContext.cores.options
+            _selfPortalForm._contextData.availableRAM = curContext.memoryGB.options
+            _selfPortalForm._contextData.defaultCores = curContext.cores.default
+            _selfPortalForm._contextData.defaultRAM = curContext.memoryGB.default
 
             _selfPortalForm._ajaxCallCount--
             if (_selfPortalForm._ajaxCallCount === 0) {
