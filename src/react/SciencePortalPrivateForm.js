@@ -235,7 +235,7 @@ class SciencePortalPrivateForm extends React.Component {
                       size="sm"
                       className="sp-form-cursor"
                   >
-                    {this.state.fData.types.map(mapObj => (
+                    {this.state.fData.types?.map(mapObj => (
                         <option className="sp-form" key={mapObj} name={mapObj} value={mapObj}>{mapObj}</option>
                     ))}
                   </Form.Select>
@@ -272,7 +272,7 @@ class SciencePortalPrivateForm extends React.Component {
                           name="ram"
                           className="sp-form-cursor"
                           onChange={this.handleRAMChange.bind(this)}>
-                        {this.state.fData.contextData.availableRAM.map(mapObj => (
+                        {this.state.fData.contextData.availableRAM?.map(mapObj => (
                             <option key={mapObj} value={mapObj}>{mapObj}</option>
                         ))}
                       </Form.Select>

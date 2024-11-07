@@ -167,7 +167,7 @@ class SciencePortalForm extends React.Component {
                   name="image"
                   className="sp-form-cursor"
                   >
-                  {this.state.fData.imageList.map(mapObj => (
+                  {this.state.fData.imageList?.map(mapObj => (
                     <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
                   ))}
                 </Form.Select>
@@ -204,7 +204,7 @@ class SciencePortalForm extends React.Component {
                   name="ram"
                   className="sp-form-cursor"
                   onChange={this.handleRAMChange.bind(this)}>
-                  {this.state.fData.contextData.availableRAM.map(mapObj => (
+                  {this.state.fData.contextData.availableRAM?.map(mapObj => (
                     <option key={mapObj} value={mapObj}>{mapObj}</option>
                   ))}
                 </Form.Select>
@@ -224,7 +224,7 @@ class SciencePortalForm extends React.Component {
                   className="sp-form-cursor"
                   value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
                   onChange={this.handleCoresChange.bind(this)}>
-                  {this.state.fData.contextData.availableCores.map(mapObj => (
+                  {this.state.fData.contextData.availableCores?.map(mapObj => (
                     <option key={mapObj} value={mapObj}>{mapObj}</option>
                   ))}
                 </Form.Select>
