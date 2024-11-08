@@ -44,6 +44,9 @@
     inputs.reactApp = _reactApp
     _reactApp.setThemeName(inputs.themeName)
     _reactApp.setHeaderURLs(inputs.headerURLs)
+    if (inputs.tabLabels) {
+      _reactApp.setTabLabels(inputs.tabLabels)
+    }
 
     var portalCore = new cadc.web.science.portal.core.PortalCore(inputs)
     var portalSessions = new cadc.web.science.portal.session.PortalSession(inputs)
@@ -396,10 +399,10 @@
       event.preventDefault()
       portalCore.clearAjaxAlert(portalCore.pageSections.form)
 
-      var _prunedFormData = new FormData();
+      const _prunedFormData = new FormData();
 
-      for (var i=0; i< event.target.length; i++) {
-        var currentValue = event.target[i]
+      for (let i= 0; i < event.target.length; i++) {
+        const currentValue = event.target[i];
         _prunedFormData.append(currentValue.name, currentValue.value)
         console.log(currentValue.name + ": " + currentValue.value)
       }
@@ -418,9 +421,9 @@
     }
 
     function postSessionRequestAjax(serviceURL, sessionData) {
-      var portalLogin = new cadc.web.science.portal.login.PortalLogin({reactApp: _reactApp})
+      const portalLogin = new cadc.web.science.portal.login.PortalLogin({reactApp: _reactApp});
       return new Promise(function (resolve, reject) {
-        var request = new XMLHttpRequest()
+        const request = new XMLHttpRequest();
 
         // "load" is the XMLHttpRequest "finished" event
         request.addEventListener(
@@ -435,7 +438,7 @@
               reject(request)
             } else if (request.status === 401) {
               portalCore.hideModal()
-              var userState = {
+              const userState = {
                 loginHandler : portalLogin.handleLoginRequest
               }
               _reactApp.setNotAuthenticated(userState)
@@ -447,7 +450,27 @@
         // Note: SameSite cookie header isn't set with this method,
         // may cause problems with Chrome and other browsers? Feb 2021
         request.withCredentials = true
+
         request.open("POST", serviceURL)
+
+        // Request headers can only be set after the request is open.
+        const secretFieldName = "registryAuthSecret"
+        const secretHeader = "x-registry-secret"
+        const usernameHeader = "x-registry-username"
+        if (sessionData.has(secretFieldName)) {
+          const secret = sessionData.get(secretFieldName)
+          const username = sessionData.get("registryAuthUsername")
+          if (secret) {
+            request.setRequestHeader(secretHeader, secret)
+          }
+
+          if (username) {
+            request.setRequestHeader(usernameHeader, username)
+          }
+
+          sessionData.delete(secretFieldName)
+        }
+
         request.send(sessionData)
       }) // end Promise
 

@@ -9,6 +9,7 @@
   final String sessionsResourceID = configuration.getResourceID();
   final String sessionsStandardID = configuration.getStandardID();
   final String themeName = configuration.getThemeName();
+  final String[] tabLabels = configuration.getTabLabels();
   String bannerText = configuration.getBannerMessage();
   String headerURLJSON = configuration.getHeaderURLs().toString();
   
@@ -90,11 +91,16 @@
         const length = 16
         const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         let result = '';
-        for (var i = length; i > 0; --i) {
+        for (let i = length; i > 0; --i) {
           result += chars[Math.floor(Math.random() * chars.length)]
         }
         return result;
       }
+
+      const tabLabelArray = [];
+      <% for (int i = 0; i < tabLabels.length; i++) { %>
+      tabLabelArray[<%= i %>] = "<%= tabLabels[i] %>";
+      <% } %>
 
       window.runStartupTasks = () => {
         // Set up controller for Science Portal Session Launch page
@@ -103,6 +109,7 @@
           sessionsResourceID: '<%= sessionsResourceID %>',
           sessionsStandardID: '<%= sessionsStandardID %>',
           themeName: '<%= themeName %>',
+          tabLabels: tabLabelArray,
           bannerText: '<%= bannerText %>',
           contentBase: "${contextPath}/dist",
           headerURLs: JSON.parse('<%= headerURLJSON %>')

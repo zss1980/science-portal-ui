@@ -215,12 +215,21 @@ div.sp-card-header {
 }
 
 .sp-form-row {
-  margin: 5px 0px 5px 0px;
+  margin: 5px 0 5px 0;
 }
 
-option.sp-form
+option.sp-form,
 div.sp-form {
   font-size: 14px;
+}
+
+form.sp-form fieldset hr {
+  margin: 1rem 0;
+  color: #ced4da;
+  border: 0;
+  border-top: 5px solid;
+  opacity: .5;
+  border-radius: 0.4em;
 }
 
 .sp-form-label {

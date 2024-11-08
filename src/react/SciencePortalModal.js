@@ -80,7 +80,7 @@ class SciencePortalModal extends React.Component {
           backdrop="static"
           keyboard={false}
         >
-          <Modal.Header closeButton>
+          <Modal.Header>
             <Modal.Title>{modalTitle}</Modal.Title>
           </Modal.Header>
           <Modal.Body>

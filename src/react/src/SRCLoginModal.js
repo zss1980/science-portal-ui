@@ -11,10 +11,6 @@ class SRCLoginModal extends React.Component {
     }
   }
 
-  handleClose() {
-    this.setState({ isOpen: false });
-  }
-
   static getDerivedStateFromProps(nextProps, _prevState) {
     return nextProps;
   }
@@ -35,11 +31,6 @@ class SRCLoginModal extends React.Component {
       show = true
     }
 
-    let errMsg = ""
-    if (this.state.errMsg !== undefined) {
-      errMsg = <div class="sp-error-msg"> {this.state.errMsg} </div>
-    }
-
     return (
       <>
         <Modal
@@ -48,7 +39,7 @@ class SRCLoginModal extends React.Component {
           backdrop="static"
           keyboard={false}
         >
-          <Modal.Header closeButton>
+          <Modal.Header>
             <Modal.Title className="sp-modal-header">Authentication required</Modal.Title>
           </Modal.Header>
           <Modal.Body className="sp-auth-form-body">

@@ -138,7 +138,7 @@ class SciencePortalForm extends React.Component {
           <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
             <Row className="sp-form-row">
               <Col sm={4}>
-                <Form.Label className="sp-form-label">type
+                <Form.Label className="sp-form-label" column="sm">type
                   {this.renderPopover("Session Type","Select from the list of supported session types")}
                 </Form.Label>
               </Col>
@@ -158,7 +158,7 @@ class SciencePortalForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col sm={4}>
-                <Form.Label className="sp-form-label">container image
+                <Form.Label className="sp-form-label" column="sm">container image
                   {this.renderPopover("Container Image","The Docker image for the session.")}
                 </Form.Label>
               </Col>
@@ -167,7 +167,7 @@ class SciencePortalForm extends React.Component {
                   name="image"
                   className="sp-form-cursor"
                   >
-                  {this.state.fData.imageList.map(mapObj => (
+                  {this.state.fData.imageList?.map(mapObj => (
                     <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
                   ))}
                 </Form.Select>
@@ -175,7 +175,7 @@ class SciencePortalForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col sm={4}>
-                <Form.Label className="sp-form-label">name
+                <Form.Label className="sp-form-label" column="sm">name
                   {this.renderPopover("Session Name","Name for the session. Alphanumeric and '-' characters only.")}
                 </Form.Label>
               </Col>
@@ -194,7 +194,7 @@ class SciencePortalForm extends React.Component {
             {showRAM === true &&
             <Row className="sp-form-row">
               <Col sm={4}>
-                <Form.Label className="sp-form-label">memory
+                <Form.Label className="sp-form-label" column="sm">memory
                   {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
                 </Form.Label>
               </Col>
@@ -204,7 +204,7 @@ class SciencePortalForm extends React.Component {
                   name="ram"
                   className="sp-form-cursor"
                   onChange={this.handleRAMChange.bind(this)}>
-                  {this.state.fData.contextData.availableRAM.map(mapObj => (
+                  {this.state.fData.contextData.availableRAM?.map(mapObj => (
                     <option key={mapObj} value={mapObj}>{mapObj}</option>
                   ))}
                 </Form.Select>
@@ -214,7 +214,7 @@ class SciencePortalForm extends React.Component {
             {showCores === true &&
             <Row className="sp-form-row">
               <Col sm={4}>
-                <Form.Label className="sp-form-label"># cores
+                <Form.Label className="sp-form-label" column="sm"># cores
                   {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
                 </Form.Label>
               </Col>
@@ -224,7 +224,7 @@ class SciencePortalForm extends React.Component {
                   className="sp-form-cursor"
                   value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
                   onChange={this.handleCoresChange.bind(this)}>
-                  {this.state.fData.contextData.availableCores.map(mapObj => (
+                  {this.state.fData.contextData.availableCores?.map(mapObj => (
                     <option key={mapObj} value={mapObj}>{mapObj}</option>
                   ))}
                 </Form.Select>
@@ -247,7 +247,7 @@ class SciencePortalForm extends React.Component {
           <Form className="sp-form">
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
-                <Form.Label  className="sp-form-label">type
+                <Form.Label  className="sp-form-label" column="sm">type
                   {this.renderPopover("Session Type","Select from the list of supported session types")}
                 </Form.Label>
               </Col>
@@ -255,7 +255,7 @@ class SciencePortalForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
-                <Form.Label  className="sp-form-label">container image
+                <Form.Label  className="sp-form-label" column="sm">container image
                   {this.renderPopover("Container Image","Reference to an image to use to start the session container")}
                 </Form.Label>
               </Col>
@@ -263,7 +263,7 @@ class SciencePortalForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
-                <Form.Label className="sp-form-label">name
+                <Form.Label className="sp-form-label" column="sm">name
                   {this.renderPopover("Session Name","Name for the session. Default name reflects the current number of sessions of the selected type.\n" +
                     "Alphanumeric characters only. 15 character maximum.")}
                 </Form.Label>
@@ -272,7 +272,7 @@ class SciencePortalForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
-                <Form.Label  className="sp-form-label">memory
+                <Form.Label  className="sp-form-label" column="sm">memory
                   {this.renderPopover("Memory","System memory (RAM) to be used for the session. Default: 16G")}
                 </Form.Label>
               </Col>
@@ -280,7 +280,7 @@ class SciencePortalForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
-                <Form.Label  className="sp-form-label"># cores
+                <Form.Label  className="sp-form-label" column="sm"># cores
                   {this.renderPopover("# of Cores","Number of cores used by the session. Default: 2")}
                 </Form.Label>
               </Col>

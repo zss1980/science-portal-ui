@@ -31,9 +31,9 @@
    * @constructor
    */
   function PortalForm() {
-    var _selfPortalForm = this
+    const _selfPortalForm = this
 
-    this._imageData = new Array()
+    this._imageData = []
     this._contextData = {}
     this._sessionTypeList = null
     this._sessionTypeMap = {}
@@ -98,8 +98,8 @@
         _selfPortalForm._sessionTypeMap = jsonData
 
         // Build session type list
-        var tempTypeList = new Array()
-        for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
+        const tempTypeList = [];
+        for (let i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
           // each entry has id, type, digest, only 'id' is needed
           tempTypeList.push( _selfPortalForm._sessionTypeMap.session_types[i].name)
         }
@@ -116,7 +116,7 @@
     }
 
     function getMapEntry(sessionName) {
-      for (var i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
+      for (let i = 0; i < _selfPortalForm._sessionTypeMap.session_types.length; i++) {
         if (_selfPortalForm._sessionTypeMap.session_types[i].name === sessionName) {
           return _selfPortalForm._sessionTypeMap.session_types[i]
         }
@@ -125,20 +125,16 @@
     }
 
     function isTypeInList(imageTypes) {
-      var isInList = (element) => imageTypes.includes(element)
-      var typeIndex = _selfPortalForm._sessionTypeList.findIndex(isInList)
-      if (typeIndex === -1) {
-        return false
-      } else {
-        return true
-      }
+      const isInList = (element) => imageTypes.includes(element)
+      const typeIndex = _selfPortalForm._sessionTypeList.findIndex(isInList)
+      return typeIndex !== -1;
     }
 
 
     // --------------- Image list functions
 
     function getFullImageList() {
-      var fullListURL = _selfPortalForm.sessionURLs.images
+      const fullListURL = _selfPortalForm.sessionURLs.images;
       Promise.resolve(_getAjaxData(fullListURL))
         .then(function (imageList) {
 
@@ -146,8 +142,8 @@
           _selfPortalForm._imageData = {}
           for (var j=0; j<_selfPortalForm._sessionTypeList.length; j++) {
             _selfPortalForm._imageData[_selfPortalForm._sessionTypeList[j]] = {
-              "imageList": new Array(),
-              "imageDisplayList": new Array()
+              "imageList": [],
+              "imageDisplayList": []
             }
           }
 

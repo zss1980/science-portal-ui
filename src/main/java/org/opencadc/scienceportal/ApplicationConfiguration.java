@@ -1,6 +1,9 @@
 package org.opencadc.scienceportal;
 
 
+import ca.nrc.cadc.auth.AuthMethod;
+import ca.nrc.cadc.reg.Standards;
+import ca.nrc.cadc.reg.client.LocalAuthority;
 import ca.nrc.cadc.reg.client.RegistryClient;
 import ca.nrc.cadc.util.StringUtil;
 
@@ -10,12 +13,15 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 
+import java.util.NoSuchElementException;
+import java.util.Set;
 import org.apache.commons.configuration2.CombinedConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.SystemConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.MergeCombiner;
 import org.apache.log4j.Logger;
@@ -49,8 +55,7 @@ public class ApplicationConfiguration {
 
         final Parameters parameters = new Parameters();
         final FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
-                new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
-                        .configure(parameters.properties().setFileName(filePath));
+                new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class).configure(parameters.properties().setFileName(filePath));
 
         try {
             combinedConfiguration.addConfiguration(builder.getConfiguration());
@@ -82,6 +87,22 @@ public class ApplicationConfiguration {
     }
 
     /**
+     * Expected that the configuration is a forward slash list of tab labels.
+     * <a href="https://commons.apache.org/proper/commons-configuration/userguide/howto_basicfeatures.html">Apache Configuration reference</a>
+     * @return String array, never null.
+     */
+    public String[] getTabLabels() {
+        final String[] tabLabelArray = Arrays.stream(configuration.getString(ConfigurationKey.TAB_LABELS.propertyName).split(","))
+                                             .map(String::trim)
+                                             .toArray(String[]::new);
+        if (tabLabelArray.length == 0) {
+            throw new IllegalStateException("Configuration property " + ConfigurationKey.TAB_LABELS.propertyName + " is missing" + this.filePath);
+        }
+
+        return tabLabelArray;
+    }
+
+    /**
      * Pull the /applications header URLs.
      * @return  JSONObject of header URIs to URLs.
      */
@@ -98,6 +119,21 @@ public class ApplicationConfiguration {
                 LOGGER.warn("Unable to get Applications URL for " + applicationStandard.standardID, e);
             }
         });
+
+        final LocalAuthority localAuthority = new LocalAuthority();
+        try {
+            final Set<URI> credEndpoints = localAuthority.getServiceURIs(Standards.CRED_PROXY_10);
+            if (!credEndpoints.isEmpty()) {
+                final URI credServiceID = credEndpoints.stream().findFirst().orElseThrow(IllegalStateException::new);
+                final URL credServiceURL = registryClient.getServiceURL(credServiceID, Standards.CRED_PROXY_10, AuthMethod.CERT);
+
+                if (credServiceURL != null) {
+                    jsonObject.put("ivo://cadc.nrc.ca/cred", credServiceURL.toExternalForm());
+                }
+            }
+        } catch (NoSuchElementException noSuchElementException) {
+            LOGGER.debug("Not using proxy certificates.  Skipping menu addition.");
+        }
 
         return jsonObject;
     }
@@ -167,6 +203,7 @@ public class ApplicationConfiguration {
 
     private enum ConfigurationKey {
         THEME_NAME("org.opencadc.science-portal.themeName", true),
+        TAB_LABELS("org.opencadc.science-portal.tabLabels", true),
         SESSIONS_STANDARD_ID("org.opencadc.science-portal.sessions.standard", true),
         SESSIONS_RESOURCE_ID("org.opencadc.science-portal.sessions.resourceID", true),
         BANNER_TEXT("org.opencadc.science-portal.sessions.bannerText", false),

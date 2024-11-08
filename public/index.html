@@ -1,72 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="Science Portal Test App"
-      content="Web site created using create-react-app"
-    />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta name="Pragma" content="no-cache" />
+  <meta name="Expires" content="0" />
 
-    <script type="application/javascript" src="https://www.canfar.net/canfar/javascript/jquery-2.2.4.min.js"></script>
-    <script type="text/javascript" src="https://www.canfar.net/cadcJS/javascript/cadc.registry-client.js"></script>
-    <script type="text/javascript" src="canfarRootCopy/cadc.user.js"></script>
-    <script type="text/javascript" src="https://www.canfar.net/canfar/javascript/cadc.redirect.util.js"></script>
+<!--  <base href="${fn:substring(url, 0, fn:length(url) - fn:length(uri))}${req.contextPath}/" />-->
 
-    <script type="application/javascript" src="dev/js/science_portal_login.js"></script>
-    <script type="application/javascript" src="dev/js/science_portal_core.js"></script>
-    <script type="application/javascript" src="dev/js/science_portal_session.js"></script>
-    <script type="application/javascript" src="dev/js/science_portal_form.js"></script>
-    <script type="application/javascript" src="dev/js/science_portal.js"></script>
+  <!-- Located in ROOT.war -->
+  <script type="application/javascript" src="https://www.canfar.net/canfar/javascript/jquery-2.2.4.min.js"></script>
 
-    <script type="application/javascript" src="./test_config/sp_test_config.js"></script>
+  <!-- Add Promises if missing/broken. -->
+  <script type="application/javascript" src="https://cdn.jsdelivr.net/npm/es6-promise/dist/es6-promise.auto.js"></script>
+  <!-- Found in canfar-root: tomcat(-canfar)/webapps/ROOT unless an absolute URL -->
+  <script type="text/javascript" src="https://www.canfar.net/cadcJS/javascript/cadc.registry-client.js"></script>
+  <script type="text/javascript" src="https://www.canfar.net/cadcJS/javascript/org.opencadc.js"></script>
+  <script type="text/javascript" src="https://www.canfar.net/cadcJS/javascript/cadc.uri.js"></script>
+  <script type="text/javascript" src="https://www.canfar.net/cadcJS/javascript/cadc.user.js"></script>
+  <script type="text/javascript" src="https://www.canfar.net/canfar/javascript/cadc.redirect.util.js"></script>
 
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="react-mountpoint"></div>
-  </body>
+  <!--[if lt IE 9]><script src="/html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
-  <script type="application/javascript">
-    // when the react app has mounted itself (which can be a different point time time
-    // than document ready,) this function is run to start the Science Portal App
-    // Using this rather than document.ready because running locally the timing doesn't work
-    // otherwise
+  <title>Science Portal</title>
+</head>
 
-    // NOTE: bannerText can be uncommented and filled in here to test the banner
-    // NOTE: isDev is required to have authentication be set to true (as there's no local instance of /access
-    // to properly handle authentication
+<body class="theme-src">
+<div class="container-fluid fill">
+  <div class="row fill">
+    <div role="main" class="col-sm-12 col-md-12 main fill">
+      <div class="inner fill">
+        <section id="main_content" class="fill">
+          <!--  CANFAR React App loads here -->
+          <div class="science-portal-authenticated">
+            <div id="sp_listnavbar" class="panel panel-default sp-panel">
+              <div id="react-mountpoint"></div>
+              <!-- Content ends -->
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
 
-    window.runStartupTasks = () => {
-      // Set up controller for Science Portal Session Launch page
-      const launch_js = new cadc.web.science.portal.PortalApp({
-        baseURL: "https://rc-www.canfar.net",
-        sessionsResourceID: 'ivo://cadc.nrc.ca/skaha',
-        //bannerText: "test banner text injected at startup",
-        contentBase: contentBase,
-        URLOverrides: devtestSessionURLs,
-        isDev: true,
-        registryLocation: devtestSessionURLs.registryClient
-      })
+<!--local files ot pick up-->
+<script type="application/javascript" src="dev/js/science_portal_login.js"></script>
+<script type="application/javascript" src="dev/js/science_portal_core.js"></script>
+<script type="application/javascript" src="dev/js/science_portal_session.js"></script>
+<script type="application/javascript" src="dev/js/science_portal_form.js"></script>
+<script type="application/javascript" src="dev/js/science_portal.js"></script>
+<script type="application/javascript" src="test_config/sp_test_config.js"></script>
 
-      launch_js.init()
+<script type="application/javascript">
+  function generateState() {
+    const length = 16
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    let result = '';
+    for (let i = length; i > 0; --i) {
+      result += chars[Math.floor(Math.random() * chars.length)]
     }
+    return result;
+  }
 
-  </script>
+  const tabLabelArray = ["Test Standard", "Test Advanced"];
+
+  window.runStartupTasks = () => {
+    // Set up controller for Science Portal Session Launch page
+    const launch_js = new cadc.web.science.portal.PortalApp({
+      baseURL: window.location.origin,
+      sessionsResourceID: 'ivo://cadc.nrc.ca/skaha',
+      sessionsStandardID: 'vos://cadc.nrc.ca~vospace/CADC/std/Proc#sessions-1.0',
+      themeName: 'src',
+      tabLabels: tabLabelArray,
+      bannerText: '',
+      contentBase: 'dev',
+      headerURLs: {
+        "ivo://cadc.nrc.ca/groups": "#",
+        "ivo://cadc.nrc.ca/search": "#",
+        "ivo://cadc.nrc.ca/acctupdate": "#",
+        "ivo://cadc.nrc.ca/passchg": "#",
+        "ivo://cadc.nrc.ca/cred": "#"
+      }
+    })
+
+    launch_js.init()
+  }
+</script>
+
+<!-- render the react app last - App.js's render cycle will call window.runStartupTasks() on completion. -->
+<!--<script src="${contextPath}/dist/react-app.js"></script>-->
+
+</body>
 </html>
