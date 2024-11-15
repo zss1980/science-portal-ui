@@ -61,7 +61,8 @@ class SciencePortalForm extends React.Component {
 
     this.setState({
       selectedCores : this.state.fData.contextData.defaultCores,
-      selectedRAM : this.state.fData.contextData.defaultRAM
+      selectedRAM : this.state.fData.contextData.defaultRAM,
+      selectedProject: undefiend
     });
     this.state.fData.resetHandler();
   }
@@ -264,7 +265,7 @@ class SciencePortalForm extends React.Component {
               {/* placeholder column so buttons line up with form entry elements */}
               </Col>
               <Col sm={7}>
-                <Button variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
+                <Button disabled={!this.state.selectedProject} variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
                 <Button variant="secondary" size="sm" onClick={this.resetForm} className="sp-reset-button">Reset</Button>
               </Col>
             </Row>
