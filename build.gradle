@@ -1,6 +1,5 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-
 plugins {
     id 'war'
     id "com.github.node-gradle.node" version "3.0.1"
@@ -10,14 +9,13 @@ plugins {
 }
 
 node {
-    version = '18.18.0'
+    version = '22.11.0'
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
-
 
 dependencies {
     implementation 'com.opencsv:opencsv:[5.1,6.0)'
@@ -37,7 +35,7 @@ dependencies {
     runtimeOnly 'org.apache.taglibs:taglibs-standard-impl:1.2.5'
 
     testImplementation 'junit:junit:[4.12,5.0)'
-    testImplementation 'org.mockito:mockito-core:[5.14.0,6.0.0)'
+    testImplementation 'org.mockito:mockito-core:[4.11.0,5.0.0)'
 }
 
 sourceCompatibility = '1.8'
@@ -50,10 +48,11 @@ war {
         }
     }
 
-    archiveName 'science-portal.war'
+    archiveFileName = 'science-portal.war'
 }
 
-task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
+tasks.register('buildReactApp', NodeTask) {
+    dependsOn 'npmInstall'
     script = project.file('node_modules/webpack/bin/webpack.js')
     args = [
             '--mode', 'development',
