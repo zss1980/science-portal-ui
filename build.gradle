@@ -7,17 +7,19 @@ plugins {
 
     // IntelliJ IDEA plugin here to allow integration tests to appear properly in IDEs.
     id 'idea'
+
+    id 'com.diffplug.spotless' version '6.25.0'
+    id 'jacoco'
 }
 
 node {
-    version = '18.18.0'
+    version = '22.11.0'
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
-
 
 dependencies {
     implementation 'com.opencsv:opencsv:[5.1,6.0)'
@@ -53,7 +55,8 @@ war {
     archiveName 'science-portal.war'
 }
 
-task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
+tasks.register('buildReactApp', NodeTask) {
+    dependsOn 'npmInstall'
     script = project.file('node_modules/webpack/bin/webpack.js')
     args = [
             '--mode', 'development',
