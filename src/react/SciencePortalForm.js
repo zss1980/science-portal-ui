@@ -174,11 +174,11 @@ class SciencePortalForm extends React.Component {
                 <Form.Select
                     name="project"
                     className="sp-form-cursor"
-                    onChange={(e) => this.setState({selectedProject: e.target.value})}
+                    onChange={(e) => this.setState({selectedProject: e.target.value || undefined})}
                     value={this.state.selectedProject}
                 >
-                  <option className="sp-form" value={undefined}>Select project</option>
-                  {availableProjects.map(project => (
+                  <option className="sp-form" value="">Select project</option>
+                  {availableProjects?.map(project => (
                       <option className="sp-form" key={project} value={project}>{project}</option>
                   ))}
                 </Form.Select>
@@ -195,7 +195,7 @@ class SciencePortalForm extends React.Component {
                     name="image"
                     className="sp-form-cursor"
                 >
-                  {imagesOfProject.map(mapObj => (
+                  {imagesOfProject?.map(mapObj => (
                       <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
                   ))}
                 </Form.Select>
