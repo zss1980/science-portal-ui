@@ -12,6 +12,9 @@ import Popover from 'react-bootstrap/Popover';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
 
+// Utils
+import {getProjectImagesMap, getProjectNames} from "./utilities/utils";
+
 class SciencePortalForm extends React.Component {
 
   constructor(props) {
@@ -25,7 +28,8 @@ class SciencePortalForm extends React.Component {
     this.state = {
       fData:props.fData,
       selectedRAM: this.selectedRAM,
-      selectedCores: this.selectedCores
+      selectedCores: this.selectedCores,
+      selectedProject: undefined
     }
     this.handleChange = this.handleChange.bind(this);
     this.resetForm = this.resetForm.bind(this);
@@ -131,6 +135,10 @@ class SciencePortalForm extends React.Component {
       }
     }
 
+    const projectsOfType = getProjectImagesMap(this.state.fData.imageList)
+    const availableProjects = getProjectNames(projectsOfType) || []
+    const imagesOfProject = this.state.selectedProject ? projectsOfType[this.state.selectedProject] : []
+
     return (
       <>
         {Object.keys(this.state.fData).length !== 0 && 
@@ -158,17 +166,37 @@ class SciencePortalForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col sm={4}>
+                <Form.Label className="sp-form-label" column="sm">project
+                  {this.renderPopover("Image Project","The project for which the image is used.")}
+                </Form.Label>
+              </Col>
+              <Col sm={7}>
+                <Form.Select
+                    name="project"
+                    className="sp-form-cursor"
+                    onChange={(e) => this.setState({selectedProject: e.target.value})}
+                    value={this.state.selectedProject}
+                >
+                  <option className="sp-form" value={undefined}>Select project</option>
+                  {availableProjects.map(project => (
+                      <option className="sp-form" key={project} value={project}>{project}</option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+            <Row className="sp-form-row">
+              <Col sm={4}>
                 <Form.Label className="sp-form-label" column="sm">container image
                   {this.renderPopover("Container Image","The Docker image for the session.")}
                 </Form.Label>
               </Col>
               <Col sm={7}>
                 <Form.Select
-                  name="image"
-                  className="sp-form-cursor"
-                  >
-                  {this.state.fData.imageList?.map(mapObj => (
-                    <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
+                    name="image"
+                    className="sp-form-cursor"
+                >
+                  {imagesOfProject.map(mapObj => (
+                      <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
                   ))}
                 </Form.Select>
               </Col>
