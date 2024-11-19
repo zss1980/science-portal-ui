@@ -62,7 +62,7 @@ class SciencePortalForm extends React.Component {
     this.setState({
       selectedCores : this.state.fData.contextData.defaultCores,
       selectedRAM : this.state.fData.contextData.defaultRAM,
-      selectedProject: undefiend
+      selectedProject: ''
     });
     this.state.fData.resetHandler();
   }
