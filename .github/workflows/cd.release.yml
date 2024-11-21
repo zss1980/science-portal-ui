@@ -1,0 +1,69 @@
+# Release Please Actions
+name: "CD: Release Please"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  platform:
+    branches:
+      - main
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release-please-output: ${{ steps.release-please.outputs }}
+    if: github.repository == 'opencadc/science-portal'
+    steps:
+      -
+        name: Create release
+        id: release-please
+        uses: googleapis/release-please-action@v4.1.3
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      -
+        name: Dispatch Edge Build
+        # Run this step only if the release-please completes successfully
+        if: steps.release-please.outcome == 'success' 
+        uses: peter-evans/repository-dispatch@v3.0.0
+        with:
+          repository: opencadc/science-portal
+          event-type: edge-build
+          token: ${{ secrets.GITHUB_TOKEN }}
+          client-payload: |-
+            {
+              "releases_created": "${{ steps.release-please.outputs.release_created }}",
+              "tag_name": "${{ steps.release-please.outputs.tag_name }}",
+              "sha": "${{ steps.release-please.outputs.sha }}"
+            }
+      -
+        name: Dispatch Science Portal Release Build
+        # Run this step only if the release-please completes successfully
+        if: ${{ steps.release-please.outputs.release_created == 'true' }}
+        run: |
+          echo "Release Build currently Disabled"
+        # uses: peter-evans/repository-dispatch@v3.0.0
+        # with:
+        #   repository: opencadc/science-portal
+        #   event-type: release-build
+        #   token: ${{ secrets.GITHUB_TOKEN }}
+        #   client-payload: |-
+        #     {
+        #       "releases_created": "${{ steps.release-please.outputs.releases_created }}",
+        #       "tag_name": "${{ steps.release-please.outputs.tag_name }}",
+        #       "sha": "${{ steps.release-please.outputs.sha }}"
+        #     }
+  release-debug:
+    runs-on: ubuntu-latest
+    needs: release-please
+    steps:
+      - env:
+          RELEASE_PLEASE_OUTPUT: ${{ needs.release-please.outputs.release-please-output }}
+        run: |
+          echo "Release Please Output: $RELEASE_PLEASE_OUTPUT"
