@@ -2,4 +2,8 @@ node_modules
 Dockerfile*
 bin
 build
-.[a-zA-Z0-9]*
+.idea
+.vscode
+.gradle
+.github
+.git
