@@ -41,18 +41,15 @@ jobs:
             }
       -
         name: Dispatch Science Portal Release Build
-        # Run this step only if the release-please completes successfully
+        uses: peter-evans/repository-dispatch@v3.0.0
         if: ${{ steps.release-please.outputs.release_created == 'true' }}
-        run: |
-          echo "Release Build currently Disabled"
-        # uses: peter-evans/repository-dispatch@v3.0.0
-        # with:
-        #   repository: opencadc/science-portal
-        #   event-type: release-build
-        #   token: ${{ secrets.GITHUB_TOKEN }}
-        #   client-payload: |-
-        #     {
-        #       "releases_created": "${{ steps.release-please.outputs.releases_created }}",
-        #       "tag_name": "${{ steps.release-please.outputs.tag_name }}",
-        #       "sha": "${{ steps.release-please.outputs.sha }}"
-        #     }
+        with:
+          repository: opencadc/science-portal
+          event-type: release-build
+          token: ${{ secrets.GITHUB_TOKEN }}
+          client-payload: |-
+            {
+              "releases_created": "${{ steps.release-please.outputs.release_created }}",
+              "tag_name": "${{ steps.release-please.outputs.tag_name }}",
+              "sha": "${{ steps.release-please.outputs.sha }}"
+            }

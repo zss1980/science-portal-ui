@@ -3,6 +3,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'war'
     id "com.github.node-gradle.node" version "3.0.1"
+
+    // Use version 6.13.0 until JDK 1.8 is no longer required.
     id 'com.diffplug.spotless' version '6.13.0'
 
     // IntelliJ IDEA plugin here to allow integration tests to appear properly in IDEs.
