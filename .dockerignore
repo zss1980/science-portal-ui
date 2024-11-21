@@ -1,1 +1,5 @@
 node_modules
+Dockerfile*
+bin
+build
+.[a-zA-Z0-9]*
