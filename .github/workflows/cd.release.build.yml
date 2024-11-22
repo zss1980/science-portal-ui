@@ -39,14 +39,6 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_TOKEN }}
       -
-        name: Sanitize Release Tag
-        id: sanitize-tag
-        run: |
-          echo "Sanitizing Tag: ${{ env.TAG_RELEASE }}"
-          export SANITIZED_TAG_RELEASE=$(echo ${{ env.TAG_RELEASE }} | sed 's/^v//'
-          echo "Sanitized Tag: $SANITIZED_TAG_RELEASE"
-          echo SANITIZED_TAG_RELEASE=$SANITIZED_TAG_RELEASE >> $GITHUB_ENV
-      -
         name: Build and Push Docker Image
         id: build
         uses: docker/build-push-action@v6.9.0
@@ -62,7 +54,7 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ env.TAG }}
             ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ env.TAG_RELEASE }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ env.SANITIZED_TAG_RELEASE }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE }}:v${{ env.TAG_RELEASE }}
           labels: |
             org.opencontainers.image.title=Science Portal
             org.opencontainers.image.version=${{ env.TAG_RELEASE }}
@@ -92,6 +84,4 @@ jobs:
         id: cosign
         run: |
           cosign version
-          cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ env.TAG }} --upload
-          cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ env.TAG_RELEASE }} --upload
           cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ steps.build.outputs.digest }} --upload
