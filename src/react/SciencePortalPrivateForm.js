@@ -12,16 +12,19 @@ import Popover from 'react-bootstrap/Popover';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
 
+// Constants
+import {DEFAULT_CORES_NUMBER, DEFAULT_RAM_NUMBER} from "./utilities/constants";
+
 class SciencePortalPrivateForm extends React.Component {
 
   constructor(props) {
     super(props)
-    this.selectedRAM = ""
-    this.selectedCores = ""
+    this.selectedRAM = DEFAULT_RAM_NUMBER
+    this.selectedCores = DEFAULT_CORES_NUMBER
     this.repositoryUsername = props.authenticatedUsername && props.authenticatedUsername !== "Login" ? props.authenticatedUsername : ""
     if (typeof props.fData.contextData !== "undefined") {
-      this.selectedRAM = props.fData.contextData.defaultRAM
-      this.selectedCores = props.fData.contextData.defaultCores
+      this.selectedRAM = Math.max(props.fData.contextData.defaultRAM, DEFAULT_RAM_NUMBER)
+      this.selectedCores = Math.max(props.fData.contextData.defaultCores, DEFAULT_CORES_NUMBER)
     }
 
     const repositoryHostArray = props.fData.repositoryHosts
@@ -84,8 +87,8 @@ class SciencePortalPrivateForm extends React.Component {
     const formProps = this.props;
 
     this.setState({
-      selectedCores : this.state.fData.contextData.defaultCores,
-      selectedRAM : this.state.fData.contextData.defaultRAM,
+      selectedCores : Math.max(this.props.fData.contextData.defaultCores, DEFAULT_CORES_NUMBER),
+      selectedRAM : Math.max(this.props.fData.contextData.defaultRAM, DEFAULT_RAM_NUMBER),
       repositoryUsername: formProps.authenticatedUsername && formProps.authenticatedUsername !== "Login"
           ? formProps.authenticatedUsername : ""
     });
@@ -270,7 +273,7 @@ class SciencePortalPrivateForm extends React.Component {
               </Row>
               <Row className="sp-form-row">
                 <Col sm={4}>
-                  <Form.Label className="sp-form-label" column="sm">name
+                  <Form.Label className="sp-form-label" column="sm">session name
                     {this.renderPopover("Session Name", "Name for the session. Alphanumeric and '-' characters only.")}
                   </Form.Label>
                 </Col>
@@ -360,7 +363,7 @@ class SciencePortalPrivateForm extends React.Component {
             </Row>
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
-                <Form.Label className="sp-form-label" column="sm">name
+                <Form.Label className="sp-form-label" column="sm">session name
                   {this.renderPopover("Session Name","Name for the session. Default name reflects the current number of sessions of the selected type.\n" +
                     "Alphanumeric characters only. 15 character maximum.")}
                 </Form.Label>
