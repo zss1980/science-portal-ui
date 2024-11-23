@@ -188,7 +188,7 @@ class SciencePortalPrivateForm extends React.Component {
           <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
             <fieldset className="mt-3">
               <div className="ps-4 pe-4 pt-4 w-75">
-                <legend className="fs-6">Image access details</legend>
+                <legend className="fs-6">Image access</legend>
                 <hr />
               </div>
               <Row className="sp-form-row">
@@ -248,7 +248,7 @@ class SciencePortalPrivateForm extends React.Component {
             </fieldset>
             <fieldset>
               <div className="ps-4 pe-4 pt-4 w-75">
-                <legend className="fs-6">Execution details</legend>
+                <legend className="fs-6">Launch session</legend>
                 <hr/>
               </div>
               <Row className="sp-form-row">
@@ -313,7 +313,7 @@ class SciencePortalPrivateForm extends React.Component {
                   <Row className="sp-form-row">
                     <Col sm={4}>
                       <Form.Label className="sp-form-label" column="sm"># cores
-                        {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
+                        {this.renderPopover("# of Cores", "Number of cores used by the session.")}
                       </Form.Label>
                     </Col>
                     <Col sm={7}>

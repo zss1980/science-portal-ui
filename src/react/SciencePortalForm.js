@@ -286,7 +286,7 @@ class SciencePortalForm extends React.Component {
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
                 <Form.Label  className="sp-form-label" column="sm">container image
-                  {this.renderPopover("Container Image","Reference to an image to use to start the session container")}
+                  {this.renderPopover("Container Image","Reference to an image to use to start the session container. Default: use skaha project access the default CANFAR image list.")}
                 </Form.Label>
               </Col>
               {this.renderPlaceholder()}
@@ -303,7 +303,7 @@ class SciencePortalForm extends React.Component {
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
                 <Form.Label  className="sp-form-label" column="sm">memory
-                  {this.renderPopover("Memory","System memory (RAM) to be used for the session. Default: 16G")}
+                  {this.renderPopover("Memory","System memory (RAM) to be used for the session.")}
                 </Form.Label>
               </Col>
               {this.renderPlaceholder()}
@@ -311,7 +311,7 @@ class SciencePortalForm extends React.Component {
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
                 <Form.Label  className="sp-form-label" column="sm"># cores
-                  {this.renderPopover("# of Cores","Number of cores used by the session. Default: 2")}
+                  {this.renderPopover("# of Cores","Number of cores used by the session.")}
                 </Form.Label>
               </Col>
               {this.renderPlaceholder()}
