@@ -55,7 +55,7 @@ jobs:
         uses: codecov/codecov-action@v5.0.7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: jacocoTestReport.xml
+          files: ./jacocoTestReport.xml
           flags: science-portal-unittests-coverage
           name: science-portal-unittests-coverage
           fail_ci_if_error: true
