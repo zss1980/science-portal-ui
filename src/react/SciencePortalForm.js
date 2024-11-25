@@ -14,7 +14,10 @@ import {faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
 
 // Utils
 import {getProjectImagesMap, getProjectNames} from "./utilities/utils";
-import {DEFAULT_CORES_NUMBER, DEFAULT_RAM_NUMBER} from "./utilities/constants";
+import {
+  DEFAULT_CORES_NUMBER, DEFAULT_IMAGE_NAMES,
+  DEFAULT_RAM_NUMBER, SKAHA_PROJECT
+} from "./utilities/constants";
 
 class SciencePortalForm extends React.Component {
 
@@ -30,7 +33,8 @@ class SciencePortalForm extends React.Component {
       fData:props.fData,
       selectedRAM: this.selectedRAM,
       selectedCores: this.selectedCores,
-      selectedProject: undefined
+      selectedProject: undefined,
+      selectedImageId: undefined
     }
     this.handleChange = this.handleChange.bind(this);
     this.resetForm = this.resetForm.bind(this);
@@ -40,7 +44,7 @@ class SciencePortalForm extends React.Component {
     // Entire session form state data object needs to be put back
     // into the form on session name input change or the
     // form can't render
-    var tmpData = this.state.fData
+    let tmpData = this.state.fData
     tmpData.sessionName = event.target.value
     this.setState({fData: tmpData});
   }
@@ -63,7 +67,8 @@ class SciencePortalForm extends React.Component {
     this.setState({
       selectedCores : Math.max(this.props.fData.contextData.defaultCores, DEFAULT_CORES_NUMBER),
       selectedRAM : Math.max(this.props.fData.contextData.defaultRAM, DEFAULT_RAM_NUMBER),
-      selectedProject: ''
+      selectedProject: '',
+      selectedImageId: '',
     });
     this.state.fData.resetHandler();
   }
@@ -139,9 +144,12 @@ class SciencePortalForm extends React.Component {
 
     const projectsOfType = getProjectImagesMap(this.state.fData.imageList)
     const availableProjects = getProjectNames(projectsOfType) || []
-    const imagesOfProject = this.state.selectedProject ? projectsOfType[this.state.selectedProject] : []
+    const defaultImages =  projectsOfType[SKAHA_PROJECT] || []
+    const imagesOfProject = this.state.selectedProject ? projectsOfType[this.state.selectedProject] : defaultImages
+    const defaultImageName = this.state.fData.selectedType ? DEFAULT_IMAGE_NAMES[this.state.fData.selectedType] : undefined
+    const defaultImageId = defaultImageName ? imagesOfProject.find(mObj => mObj.name === defaultImageName)?.id : imagesOfProject[0]?.id
 
-    return (
+      return (
       <>
         {Object.keys(this.state.fData).length !== 0 && 
          this.state.fData.imageList && 
@@ -169,7 +177,7 @@ class SciencePortalForm extends React.Component {
             <Row className="sp-form-row">
               <Col sm={4}>
                 <Form.Label className="sp-form-label" column="sm">project
-                  {this.renderPopover("Image Project","The project for which the image is used.")}
+                  {this.renderPopover("Image Project","The project for which the image is used. Default: Use the Skaha project to access the default CANFAR image list.")}
                 </Form.Label>
               </Col>
               <Col sm={7}>
@@ -177,7 +185,7 @@ class SciencePortalForm extends React.Component {
                     name="project"
                     className="sp-form-cursor"
                     onChange={(e) => this.setState({selectedProject: e.target.value || undefined})}
-                    value={this.state.selectedProject}
+                    value={this.state.selectedProject || SKAHA_PROJECT}
                 >
                   <option className="sp-form" value="">Select project</option>
                   {availableProjects?.map(project => (
@@ -196,6 +204,8 @@ class SciencePortalForm extends React.Component {
                 <Form.Select
                     name="image"
                     className="sp-form-cursor"
+                    onChange={(e) => this.setState({selectedImageId: e.target.value || undefined})}
+                    value={this.state.selectedImageId || defaultImageId}
                 >
                   {imagesOfProject?.map(mapObj => (
                       <option className="sp-form" key={mapObj.id} value={mapObj.id}>{mapObj.name}</option>
@@ -245,7 +255,7 @@ class SciencePortalForm extends React.Component {
             <Row className="sp-form-row">
               <Col sm={4}>
                 <Form.Label className="sp-form-label" column="sm"># cores
-                  {this.renderPopover("# of Cores", "Number of cores used by the session. Default: 2")}
+                  {this.renderPopover("# of Cores", "Number of cores used by the session.")}
                 </Form.Label>
               </Col>
               <Col sm={7}>
@@ -266,7 +276,7 @@ class SciencePortalForm extends React.Component {
               {/* placeholder column so buttons line up with form entry elements */}
               </Col>
               <Col sm={7}>
-                <Button disabled={!this.state.selectedProject} variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
+                <Button variant="primary" type="submit"  size="sm" className="sp-form-button">Launch</Button>
                 <Button variant="secondary" size="sm" onClick={this.resetForm} className="sp-reset-button">Reset</Button>
               </Col>
             </Row>
@@ -279,6 +289,14 @@ class SciencePortalForm extends React.Component {
               <Col className="sp-placeholder" sm={3}>
                 <Form.Label  className="sp-form-label" column="sm">type
                   {this.renderPopover("Session Type","Select from the list of supported session types")}
+                </Form.Label>
+              </Col>
+              {this.renderPlaceholder()}
+            </Row>
+            <Row className="sp-form-row">
+              <Col className="sp-placeholder" sm={3}>
+                <Form.Label  className="sp-form-label" column="sm">project
+                  {this.renderPopover("Image Project","The project for which the image is used.")}
                 </Form.Label>
               </Col>
               {this.renderPlaceholder()}
