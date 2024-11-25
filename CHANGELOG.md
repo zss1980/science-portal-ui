@@ -1,5 +1,12 @@
 ## Oct 23, 2023
 
+## [0.5.2](https://github.com/opencadc/science-portal/compare/0.5.1...0.5.2) (2024-11-25)
+
+
+### Bug Fixes
+
+* fix for image sha name for cosign ([e96adc4](https://github.com/opencadc/science-portal/commit/e96adc4946fa435250bddd78262ac34bd16b39d0))
+
 ## [0.5.1](https://github.com/opencadc/science-portal/compare/0.5.0...0.5.1) (2024-11-25)
 
 
