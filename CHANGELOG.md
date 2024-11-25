@@ -1,5 +1,12 @@
 ## Oct 23, 2023
 
+## [0.5.1](https://github.com/opencadc/science-portal/compare/0.5.0...0.5.1) (2024-11-25)
+
+
+### Miscellaneous Chores
+
+* release 0.5.1 ([635b65c](https://github.com/opencadc/science-portal/commit/635b65cffd83cdbe8330c9cd2a419b97c1ab2b74))
+
 ## [0.5.0](https://github.com/opencadc/science-portal/compare/v0.4.0...0.5.0) (2024-11-22)
 
 
