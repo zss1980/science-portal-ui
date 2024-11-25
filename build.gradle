@@ -79,7 +79,8 @@ clean.delete << file('src/main/webapp/dist')
 
 spotless {
     // optional: limit format enforcement to just the files changed by this feature branch
-    ratchetFrom 'origin/main'
+    // optional: Disabled - does not work with JDK 1.8
+//    ratchetFrom 'origin/main'
 
     java {
         // Use the default importOrder configuration
@@ -98,6 +99,7 @@ spotless {
         endWithNewline()
     }
 }
+
 check.dependsOn spotlessCheck
 
 // Create Java Code Coverage Reports
