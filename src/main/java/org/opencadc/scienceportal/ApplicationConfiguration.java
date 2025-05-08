@@ -119,7 +119,7 @@ public class ApplicationConfiguration {
 
         final LocalAuthority localAuthority = new LocalAuthority();
         try {
-            final Set<URI> credEndpoints = localAuthority.getServiceURIs(Standards.CRED_PROXY_10);
+            final Set<URI> credEndpoints = localAuthority.getResourceIDs(Standards.CRED_PROXY_10);
             if (!credEndpoints.isEmpty()) {
                 final URI credServiceID = credEndpoints.stream().findFirst().orElseThrow(IllegalStateException::new);
                 final URL credServiceURL =
