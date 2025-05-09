@@ -22,7 +22,13 @@
         "form_fields": ["name", "type", "image", "memory", "cores"],
         "portal_icon": "fas_cube.png",
         "portal_text": "contributed"
-      }
+      },
+    {
+      "name": "firefly",
+      "form_fields": ["name", "type", "image"],
+      "portal_icon": "firefly_icon.png",
+      "portal_text": "firefly"
+    }
     ],
   "default" : "notebook"
 }
