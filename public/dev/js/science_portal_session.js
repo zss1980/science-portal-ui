@@ -89,7 +89,8 @@
       "desktop" : 2,
       "carta" : 3,
       "contributed" : 4,
-      "headless" : 5
+      "firefly" : 5,
+      "headless" : 6
     }
 
     function sortSessions(sList) {
