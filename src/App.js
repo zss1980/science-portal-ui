@@ -38,6 +38,7 @@ import 'react-tabs/style/react-tabs.css';
 import "./react/sp-session-list.css";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
+import SciencePortalUserStorage from "./react/SciencePortalUserStorage";
 
 
 const MODAL_DATA = {
@@ -137,7 +138,8 @@ class SciencePortalApp extends React.Component {
             headerURLs: HEADER_URL_DEFAULTS,
             userInfo: {},
             themeName: "canfar",
-            tabLabels: ["Public", "Advanced"]
+            tabLabels: ["Public", "Advanced"],
+            fetchingStorageQuota: false
         };
     }
 
@@ -223,6 +225,10 @@ class SciencePortalApp extends React.Component {
 
     setBanner(bannerText) {
         this.setState({bannerText: bannerText})
+    }
+
+    onFetchingStorageQuota(fetchingStorageQuota) {
+        this.setState({fetchingStorageQuota: fetchingStorageQuota})
     }
 
 
@@ -330,6 +336,15 @@ class SciencePortalApp extends React.Component {
                                     <SessionItem listType="empty"/>
                                 </Col>
                             }
+                            <Col sm={3} className={'ms-auto'}>
+                                <Card>
+                                    <Card.Body>
+
+                                        <SciencePortalUserStorage isAuthenticated={true}
+                                                                  name={name} />
+                                    </Card.Body>
+                                </Card>
+                            </Col>
                         </Row>
 
                     </Container>
