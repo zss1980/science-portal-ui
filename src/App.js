@@ -64,6 +64,9 @@ const HEADER_URL_DEFAULTS = {
   baseURLCanfar: "https://www.canfar.net",
 };
 
+const DEFAULT_STORAGE_XML_INFO_URL =
+  "https://1ws-uv.canfar.net/arc/nodes/home/";
+
 const BASE_PAGE_STATE = {
   spForm: {
     alert: {
@@ -134,6 +137,7 @@ class SciencePortalApp extends React.Component {
       confirmModalData: { dynamicProps: { isOpen: false } },
       pageState: BASE_PAGE_STATE,
       headerURLs: HEADER_URL_DEFAULTS,
+      storageUrl: DEFAULT_STORAGE_XML_INFO_URL,
       userInfo: {},
       themeName: "canfar",
       tabLabels: ["Public", "Advanced"],
@@ -203,6 +207,11 @@ class SciencePortalApp extends React.Component {
 
   setHeaderURLs(hURLs) {
     this.setState({ headerURLs: hURLs });
+  }
+
+  setStorageUrl(sURL) {
+    console.log('Storage url', sURL)
+    this.setState({ storageUrl: sURL });
   }
 
   setThemeName(themeName) {
@@ -386,16 +395,19 @@ class SciencePortalApp extends React.Component {
                   <SessionItem listType="empty" />
                 </Col>
               )}
-              <Col sm={1} className={"sp-card-container ms-auto"}>
-                <Card>
-                  <Card.Body>
-                    <SciencePortalUserStorage
-                      isAuthenticated={true}
-                      name={name}
-                    />
-                  </Card.Body>
-                </Card>
-              </Col>
+              {this.state.storageUrl ? (
+                <Col sm={1} className={"sp-card-container ms-auto"}>
+                  <Card>
+                    <Card.Body>
+                      <SciencePortalUserStorage
+                        isAuthenticated={true}
+                        name={name}
+                        storageUrl={this.state.storageUrl}
+                      />
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ) : null}
             </Row>
           </Container>
 

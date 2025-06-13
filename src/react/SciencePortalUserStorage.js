@@ -15,8 +15,7 @@ import { faRefresh, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import "./css/index.css";
 import "./sp-session-list.css";
 import { parseVospaceXML } from "./utilities/parseVospaceXML";
-
-const END_POINT = `https://ws-uv.canfar.net/arc/nodes/home/`;
+import Alert from "react-bootstrap/Alert";
 
 const TEST_DATA = {
   size: 11281596360,
@@ -93,9 +92,10 @@ const StorageCard = ({ label, value, isLoading }) => {
   );
 };
 
-function SciencePortalUserStorage({ isAuthenticated, name }) {
+function SciencePortalUserStorage({ isAuthenticated, name, storageUrl }) {
   const [data, setData] = useState(null);
   const [fetching, setFetching] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // Card configuration mapped to data keys
   const cardConfigs = [
@@ -122,15 +122,16 @@ function SciencePortalUserStorage({ isAuthenticated, name }) {
 
   const fetchStorageData = async () => {
     setFetching(true);
+    setErrorMessage(null);
 
     try {
-      const response = await fetch(`${END_POINT}${name}`, {
+      const response = await fetch(`${storageUrl}${name}`, {
         headers: { Accept: "application/xml" },
         credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        setErrorMessage(`HTTP ${response.status}`);
       }
 
       const xmlString = await response.text();
@@ -159,6 +160,11 @@ function SciencePortalUserStorage({ isAuthenticated, name }) {
 
   return (
     <>
+      {errorMessage ? (
+        <Alert variant={"danger"}>
+          <span>{errorMessage}</span>
+        </Alert>
+      ) : null}
       {/* Header with title and controls */}
       <Col>
         <Row>
