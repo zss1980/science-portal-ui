@@ -1,5 +1,12 @@
 # Science Portal User Interface (0.6.1)
 
+## [0.6.2](https://github.com/opencadc/science-portal/compare/0.6.1...0.6.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* version update for image ([1c23956](https://github.com/opencadc/science-portal/commit/1c23956b37aee9ba521f28fb7b1298a2673d35f6))
+
 ## [0.6.1](https://github.com/opencadc/science-portal/compare/0.6.0...0.6.1) (2025-06-16)
 
 
