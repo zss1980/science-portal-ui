@@ -4,8 +4,7 @@ plugins {
     id 'war'
     id "com.github.node-gradle.node" version "3.0.1"
 
-    // Use version 6.13.0 until JDK 1.8 is no longer required.
-    id 'com.diffplug.spotless' version '6.13.0'
+    id 'com.diffplug.spotless' version '6.25.0'
 
     // IntelliJ IDEA plugin here to allow integration tests to appear properly in IDEs.
     id 'idea'
@@ -74,6 +73,8 @@ tasks.register('copyDevToDist', Copy) {
     into layout.projectDirectory.file("src/main/webapp/dist")
 }
 
+war.dependsOn('copyDevToDist')
+
 processResources.dependsOn 'buildReactApp'
 assemble.dependsOn 'copyDevToDist'
 
@@ -81,8 +82,7 @@ clean.delete << file('src/main/webapp/dist')
 
 spotless {
     // optional: limit format enforcement to just the files changed by this feature branch
-    // optional: Disabled - does not work with JDK 1.8
-//    ratchetFrom 'origin/main'
+    ratchetFrom 'origin/main'
 
     java {
         // Use the default importOrder configuration
@@ -90,7 +90,7 @@ spotless {
         // Remove unused imports
         removeUnusedImports()
         // Google Java Format, Android Open Source Project style which uses 4 spaces for indentation
-        palantirJavaFormat()
+        palantirJavaFormat('2.50.0').formatJavadoc(true)
         // Format annotations on a single line
         formatAnnotations()
     }
@@ -107,8 +107,8 @@ check.dependsOn spotlessCheck
 // Create Java Code Coverage Reports
 jacocoTestReport {
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required = true
+        html.required = true
     }
 }
 check.dependsOn jacocoTestReport

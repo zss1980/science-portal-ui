@@ -1,15 +1,5 @@
 # CANFAR Science Portal
 
-### V 3.5.1
-#### June 13, 2025
-added a VOSpace usage widget
-added a format script
-```
-npm run format src/App.js
-```
-### V 3.5
-##### Oct 23, 2023
-
 UI for accessing and managing JupyterLab notebooks, Carta, Desktop and other interactive sessions that back onto CANFAR resources.
 
 Platform Load information is available, including current CPU usage and counts of running instances.
@@ -19,6 +9,12 @@ This CANFAR service provides the ability to access and manage Jupyter notebook, 
 on to CANFAR resources. Using container images and current system resource values (context) provided by Skaha, you can
 launch and manage sessions using the container image you select. Contextualization is provided for some session types 
 allowing the amount of memory and number of cores you designate to be used to power your session. 
+
+## Building
+Dependencies for building are:
+- Gradle 7.0 or later
+- JDK 11 or later
+- NodeJS 21 or later
 
 ## Endpoint locations
 All endpoints require authentication with CANFAR, and authorization to access Skaha resource allocations.

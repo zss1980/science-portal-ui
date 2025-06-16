@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11 AS base
+FROM gradle:8-jdk21 AS base
 ARG NODE_VERSION=v22.11.0
 ARG NVM_DIR=/nvm
 ARG NVM_VERSION=v0.40.0
@@ -21,9 +21,11 @@ RUN \
     && npm -v # should print `10.9.0`
 COPY . /science-portal
 WORKDIR /science-portal
+
+# Disable the spotless check until the entire codebase is formatted
 RUN \
     . ${NVM_DIR}/nvm.sh \
-    && ./gradlew -i clean spotlessCheck build --no-daemon
+    && gradle -i clean build test -x spotlessCheck --no-daemon
 
 FROM images.opencadc.org/library/cadc-tomcat:1.3 AS production
 

@@ -79,8 +79,9 @@ public class ApplicationConfiguration {
     }
 
     /**
-     * Expected that the configuration is a forward slash list of tab labels.
-     * <a href="https://commons.apache.org/proper/commons-configuration/userguide/howto_basicfeatures.html">Apache Configuration reference</a>
+     * Expected that the configuration is a forward slash list of tab labels. <a
+     * href="https://commons.apache.org/proper/commons-configuration/userguide/howto_basicfeatures.html">Apache
+     * Configuration reference</a>
      *
      * @return String array, never null.
      */

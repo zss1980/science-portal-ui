@@ -1,7 +1,12 @@
-## Oct 23, 2023
+# Science Portal User Interface (0.6.1)
+
+## [0.6.1](https://github.com/opencadc/science-portal/compare/0.6.0...0.6.1) (2025-06-16)
+
+### Features
+
+* add support for user storage information ([841fdb0](https://github.com/opencadc/science-portal/commit/841fdb07a7bd994f49b9e77cacabeea57b7f807b))
 
 ## [0.6.0](https://github.com/opencadc/science-portal/compare/0.5.3...0.6.0) (2025-05-09)
-
 
 ### Features
 
