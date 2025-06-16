@@ -210,7 +210,7 @@ class SciencePortalApp extends React.Component {
   }
 
   setStorageUrl(sURL) {
-    const verifiedURL = sURL.endsWith('/') ? sURL : sURL + '/';
+    const verifiedURL = sURL?.endsWith('/') ? sURL : sURL + '/';
     this.setState({ storageUrl: verifiedURL });
   }
 
