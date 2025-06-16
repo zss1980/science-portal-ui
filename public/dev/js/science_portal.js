@@ -44,7 +44,9 @@
     inputs.reactApp = _reactApp
     _reactApp.setThemeName(inputs.themeName)
     _reactApp.setHeaderURLs(inputs.headerURLs)
-    _reactApp.setStorageUrl(inputs.storageXmlInfoUrl)
+    if (inputs.storageXmlInfoUrl) {
+      _reactApp.setStorageUrl(inputs.storageXmlInfoUrl)
+    }
     if (inputs.tabLabels) {
       _reactApp.setTabLabels(inputs.tabLabels)
     }
