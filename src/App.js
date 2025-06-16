@@ -65,7 +65,7 @@ const HEADER_URL_DEFAULTS = {
 };
 
 const DEFAULT_STORAGE_XML_INFO_URL =
-  "https://1ws-uv.canfar.net/arc/nodes/home/";
+  "https://ws-uv.canfar.net/arc/nodes/home/";
 
 const BASE_PAGE_STATE = {
   spForm: {
