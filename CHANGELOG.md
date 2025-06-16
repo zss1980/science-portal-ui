@@ -2,6 +2,13 @@
 
 ## [0.6.1](https://github.com/opencadc/science-portal/compare/0.6.0...0.6.1) (2025-06-16)
 
+
+### Bug Fixes
+
+* updates for version and spotless check ([26afb48](https://github.com/opencadc/science-portal/commit/26afb488d346dbd86c3f7cb555b4f55f20e8d1ea))
+
+## [0.6.1](https://github.com/opencadc/science-portal/compare/0.6.0...0.6.1) (2025-06-16)
+
 ### Features
 
 * add support for user storage information ([841fdb0](https://github.com/opencadc/science-portal/commit/841fdb07a7bd994f49b9e77cacabeea57b7f807b))
