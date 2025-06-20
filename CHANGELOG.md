@@ -1,5 +1,12 @@
 # Science Portal User Interface (0.6.1)
 
+## [0.7.0](https://github.com/opencadc/science-portal/compare/0.6.2...0.7.0) (2025-06-20)
+
+
+### Features
+
+* disable storage info if not set in url ([1dbbc72](https://github.com/opencadc/science-portal/commit/1dbbc72864622bbc158a84ff3d181b221107c7f4))
+
 ## [0.6.2](https://github.com/opencadc/science-portal/compare/0.6.1...0.6.2) (2025-06-16)
 
 
