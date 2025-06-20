@@ -64,9 +64,6 @@ const HEADER_URL_DEFAULTS = {
   baseURLCanfar: "https://www.canfar.net",
 };
 
-const DEFAULT_STORAGE_XML_INFO_URL =
-  "https://ws-uv.canfar.net/arc/nodes/home/";
-
 const BASE_PAGE_STATE = {
   spForm: {
     alert: {
@@ -137,7 +134,7 @@ class SciencePortalApp extends React.Component {
       confirmModalData: { dynamicProps: { isOpen: false } },
       pageState: BASE_PAGE_STATE,
       headerURLs: HEADER_URL_DEFAULTS,
-      storageUrl: DEFAULT_STORAGE_XML_INFO_URL,
+      storageUrl: "",
       userInfo: {},
       themeName: "canfar",
       tabLabels: ["Public", "Advanced"],
@@ -210,7 +207,7 @@ class SciencePortalApp extends React.Component {
   }
 
   setStorageUrl(sURL) {
-    const verifiedURL = sURL?.endsWith('/') ? sURL : sURL + '/';
+    const verifiedURL = sURL ? (sURL.endsWith('/') ? sURL : `${sURL}/`) : null;
     this.setState({ storageUrl: verifiedURL });
   }
 

@@ -172,8 +172,15 @@ public class ApplicationConfiguration {
         return getStringValue(ConfigurationKey.OIDC_SCOPE);
     }
 
+    /**
+     * Returns the URL to the storage XML info service. Return an empty string if not configured to conform to the
+     * JavaScript this value will be injected into.
+     *
+     * @return String URL to the storage XML info service, or an empty string if not configured. Never null.
+     */
     public String getStorageXmlInfoUrl() {
-        return getStringValue(ConfigurationKey.STORAGE_XML_INFO_URL);
+        final String configuredStorageHomeURL = getStringValue(ConfigurationKey.STORAGE_XML_INFO_URL);
+        return StringUtil.hasText(configuredStorageHomeURL) ? configuredStorageHomeURL : "";
     }
 
     public boolean isOIDCConfigured() {
