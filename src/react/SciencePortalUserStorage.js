@@ -17,6 +17,11 @@ import "./sp-session-list.css";
 import { parseVospaceXML } from "./utilities/parseVospaceXML";
 import Alert from "react-bootstrap/Alert";
 
+/**
+ * SciencePortalUserStorage component displays user home storage information.
+ * This is considered Experimental and may change in future releases.
+ */
+
 const TEST_DATA = {
   size: 11281596360,
   quota: 200000000000,
