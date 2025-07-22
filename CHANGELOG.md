@@ -1,5 +1,12 @@
 # Science Portal User Interface (0.6.1)
 
+## [0.7.1](https://github.com/opencadc/science-portal/compare/0.7.0...0.7.1) (2025-07-22)
+
+
+### Bug Fixes
+
+* default notebook image is now astroml and version bump ([5608878](https://github.com/opencadc/science-portal/commit/56088783e15fa4c6fb0048ccd2da0834973a5a37))
+
 ## [0.7.0](https://github.com/opencadc/science-portal/compare/0.6.2...0.7.0) (2025-06-20)
 
 
