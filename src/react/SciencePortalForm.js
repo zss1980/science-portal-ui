@@ -26,18 +26,23 @@ class SciencePortalForm extends React.Component {
     this.selectedRAM = DEFAULT_RAM_NUMBER
     this.selectedCores = DEFAULT_CORES_NUMBER
     if (typeof props.fData.contextData !== "undefined") {
-      this.selectedRAM = Math.max(props.fData.contextData.defaultRAM, DEFAULT_RAM_NUMBER)
-      this.selectedCores = Math.max(props.fData.contextData.defaultCores, DEFAULT_CORES_NUMBER)
+      this.selectedRAM = Math.max(props.fData.contextData?.defaultRAM || DEFAULT_RAM_NUMBER, DEFAULT_RAM_NUMBER)
+      this.selectedCores = Math.max(props.fData.contextData?.defaultCores || DEFAULT_CORES_NUMBER, DEFAULT_CORES_NUMBER)
     }
     this.state = {
       fData:props.fData,
       selectedRAM: this.selectedRAM,
       selectedCores: this.selectedCores,
       selectedProject: undefined,
-      selectedImageId: undefined
+      selectedImageId: undefined,
+      resourceType: 'shared',
+      showRAM: false,
+      showCores: false
     }
     this.handleChange = this.handleChange.bind(this);
     this.resetForm = this.resetForm.bind(this);
+    this.renderPopover = this.renderPopover.bind(this);
+    this.handleResourceTypeChange = this.handleResourceTypeChange.bind(this);
   }
 
   handleChange(event) {
@@ -61,16 +66,35 @@ class SciencePortalForm extends React.Component {
     });
   }
 
+  handleResourceTypeChange(event) {
+    const resourceType = event.target.value;
+    const isCustom = resourceType === 'custom';
+    const ramAndCores = {}
+   if (!isCustom) {
+      ramAndCores.selectedCores = DEFAULT_CORES_NUMBER
+      ramAndCores.selectedRAM = DEFAULT_RAM_NUMBER
+    }
+    this.setState({
+      resourceType: resourceType,
+      showRAM: isCustom,
+      showCores: isCustom,
+      ...ramAndCores
+    });
+  }
+
   resetForm(event) {
     event.stopPropagation();
 
     this.setState({
-      selectedCores : Math.max(this.props.fData.contextData.defaultCores, DEFAULT_CORES_NUMBER),
-      selectedRAM : Math.max(this.props.fData.contextData.defaultRAM, DEFAULT_RAM_NUMBER),
+      selectedCores : Math.max(this.props.fData.contextData?.defaultCores || DEFAULT_CORES_NUMBER, DEFAULT_CORES_NUMBER),
+      selectedRAM : Math.max(this.props.fData.contextData?.defaultRAM || DEFAULT_RAM_NUMBER, DEFAULT_RAM_NUMBER),
       selectedProject: '',
       selectedImageId: '',
+      resourceType: 'shared',
+      showRAM: false,
+      showCores: false
     });
-    this.state.fData.resetHandler();
+    this.state.fData.resetHandler?.();
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -131,29 +155,29 @@ class SciencePortalForm extends React.Component {
     // They are parsed out of the session json data in science_portal_form.js
     let showRAM = false
     let showCores = false
-    if (this.state.fData.formFields !== undefined) {
-      if (this.state.fData.formFields.showRAM !== undefined) {
+    if (this.state.fData?.formFields !== undefined) {
+      if (this.state.fData.formFields?.showRAM !== undefined) {
         showRAM = this.state.fData.formFields.showRAM
       }
       
       showCores = false
-      if (this.state.fData.formFields.showCores !== undefined) {
+      if (this.state.fData.formFields?.showCores !== undefined) {
         showCores = this.state.fData.formFields.showCores
       }
     }
 
-    const projectsOfType = getProjectImagesMap(this.state.fData.imageList)
+    const projectsOfType = getProjectImagesMap(this.state.fData?.imageList)
     const availableProjects = getProjectNames(projectsOfType) || []
-    const defaultImages =  projectsOfType[SKAHA_PROJECT] || []
-    const imagesOfProject = this.state.selectedProject ? projectsOfType[this.state.selectedProject] : defaultImages
-    const defaultImageName = this.state.fData.selectedType ? DEFAULT_IMAGE_NAMES[this.state.fData.selectedType] : undefined
-    const defaultImageId = defaultImageName ? imagesOfProject.find(mObj => mObj.name === defaultImageName)?.id : imagesOfProject[0]?.id
-
+    const defaultImages =  projectsOfType?.[SKAHA_PROJECT] || []
+    const imagesOfProject = this.state.selectedProject ? projectsOfType?.[this.state.selectedProject] : defaultImages
+    const defaultImageName = this.state.fData?.selectedType ? DEFAULT_IMAGE_NAMES[this.state.fData.selectedType] : undefined
+    const defaultImageId = defaultImageName ? imagesOfProject?.find(mObj => mObj.name === defaultImageName)?.id : imagesOfProject?.[0]?.id
+                      console.log('state', this.state)
       return (
       <>
-        {Object.keys(this.state.fData).length !== 0 && 
-         this.state.fData.imageList && 
-          <Form onSubmit={this.state.fData.submitHandler} className="sp-form">
+        {Object.keys(this.state.fData || {}).length !== 0 && 
+         this.state.fData?.imageList && 
+          <Form onSubmit={this.state.fData?.submitHandler} className="sp-form">
             <Row className="sp-form-row">
               <Col sm={4}>
                 <Form.Label className="sp-form-label" column="sm">type
@@ -162,13 +186,13 @@ class SciencePortalForm extends React.Component {
               </Col>
               <Col sm={7}>
                 <Form.Select
-                  value={this.state.fData.selectedType}
-                  onChange={this.state.fData.changeTypeHandler}
+                  value={this.state.fData?.selectedType || ''}
+                  onChange={this.state.fData?.changeTypeHandler}
                   name="type"
                   size="sm"
                   className="sp-form-cursor"
                 >
-                  {this.state.fData.types.map(mapObj => (
+                  {(this.state.fData?.types || []).map(mapObj => (
                     <option className="sp-form" key={mapObj} name={mapObj} value={mapObj}>{mapObj}</option>
                   ))}
                 </Form.Select>
@@ -220,54 +244,78 @@ class SciencePortalForm extends React.Component {
                 </Form.Label>
               </Col>
               <Col sm={7}>
-                <Form.Control
+                  <Form.Control
                     type="text"
                     maxLength={15}
                     placeholder="Enter session name"
-                    value={this.state.fData.sessionName}
+                    value={this.state.fData?.sessionName || ''}
                     onChange={this.handleChange}
                     name="name"
                     className="sp-form-input"
-                />
+                  />
               </Col>
             </Row>
-            {showRAM === true &&
-            <Row className="sp-form-row">
+
+            <Row className="sp-form-row radio-res d-flex align-items-center">
               <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm">memory
-                  {this.renderPopover("Memory", "System memory (RAM) in gigabytes.")}
-                </Form.Label>
+                <Form.Label className="sp-form-label" column="sm">resources</Form.Label>
               </Col>
-              <Col sm={7}>
-                <Form.Select
-                  value={this.state.selectedRAM || this.state.fData.contextData.defaultRAM}
-                  name="ram"
-                  className="sp-form-cursor"
-                  onChange={this.handleRAMChange.bind(this)}>
-                  {this.state.fData.contextData.availableRAM?.map(mapObj => (
-                    <option key={mapObj} value={mapObj}>{mapObj}</option>
-                  ))}
-                </Form.Select>
+              <Col sm={7} >
+                <Form.Check
+                  type="radio"
+                  id="resource-shared"
+                  name="resourceType"
+                  label="Flexible"
+                  value="shared"
+                  checked={this.state.resourceType === 'shared'}
+                  onChange={this.handleResourceTypeChange}
+                  inline
+                />{this.renderPopover("Flexible", "Variable access to shared node resources as needed.")}
+
+                <Form.Check
+                  type="radio"
+                  id="resource-custom"
+                  name="resourceType"
+                  label="Fixed"
+                  value="custom"
+                  checked={this.state.resourceType === 'custom'}
+                  onChange={this.handleResourceTypeChange}
+                  inline
+                />{this.renderPopover("Fixed", "Guaranteed dedicated resources that may be harder to allocate, especially for large memory and/or cores.")}
               </Col>
             </Row>
-            }
-            {showCores === true &&
+            {this.state.showRAM === true && this.state.showCores === true &&
             <Row className="sp-form-row">
               <Col sm={4}>
-                <Form.Label className="sp-form-label" column="sm"># cores
-                  {this.renderPopover("# of Cores", "Number of cores used by the session.")}
-                </Form.Label>
+                {' '}
               </Col>
               <Col sm={7}>
-                <Form.Select
-                  name="cores"
-                  className="sp-form-cursor"
-                  value={this.state.selectedCores || this.state.fData.contextData.defaultCores}
-                  onChange={this.handleCoresChange.bind(this)}>
-                  {this.state.fData.contextData.availableCores?.map(mapObj => (
-                    <option key={mapObj} value={mapObj}>{mapObj}</option>
-                  ))}
-                </Form.Select>
+                <Row>
+                  <Col sm={6}>
+                    <Form.Label className="sp-form-sublabel">Memory (GB)</Form.Label>
+                    <Form.Select
+                      value={this.state.selectedRAM || this.state.fData?.contextData?.defaultRAM || DEFAULT_RAM_NUMBER}
+                      name="ram"
+                      className="sp-form-cursor"
+                      onChange={this.handleRAMChange.bind(this)}>
+                      {(this.state.fData?.contextData?.availableRAM || []).map(mapObj => (
+                          <option key={mapObj} value={mapObj}>{mapObj}</option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                  <Col sm={6}>
+                    <Form.Label className="sp-form-sublabel">CPU Cores</Form.Label>
+                    <Form.Select
+                      name="cores"
+                      className="sp-form-cursor"
+                      value={this.state.selectedCores || this.state.fData?.contextData?.defaultCores || DEFAULT_CORES_NUMBER}
+                      onChange={this.handleCoresChange.bind(this)}>
+                      {(this.state.fData?.contextData?.availableCores || []).map(mapObj => (
+                        <option key={mapObj} value={mapObj}>{mapObj}</option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                </Row>
               </Col>
             </Row>
             }
@@ -283,7 +331,7 @@ class SciencePortalForm extends React.Component {
           </Form>
         }
 
-        {(Object.keys(this.state.fData).length === 0 || !this.state.fData.imageList) && 
+        {(Object.keys(this.state.fData || {}).length === 0 || !this.state.fData?.imageList) && 
           <Form className="sp-form">
             <Row className="sp-form-row">
               <Col className="sp-placeholder" sm={3}>
