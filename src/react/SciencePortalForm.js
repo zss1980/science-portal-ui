@@ -86,8 +86,8 @@ class SciencePortalForm extends React.Component {
     event.stopPropagation();
 
     this.setState({
-      selectedCores : Math.max(this.props.fData.contextData?.defaultCores || DEFAULT_CORES_NUMBER, DEFAULT_CORES_NUMBER),
-      selectedRAM : Math.max(this.props.fData.contextData?.defaultRAM || DEFAULT_RAM_NUMBER, DEFAULT_RAM_NUMBER),
+      selectedCores : Math.max(this.props.fData.contextData?.defaultCores, DEFAULT_CORES_NUMBER),
+      selectedRAM : Math.max(this.props.fData.contextData?.defaultRAM, DEFAULT_RAM_NUMBER),
       selectedProject: '',
       selectedImageId: '',
       resourceType: 'shared',
@@ -172,7 +172,7 @@ class SciencePortalForm extends React.Component {
     const imagesOfProject = this.state.selectedProject ? projectsOfType?.[this.state.selectedProject] : defaultImages
     const defaultImageName = this.state.fData?.selectedType ? DEFAULT_IMAGE_NAMES[this.state.fData.selectedType] : undefined
     const defaultImageId = defaultImageName ? imagesOfProject?.find(mObj => mObj.name === defaultImageName)?.id : imagesOfProject?.[0]?.id
-                      console.log('state', this.state)
+
       return (
       <>
         {Object.keys(this.state.fData || {}).length !== 0 && 
