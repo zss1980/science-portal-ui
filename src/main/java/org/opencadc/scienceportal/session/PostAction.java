@@ -102,9 +102,7 @@ public class PostAction extends SciencePortalAuthAction {
         this.syncInput = syncInput;
     }
 
-    /**
-     * Not used explicitly, but needs to be present for the reflection-based client
-     */
+    /** Not used explicitly, but needs to be present for the reflection-based client. */
     public PostAction() {
         super();
     }

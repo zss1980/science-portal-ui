@@ -12,9 +12,9 @@ allowing the amount of memory and number of cores you designate to be used to po
 
 ## Building
 Dependencies for building are:
-- Gradle 7.0 or later
-- JDK 11 or later
-- NodeJS 21 or later
+- Gradle 7.0 or later (8.0 or later recommended)
+- JDK 11 or later (JDK 21 or later recommended)
+- NodeJS 22.11 or later
 
 ## Endpoint locations
 All endpoints require authentication with CANFAR, and authorization to access Skaha resource allocations.

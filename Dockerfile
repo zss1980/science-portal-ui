@@ -1,12 +1,12 @@
 FROM gradle:8-jdk21 AS base
-ARG NODE_VERSION=v22.11.0
+ARG NODE_VERSION=v22.18.0
 ARG NVM_DIR=/nvm
-ARG NVM_VERSION=v0.40.0
+ARG NVM_VERSION=v0.40.3
 
 FROM base AS builder
-ARG NODE_VERSION=v22.11.0
+ARG NODE_VERSION=v22.18.0
 ARG NVM_DIR=/nvm
-ARG NVM_VERSION=v0.40.0
+ARG NVM_VERSION=v0.40.3
 
 RUN \
     mkdir -p ${NVM_DIR} \
@@ -16,7 +16,7 @@ RUN \
     && . ${NVM_DIR}/nvm.sh \
     && nvm install ${NODE_VERSION} \
     # verifies the right Node.js version is in the environment
-    && node -v # should print `v22.11.0` \
+    && node -v # should print `v22.18.0` \
     # verifies the right npm version is in the environment
     && npm -v # should print `10.9.0`
 COPY . /science-portal
@@ -25,9 +25,9 @@ WORKDIR /science-portal
 # Disable the spotless check until the entire codebase is formatted
 RUN \
     . ${NVM_DIR}/nvm.sh \
-    && gradle -i clean build test -x spotlessCheck --no-daemon
+    && gradle -i clean build test --no-daemon
 
-FROM images.opencadc.org/library/cadc-tomcat:1.3 AS production
+FROM images.opencadc.org/library/cadc-tomcat:1.4 AS production
 
 RUN mkdir -p /usr/share/tomcat/config
 
