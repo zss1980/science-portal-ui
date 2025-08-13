@@ -9,6 +9,7 @@ plugins {
     // IntelliJ IDEA plugin here to allow integration tests to appear properly in IDEs.
     id 'idea'
     id 'jacoco'
+    id 'checkstyle'
     id 'org.jetbrains.dokka' version '1.6.0'
 }
 
@@ -44,7 +45,13 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:[4.11.0,5.0.0)'
 }
 
-sourceCompatibility = '11'
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+    withSourcesJar()
+    withJavadocJar()
+}
 
 war {
     // Trying to fix static file caching on new build.
@@ -81,12 +88,15 @@ assemble.dependsOn 'copyDevToDist'
 clean.delete << file('src/main/webapp/dist')
 
 spotless {
-    // optional: limit format enforcement to just the files changed by this feature branch
-    ratchetFrom 'origin/main'
-
     java {
+        // Interpret all files as utf-8
+        encoding 'UTF-8'
+//        // Only require formatting of files that diff from main
+//        ratchetFrom 'origin/main'
         // Use the default importOrder configuration
-        importOrder()
+        if (false) {
+            importOrder()
+        }
         // Remove unused imports
         removeUnusedImports()
         // Google Java Format, Android Open Source Project style which uses 4 spaces for indentation
@@ -94,15 +104,21 @@ spotless {
         // Format annotations on a single line
         formatAnnotations()
     }
-    format 'misc', {
-        target '*.gradle'
-        trimTrailingWhitespace()
-        indentWithSpaces(4)
-        endWithNewline()
+}
+check.dependsOn spotlessCheck
+
+// Example in a Gradle build script
+afterEvaluate {
+    def spotless = getProject().getExtensions().findByName("com.diffplug.spotless")
+    if (spotless != null) {
+        File gitFolder = file('.git') // Relative or absolute path
+        if (gitFolder.exists()) {
+            spotless.ratchetFrom('origin/main')
+        } else {
+            spotless.ratchetFrom(null) // No ratchet if .git folder does not exist
+        }
     }
 }
-
-check.dependsOn spotlessCheck
 
 // Create Java Code Coverage Reports
 jacocoTestReport {
