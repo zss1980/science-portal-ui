@@ -1,5 +1,11 @@
 # Science Portal User Interface
 
+## [0.7.2](https://github.com/opencadc/science-portal/compare/0.7.1...0.7.2) (2025-08-13)
+
+
+### Bug Fixes
+Remove resource selections by default
+
 ## [0.7.1](https://github.com/opencadc/science-portal/compare/0.7.0...0.7.1) (2025-07-22)
 
 
