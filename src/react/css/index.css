@@ -17,3 +17,25 @@ Specific to themes.
 body.theme-src span.display-name {
   font-size: 1.5em;
 }
+
+/* Radio button styling for resource selection */
+.sp-form-row .form-check-label {
+  font-weight: bold;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.sp-form-row .form-check {
+  margin-right: 0;
+}
+.form-check + .svg-inline--fa {
+  margin-right: 1.5rem;
+}
+
+/* Sublabel styling for custom resources */
+.sp-form-sublabel {
+  font-weight: bold;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+  display: block;
+}
