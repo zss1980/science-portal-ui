@@ -22,12 +22,11 @@ RUN \
 COPY . /science-portal
 WORKDIR /science-portal
 
-# Disable the spotless check until the entire codebase is formatted
 RUN \
     . ${NVM_DIR}/nvm.sh \
     && gradle -i clean build test --no-daemon
 
-FROM images.opencadc.org/library/cadc-tomcat:1.4 AS production
+FROM images.opencadc.org/library/cadc-tomcat:1 AS production
 
 RUN mkdir -p /usr/share/tomcat/config
 
